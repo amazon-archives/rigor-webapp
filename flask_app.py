@@ -36,6 +36,25 @@ app.config['SECRET_KEY'] = 'fq348fnylq84ylnqx48yq3xlg8nlqy348q'
 def index():
     return render_template('index.html')
 
+# http://localhost:5000/api/v1/search?a=1&has_tags=sign,sightpal&exclude_tags=hard&max_count=3
+@app.route('/api/v1/search', methods=['GET'])
+def searchImages():
+    queryDict = {}
+    keyWhitelist = 'source sensor has_tags exclude_tags max_count page'.split()
+    for key,val in request.values.items():
+        if key in keyWhitelist:
+            if type(val) == unicode:
+                val = val.encode('utf-8')
+            queryDict[key] = val
+    if 'has_tags' in queryDict:
+        queryDict['has_tags'] = queryDict['has_tags'].split(',')
+    if 'exclude_tags' in queryDict:
+        queryDict['exclude_tags'] = queryDict['exclude_tags'].split(',')
+    debugMain('searchImages: %s'%queryDict)
+    result = backend.searchImages(queryDict)
+    return jsonify(result=result)
+
+# http://localhost:5000/api/v1/image/23659
 @app.route('/api/v1/image/<id>', methods=['GET'])
 def getImage(id):
     result = backend.getImage(id=id)

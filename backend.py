@@ -92,8 +92,8 @@ def searchImages(queryDict):
     """
         {
             db_version: 'whatever',
-            has_tags: ['hello', 'there'],
-            exclude_tags: ['iphone'],
+    +       has_tags: ['hello', 'there'],
+    +       exclude_tags: ['iphone'],
             confidence_range: [1,4],
     +       sensor: 'iphone',
     +       source: 'kevin',
