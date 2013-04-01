@@ -68,12 +68,24 @@ def dbTimestampToUTCTime(dt):
 #--------------------------------------------------------------------------------
 # MAIN
 
-def sanitizeRow(d):
+def imageDictDbToApi(d):
+    # convert db timestamps to unix time
+    # add tags
     d2 = dict(d)
-    for key,val in d2.items():
-        print type(val)
-        if type(val) == datetime.datetime:
-            d2[key] = dbTimestampToUTCTime(val)
+
+    debugDetail('getting tags for image %s'%d['id'])
+
+    # add tags
+    sql = """SELECT * FROM tag WHERE image_id = %s;"""
+    values = (d['id'],)
+    tags = []
+    for row in dbQueryDict(CONN,sql,values):
+        tags.append(row['name'])
+    d2['tags'] = tags
+
+    # convert timestamp from datetime to unix time
+    d2['stamp'] = dbTimestampToUTCTime(d['stamp'])
+
     return d2
 
 def searchImages(queryDict):
@@ -83,12 +95,14 @@ def searchImages(queryDict):
             has_tags: ['hello', 'there'],
             exclude_tags: ['iphone'],
             confidence_range: [1,4],
+    +       sensor: 'iphone',
+    +       source: 'kevin',
             annotations: {
                 'character': {'geo': true},
                 'word': {'text': false},
             }
-            max_count: 50,  // max 50
-            page: 3         // starts at 0
+    +       max_count: 50,  // max 50
+    +       page: 3         // starts at 0
         }
     """
 
@@ -103,6 +117,26 @@ def searchImages(queryDict):
     if 'source' in queryDict:
         clauses.append("""source = %s""")
         values.append(queryDict['source'])
+
+    for tag in queryDict.get('has_tags',[]):
+        clauses.append(
+        'EXISTS ('
+        '\n    SELECT tag.image_id, tag.name FROM tag'
+        '\n    WHERE tag.image_id = id'
+        '\n    AND tag.name = %s'
+        '\n)'
+        )
+        values.append(tag)
+
+    for tag in queryDict.get('exclude_tags',[]):
+        clauses.append(
+        'NOT EXISTS ('
+        '\n    SELECT tag.image_id, tag.name FROM tag'
+        '\n    WHERE tag.image_id = id'
+        '\n    AND tag.name = %s'
+        '\n)'
+        )
+        values.append(tag)
 
     if clauses:
         sql = sql + '\nWHERE ' + '\nAND '.join(clauses)
@@ -119,7 +153,7 @@ def searchImages(queryDict):
         values.append(page * max_count)
 
     results = list(dbQueryDict(CONN,sql,values))
-    results = [sanitizeRow(r) for r in results]
+    results = [imageDictDbToApi(r) for r in results]
     return results
 
 
@@ -143,7 +177,7 @@ def getImage(id=None,uuid=None):
     if len(rows) == 0:
         1/0
     elif len(rows) == 1:
-        return sanitizeRow(rows[0])
+        return imageDictDbToApi(rows[0])
     else:
         1/0
 
@@ -160,9 +194,11 @@ if __name__ == '__main__':
 #     print getImage(uuid='01bb6939-ac7f-4dbf-84c9-8136eaa3f6ea');
     debugMain('testing searchImages')
     images = searchImages({
-        'sensor': 'HTC Nexus One',
-        'source': 'Guangyu',
-        'max_count': 4,
+        #         'sensor': 'HTC Nexus One',
+        #         'source': 'Guangyu',
+        'has_tags': ['money'],
+        'exclude_tags': ['testdata'],
+        'max_count': 2,
         'page': 0,
     })
     for image in images:
