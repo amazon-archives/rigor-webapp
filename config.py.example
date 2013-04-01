@@ -1,0 +1,5 @@
+
+
+DB_CONNECTION_STRING = "host='XXX' dbname='XXX' user='XXX' password='XXX'"
+
+

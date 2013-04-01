@@ -9,4 +9,5 @@ local*
 *.swp
 .DS_Store
 
+config.py
 
