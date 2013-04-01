@@ -1,0 +1,108 @@
+
+POST /api/v1/search
+{
+    db_version: 'whatever',
+    has_tags: ['hello', 'there'],
+    exclude_tags: ['iphone'],
+    confidence_range: [1,4],
+    annotations: {
+        'character': {'geo': true},
+        'word': {'text': false},
+    }
+    max_count: 50,
+    page: 3
+}
+
+response:
+{
+    list: [
+        {... image ...},
+        {... image ...},
+        {... image ...}
+    ]
+}
+
+
+
+GET /api/v1/image/:id
+{
+    id: 1403,
+    uuid: 'fj29fq30fj30ff',
+    stamp: 19428389232,
+    url: '/images/whatever/2fi2jf2f.jpg',
+    thumb_url: '/images/thumbs/2fi2jf2f.jpg',
+    tags: ['iphone','money'],
+    sensor: 'iphone',
+    source: 'kevin',
+    resolution: [1024,768],
+    format: 'png',
+    depth: 24,
+    location: [[45.54,-122.43]],
+    annotation_counts: {
+        'character': {'geo': 24, 'text': 10},
+        'word': {'geo': 24, 'text': 10},
+        ...
+    }
+}
+
+GET /api/v1/image/annotations
+{
+    list: [
+        {... annotation ...},
+        {... annotation ...},
+        {... annotation ...}
+    ]
+}
+
+GET /api/v1/annotation/:id
+{
+    id: 249,
+    image_id: 4928,
+    stamp: 19428389232,
+    domain: 'character',
+    geometry: [[1,2],[3,4],[5,6],[7,8]],
+    model: 'hello',
+    confidence: 4
+}
+
+GET /api/v1/dbversion
+{
+    list: [
+        {
+            name: 'kevin\'s test db',
+            created: 193920497
+        },
+        { ... }
+    ]
+}
+
+
+
+
+
+
+database            webapp
+
+domain              domain
+    --                  character
+    --                  word
+    text                line
+    textcluster         column
+    blur                blur
+    money               money
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
