@@ -1,4 +1,4 @@
-#/usr/bin/env python
+#!/usr/bin/env python
 
 from __future__ import division
 import os
@@ -6,6 +6,8 @@ import random
 import time
 import json
 import pprint
+import datetime
+import calendar
 
 import psycopg2
 
@@ -66,6 +68,14 @@ def dbTimestampToUTCTime(dt):
 #--------------------------------------------------------------------------------
 # MAIN
 
+def sanitizeRow(d):
+    d2 = dict(d)
+    for key,val in d2.items():
+        print type(val)
+        if type(val) == datetime.datetime:
+            d2[key] = dbTimestampToUTCTime(val)
+    return d2
+
 def searchImages(queryDict):
     """
         {
@@ -108,7 +118,9 @@ def searchImages(queryDict):
         sql += '\nOFFSET %s'
         values.append(page * max_count)
 
-    return list(dbQueryDict(CONN,sql,values))
+    results = list(dbQueryDict(CONN,sql,values))
+    results = [sanitizeRow(r) for r in results]
+    return results
 
 
 def getImage(id=None,uuid=None):
@@ -131,7 +143,7 @@ def getImage(id=None,uuid=None):
     if len(rows) == 0:
         1/0
     elif len(rows) == 1:
-        return rows[0]
+        return sanitizeRow(rows[0])
     else:
         1/0
 

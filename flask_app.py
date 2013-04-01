@@ -38,9 +38,9 @@ def index():
 
 @app.route('/api/v1/image/<id>', methods=['GET'])
 def getImage(id):
-    result = {
-        'id': id
-    }
+    result = backend.getImage(id=id)
+    debugMain('getImage.  id = %s'%id)
+    debugDetail(result)
     return jsonify(result)
 
 
