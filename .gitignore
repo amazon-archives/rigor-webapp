@@ -1,0 +1,12 @@
+.Python
+
+bin/*
+include/*
+lib/*
+local*
+
+*.pyc
+*.swp
+.DS_Store
+
+
