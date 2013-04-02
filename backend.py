@@ -13,6 +13,7 @@ import psycopg2
 
 from utils import *
 import config
+import jsonschema
 
 
 #--------------------------------------------------------------------------------
@@ -105,6 +106,16 @@ def searchImages(queryDict):
     +       page: 3         // starts at 0
         }
     """
+
+    schema = dict(
+        has_tags = [str],
+        exclude_tags = [str],
+        sensor = str,
+        source = str,
+        max_count = int,
+        page = int
+    )
+    jsonschema.validate(schema,queryDict, allowExtraKeys=False, allowMissingKeys=True)
 
     sql = """SELECT * FROM image"""
     clauses = []

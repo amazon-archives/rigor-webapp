@@ -50,6 +50,10 @@ def searchImages():
         queryDict['has_tags'] = queryDict['has_tags'].split(',')
     if 'exclude_tags' in queryDict:
         queryDict['exclude_tags'] = queryDict['exclude_tags'].split(',')
+    if 'max_count' in queryDict:
+        queryDict['max_count'] = int(queryDict['max_count'])
+    if 'page' in queryDict:
+        queryDict['page'] = int(queryDict['page'])
     debugMain('searchImages: %s'%queryDict)
     result = backend.searchImages(queryDict)
     return jsonify(result=result)
