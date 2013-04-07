@@ -28,6 +28,11 @@ def validate(schema, input, allowExtraKeys=False, allowMissingKeys=False, stack=
     If not allowExtraKeys, raise an ExtraKeyException if extra keys are present in input.
     If not allowMissingKeys, raise a MissingKeyException if keys are missing from the input.
     Ignore the "stack" variable; it's for internal use.
+
+    A schema is a dict containing the keys you want your actual data to have.
+    The values can either be types (int, str, ...) or instances of those types (123, "hello", ...).
+    Dictionaries can be nested.
+    Lists are treated as opaque and their length and contents don't matter.
     """
     schemaKeys = set(schema.keys())
     inputKeys = set(input.keys())
@@ -57,7 +62,7 @@ def validate(schema, input, allowExtraKeys=False, allowMissingKeys=False, stack=
                 raise WrongTypeException('in %s: key %s should be %s but is %s which is type %s'%('/'+'/'.join([str(s) for s in stack]),repr(key),expectedType,repr(actualVal),actualType))
 
         if isinstance(actualVal,dict):
-            validate(expectedVal,actualVal,stack=stack+[key])
+            validate(expectedVal,actualVal,allowExtraKeys=allowExtraKeys,allowMissingKeys=allowMissingKeys,stack=stack+[key])
 
     return True
 
@@ -67,54 +72,84 @@ def validate(schema, input, allowExtraKeys=False, allowMissingKeys=False, stack=
 if __name__ == '__main__':
     testlib.begin('jsonschema')
 
-    schemaType = dict(a=str,b=str)
-    schemaExample = dict(a='a',b='b')
+    #--------------------------
+    # EXTRA KEYS, MISSING KEYS
+
+    schemaWithTypes = dict(a=str,b=str)
+    schemaWithExamples = dict(a='a',b='b')
+    inputMatch = dict(schemaWithExamples)
+    inputExtra = dict(a='a',b='b',c='c')
+    inputMissing = dict(a='a')
 
     # perfect match
-    testlib.eq(   validate(schemaType,    dict(a='a',b='b')), True, 'perfect match using types -> True'   )
-    testlib.eq(   validate(schemaExample, dict(a='a',b='b')), True, 'perfect match using example -> True'   )
+    testlib.eq(   validate(schemaWithTypes,    inputMatch), True, 'perfect match using types -> True'   )
+    testlib.eq(   validate(schemaWithExamples, inputMatch), True, 'perfect match using example -> True'   )
+
+    # missing keys
+    testlib.eq(   validate(schemaWithTypes, inputMissing, allowMissingKeys=True), True, 'missing keys allowed -> True'  )
+    testlib.expectException(    validate, [],
+                                dict(schema=schemaWithTypes, input=inputMissing, allowMissingKeys=False),
+                                MissingKeyException, 'missing keys not allowed -> MissingKeyException'  )
+
+    # extra keys
+    testlib.eq(   validate(schemaWithTypes, inputExtra, allowExtraKeys=True), True, 'extra keys allowed -> True'  )
+    testlib.expectException(    validate, [],
+                                dict(schema=schemaWithTypes, input=inputExtra, allowExtraKeys=False),
+                                ExtraKeyException, 'extra keys not allowed -> ExtraKeyException'  )
+
+    #--------------------------
+    # EXTRA KEYS, MISSING KEYS IN NESTED DICTS
+
+    schemaWithTypes = dict(nest=dict(a=str,b=str))
+    schemaWithExamples = dict(nest=dict(a='a',b='b'))
+    schemaWithExamples = dict(nest=dict(a='a',b='b'))
+    inputMatch = dict(schemaWithExamples)
+    inputExtra = dict(nest=dict(a='a',b='b',c='c'))
+    inputMissing = dict(nest=dict(a='a'))
+
+    # perfect match
+    testlib.eq(   validate(schemaWithTypes,    inputMatch), True, 'perfect match using types -> True'   )
+    testlib.eq(   validate(schemaWithExamples, inputMatch), True, 'perfect match using example -> True'   )
+
+    # missing keys
+    testlib.eq(   validate(schemaWithTypes, inputMissing, allowMissingKeys=True), True, 'missing keys allowed -> True'  )
+    testlib.expectException(    validate, [],
+                                dict(schema=schemaWithTypes, input=inputMissing, allowMissingKeys=False),
+                                MissingKeyException, 'missing keys not allowed -> MissingKeyException'  )
+
+    # extra keys
+    testlib.eq(   validate(schemaWithTypes, inputExtra, allowExtraKeys=True), True, 'extra keys allowed -> True'  )
+    testlib.expectException(    validate, [],
+                                dict(schema=schemaWithTypes, input=inputExtra, allowExtraKeys=False),
+                                ExtraKeyException, 'extra keys not allowed -> ExtraKeyException'  )
+
+    #--------------------------
+    # TYPES
 
     # special-cased ok type mismatches
     testlib.eq(   validate(dict(a=1.0), dict(a=1)), True, 'int is ok where float is expected'   )
 
-    # missing keys
-    testlib.eq(   validate(schemaType, dict(a='a'), allowMissingKeys=True), True, 'missing keys allowed -> True'  )
-    testlib.expectException(    validate, [],
-                                dict(schema=schemaType, input=dict(a='a'), allowMissingKeys=False),
-                                MissingKeyException,
-                                'missing keys not allowed -> MissingKeyException'  )
-
-    # extra keys
-    testlib.eq(   validate(schemaType, dict(a='a',b='b',c='c'), allowExtraKeys=True), True, 'extra keys allowed -> True'  )
-    testlib.expectException(    validate, [],
-                                dict(schema=schemaType, input=dict(a='a',b='b',c='c'), allowExtraKeys=False),
-                                ExtraKeyException,
-                                'extra keys not allowed -> ExtraKeyException'  )
     # wrong type
     testlib.expectException(    validate, [],
                                 dict(   schema=dict(a=str),
                                         input=dict(a=1)
                                 ),
-                                WrongTypeException,
-                                'str is not int (type check): wrongTypeException'  )
+                                WrongTypeException, 'wrongTypeException with type: expected str, got int'  )
     testlib.expectException(    validate, [],
                                 dict(   schema=dict(a='a'),
                                         input=dict(a=1)
                                 ),
-                                WrongTypeException,
-                                'str is not int (example check): wrongTypeException'  )
-    testlib.expectException(    validate, [],
-                                dict(   schema=dict(a=1),
-                                        input=dict(a=1.1)
-                                ),
-                                WrongTypeException,
-                                'float is not int (example check): wrongTypeException'  )
+                                WrongTypeException, 'wrongTypeException with example: expected str, got int'  )
     testlib.expectException(    validate, [],
                                 dict(   schema=dict(a=int),
                                         input=dict(a=1.1)
                                 ),
-                                WrongTypeException,
-                                'float is not int (example check): wrongTypeException'  )
+                                WrongTypeException, 'wrongTypeException with type: expected int, got float'  )
+    testlib.expectException(    validate, [],
+                                dict(   schema=dict(a=1),
+                                        input=dict(a=1.1)
+                                ),
+                                WrongTypeException, 'wrongTypeException with example: expected int, got float'  )
 
     # todo: tests for nested dicts
 
