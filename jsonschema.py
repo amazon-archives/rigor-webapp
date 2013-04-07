@@ -8,18 +8,30 @@ import json
 import pprint
 import testlib
 
+
 #--------------------------------------------------------------------------------
 
 class ExtraKeyException(Exception): pass
 class MissingKeyException(Exception): pass
 class WrongTypeException(Exception): pass
 
-# todo:
-#   coerce types (unicode, str->int...)
-#   remove extra keys
-#   allow only some keys to be required and some to be optional
-#   handle lists
-#   write a ton of tests
+
+#--------------------------------------------------------------------------------
+
+def clean(schema, input, allowMissingKeys=False):
+    """Return a new dict which is a copy of input with any extra keys removed.
+    If not allowMissingKeys, check for missing keys and raise a MissingKeyException if needed.
+    Can also raise a WrongTypeException if the input types don't match the schema types.
+    """
+    validate(schema, input, allowExtraKeys=True, allowMissingKeys=allowMissingKeys)
+    result = {}
+    for key in schema.keys():
+        if key not in input: continue
+        if isinstance(schema[key],dict):
+            result[key] = clean(schema[key], input[key], allowMissingKeys)
+        else:
+            result[key] = input[key]
+    return result
 
 
 def validate(schema, input, allowExtraKeys=False, allowMissingKeys=False, stack=[]):
@@ -66,20 +78,35 @@ def validate(schema, input, allowExtraKeys=False, allowMissingKeys=False, stack=
 
     return True
 
-
 #--------------------------------------------------------------------------------
+
 
 if __name__ == '__main__':
     testlib.begin('jsonschema')
-
-    #--------------------------
-    # EXTRA KEYS, MISSING KEYS
 
     schemaWithTypes = dict(a=str,b=str)
     schemaWithExamples = dict(a='a',b='b')
     inputMatch = dict(schemaWithExamples)
     inputExtra = dict(a='a',b='b',c='c')
     inputMissing = dict(a='a')
+    inputBadType = dict(a='a',b=123)
+
+    #--------------------------
+    # CLEAN
+
+    testlib.eq(  clean(schemaWithTypes, inputMatch), inputMatch, 'clean with perfect match changes nothing'  )
+    testlib.eq(  clean(schemaWithExamples, inputMatch), inputMatch, 'clean with perfect match changes nothing (using examples)'  )
+    testlib.eq(  clean(schemaWithTypes, inputExtra), inputMatch, 'clean removes extra keys'  )
+    testlib.eq(  clean(schemaWithTypes, inputMissing, allowMissingKeys=True), inputMissing, 'clean can allow missing keys'  )
+    testlib.expectException(    clean, [],
+                                dict(schema=schemaWithTypes, input=inputMissing, allowMissingKeys=False),
+                                MissingKeyException, 'clean can die on missing keys'  )
+    testlib.expectException(    clean, [],
+                                dict(schema=schemaWithTypes, input=inputBadType),
+                                WrongTypeException, 'clean detects wrong types'  )
+
+    #--------------------------
+    # EXTRA KEYS, MISSING KEYS
 
     # perfect match
     testlib.eq(   validate(schemaWithTypes,    inputMatch), True, 'perfect match using types -> True'   )
@@ -126,7 +153,7 @@ if __name__ == '__main__':
     #--------------------------
     # TYPES
 
-    # special-cased ok type mismatches
+    # special-cased type mismatches which are ok
     testlib.eq(   validate(dict(a=1.0), dict(a=1)), True, 'int is ok where float is expected'   )
 
     # wrong type
