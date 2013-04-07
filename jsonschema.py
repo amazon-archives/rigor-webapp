@@ -6,6 +6,7 @@ import random
 import time
 import json
 import pprint
+import testlib
 
 #--------------------------------------------------------------------------------
 
@@ -20,7 +21,14 @@ class WrongTypeException(Exception): pass
 #   handle lists
 #   write a ton of tests
 
+
 def validate(schema, input, allowExtraKeys=False, allowMissingKeys=False, stack=[]):
+    """Input: a schema dict and an input dict.
+    Output: either True, or an exception.
+    If not allowExtraKeys, raise an ExtraKeyException if extra keys are present in input.
+    If not allowMissingKeys, raise a MissingKeyException if keys are missing from the input.
+    Ignore the "stack" variable; it's for internal use.
+    """
     schemaKeys = set(schema.keys())
     inputKeys = set(input.keys())
 
@@ -52,22 +60,21 @@ def validate(schema, input, allowExtraKeys=False, allowMissingKeys=False, stack=
     return True
 
 if __name__ == '__main__':
-    schema = {
-        'id': int,
-        'hash': str,
-        'subdict': {
-            'a': 1,
-            'b': 2,
-        },
-    }
+    testlib.begin('jsonschema')
 
-    input = {
-        'id': 847,
-        'hash': 'hello',
-        'subdict': {
-            'a': 1,
-            'b': 'yo',
-        },
-    }
-    print validate(schema,input)
+    schema = dict(a=str,b=str)
+
+    # perfect match
+    testlib.eq(   validate(schema, dict(a='a',b='b')), True, 'perfect match -> True'   )
+
+    # missing keys
+    testlib.eq(   validate(schema, dict(a='a'), allowMissingKeys=True), True, 'missing keys allowed -> True'  )
+    testlib.expectException(    validate,
+                                [], 
+                                dict(schema=schema, input=dict(a='a'), allowMissingKeys=False),
+                                MissingKeyException,
+                                'missing keys not allowed -> MissingKeyException'  )
+
+
+    testlib.end()
 
