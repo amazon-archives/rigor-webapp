@@ -34,7 +34,7 @@ def clean(schema, input, allowMissingKeys=False):
     return result
 
 
-def validate(schema, input, allowExtraKeys=False, allowMissingKeys=False, stack=[]):
+def validate(schema, input, allowExtraKeys=False, allowMissingKeys=False, stack=None):
     """Input: a schema dict and an input dict.
     Output: either True, or an exception.
     If not allowExtraKeys, raise an ExtraKeyException if extra keys are present in input.
@@ -48,6 +48,7 @@ def validate(schema, input, allowExtraKeys=False, allowMissingKeys=False, stack=
     """
     schemaKeys = set(schema.keys())
     inputKeys = set(input.keys())
+    if stack is None: stack = []
 
     if not allowExtraKeys:
         if inputKeys - schemaKeys:
@@ -71,7 +72,7 @@ def validate(schema, input, allowExtraKeys=False, allowMissingKeys=False, stack=
             if actualType == int and expectedType == float:
                 pass
             else:
-                raise WrongTypeException('in %s: key %s should be %s but is %s which is type %s'%('/'+'/'.join([str(s) for s in stack]),repr(key),expectedType,repr(actualVal),actualType))
+                raise WrongTypeException('in %s: key %s should be %s but is %s which is type %s'%('/'+'.'.join([str(s) for s in stack]),repr(key),expectedType,repr(actualVal),actualType))
 
         if isinstance(actualVal,dict):
             validate(expectedVal,actualVal,allowExtraKeys=allowExtraKeys,allowMissingKeys=allowMissingKeys,stack=stack+[key])
