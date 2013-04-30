@@ -36,6 +36,10 @@ app.config['SECRET_KEY'] = 'fq348fnylq84ylnqx48yq3xlg8nlqy348q'
 def index():
     return render_template('index.html')
 
+@app.route('/browse')
+def index():
+    return render_template('browse.html')
+
 # http://localhost:5000/api/v1/search?a=1&has_tags=sign,sightpal&exclude_tags=hard&max_count=3
 @app.route('/api/v1/search', methods=['GET'])
 def searchImages():
@@ -56,6 +60,7 @@ def searchImages():
         queryDict['page'] = int(queryDict['page'])
     debugMain('searchImages: %s'%queryDict)
     result = backend.searchImages(queryDict)
+    print pprint.pformat(result)
     return jsonify(result=result)
 
 # http://localhost:5000/api/v1/image/23659
