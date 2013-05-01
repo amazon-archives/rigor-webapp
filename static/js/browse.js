@@ -22,12 +22,14 @@ browseApp.controller('BrowseController', function($scope, $http) {
     $scope.database_names = ['rigor']; // to be filled in by AJAX
     $scope.sources = [];               // to be filled in by AJAX
     $scope.sensors = [];               // to be filled in by AJAX
+    $scope.search_has_occurred = false;
     $scope.filter = {                  // query params for filtering images
         database_name: 'rigor',
         source: ANY,
         sensor: ANY,
         has_tags: 'sign sightpal',
-        exclude_tags: ''
+        exclude_tags: '',
+        page: 0
     };
     $scope.images = [];                // results of the filtering
 
@@ -86,8 +88,10 @@ browseApp.controller('BrowseController', function($scope, $http) {
     };
 
 
-    $scope.applyFilter = function () {
+    $scope.applyFilter = function() {
         console.log('getting images...');
+
+        $scope.search_has_occurred = true;
 
         // clean up filter object for use as URL params
         var filterParams = angular.copy($scope.filter);
@@ -113,6 +117,23 @@ browseApp.controller('BrowseController', function($scope, $http) {
             .error(function(data,status,headers,config) {
                 console.log('    error');
             });
+    };
+
+
+    $scope.nextButton = function() {
+        if ($scope.search_has_occurred) {
+            console.log('next button');
+            $scope.filter.page += 1;
+            $scope.applyFilter();
+        }
+    };
+
+    $scope.prevButton = function() {
+        if ($scope.search_has_occurred && $scope.filter.page >= 1) {
+            console.log('prev button');
+            $scope.filter.page -= 1;
+            $scope.applyFilter();
+        }
     };
 
 
