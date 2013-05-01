@@ -61,7 +61,7 @@ def searchImages():
     debugMain('searchImages: %s'%queryDict)
     result = backend.searchImages(queryDict)
     print pprint.pformat(result)
-    return jsonify(result=result)
+    return jsonify(d=result)
 
 # http://localhost:5000/api/v1/image/23659
 @app.route('/api/v1/image/<id>', methods=['GET'])

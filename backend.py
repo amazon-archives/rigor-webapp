@@ -87,6 +87,8 @@ def imageDictDbToApi(d):
     # convert timestamp from datetime to unix time
     d2['stamp'] = dbTimestampToUTCTime(d['stamp'])
 
+    # add image urls
+    d2['thumb_url'] = 'http://ea/thumbnails/64x64/%s/%s/%s.%s'%(d2['locator'][:2], d2['locator'][2:4], d2['locator'].replace('-',''), d2['format'])
     return d2
 
 def searchImages(queryDict):
@@ -191,6 +193,9 @@ def getImage(id=None,uuid=None):
         return imageDictDbToApi(rows[0])
     else:
         1/0
+
+# TODO:
+# get database names by running psql -l
 
 #--------------------------------------------------------------------------------
 # MAIN

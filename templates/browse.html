@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="browseApp" ng-controller="BrowseController">
 <head>
     <title> Rigor </title>
     <meta name="HandheldFriendly" content="true" />
@@ -25,23 +25,23 @@
             <div class="well well-small">
 
             <h3> Filter </h3>
-            <form>
+            <form ng-submit="applyFilter()">
                 <label>database</label>
-                <select class="span2">
-                    <option>rigor</option>
+                <select class="span2" ng-model="filter.database">
+                    <option ng-repeat="dbname in database_names">(( dbname ))</option>
                 </select>
 
                 <label>source</label>
-                <input type="text" class="span2">
+                <input type="text" class="span2" ng-model="filter.source">
 
                 <label>sensor</label>
-                <input type="text" class="span2">
+                <input type="text" class="span2" ng-model="filter.sensor">
 
                 <label>has_tags</label>
-                <input type="text" class="span2">
+                <input type="text" class="span2" ng-model="filter.has_tags">
 
                 <label>exclude_tags</label>
-                <input type="text" class="span2">
+                <input type="text" class="span2" ng-model="filter.exclude_tags">
 
                 <p><button type="submit" class="btn btn-primary">Go</button></p>
             </form>
@@ -50,75 +50,25 @@
         </div>
         <div class="span9 r-blue">
 
-            <h3> Results </h3>
+            <h3> (( images.length )) Results </h3>
 
             <ul class="thumbnails">
-                <li class="span3">
+
+                <li class="span3" ng-repeat="image in images">
                     <div class="thumbnail">
-                        <img src="http://placekitten.com/260/180" width=260 height=180 class="r-white">
-                        <p><b>40287349287</b></p>
-                        <p>800 x 600</p>
+                        <img ng-src="(( image.thumb_url ))" width=128 class="r-white">
+                        <p>id: (( image.id ))</p>
+                        <p>(( image.x_resolution )) x (( image.y_resolution))</p>
+                        <p>sensor: (( image.sensor ))</p>
+                        <p>source: (( image.source ))</p>
                         <p>
-                            <span class="label">sightpal</span>
-                            <span class="label">sign</span>
+                            <span ng-repeat="tag in image.tags">
+                                <span class="label label-inverse">(( tag ))</span> &nbsp;
+                            </span>
                         </p>
                     </div>
                 </li>
-                <li class="span3">
-                    <div class="thumbnail">
-                        <img src="http://placekitten.com/260/180" width=260 height=180 class="r-white">
-                        <p><b>40287349287</b></p>
-                        <p>800 x 600</p>
-                        <p>
-                            <span class="label">sightpal</span>
-                            <span class="label">sign</span>
-                        </p>
-                    </div>
-                </li>
-                <li class="span3">
-                    <div class="thumbnail">
-                        <img src="http://placekitten.com/260/180" width=260 height=180 class="r-white">
-                        <p><b>40287349287</b></p>
-                        <p>800 x 600</p>
-                        <p>
-                            <span class="label">sightpal</span>
-                            <span class="label">sign</span>
-                        </p>
-                    </div>
-                </li>
-                <li class="span3">
-                    <div class="thumbnail">
-                        <img src="http://placekitten.com/260/180" width=260 height=180 class="r-white">
-                        <p><b>40287349287</b></p>
-                        <p>800 x 600</p>
-                        <p>
-                            <span class="label">sightpal</span>
-                            <span class="label">sign</span>
-                        </p>
-                    </div>
-                </li>
-                <li class="span3">
-                    <div class="thumbnail">
-                        <img src="http://placekitten.com/260/180" width=260 height=180 class="r-white">
-                        <p><b>40287349287</b></p>
-                        <p>800 x 600</p>
-                        <p>
-                            <span class="label">sightpal</span>
-                            <span class="label">sign</span>
-                        </p>
-                    </div>
-                </li>
-                <li class="span3">
-                    <div class="thumbnail">
-                        <img src="http://placekitten.com/260/180" width=260 height=180 class="r-white">
-                        <p><b>40287349287</b></p>
-                        <p>800 x 600</p>
-                        <p>
-                            <span class="label">sightpal</span>
-                            <span class="label">sign</span>
-                        </p>
-                    </div>
-                </li>
+
             </ul>
 
         </div>
