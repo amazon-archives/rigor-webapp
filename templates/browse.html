@@ -61,14 +61,14 @@
                 <li class="span3" ng-repeat="image in images">
                     <div class="thumbnail">
                         <img ng-src="(( image.thumb_url ))" width=128 class="r-white">
-                        <p>id: (( image.id ))</p>
-                        <p>(( image.x_resolution )) x (( image.y_resolution))</p>
-                        <p>sensor: (( image.sensor ))</p>
-                        <p>source: (( image.source ))</p>
                         <p>
-                            <span ng-repeat="tag in image.tags">
-                                <span class="label label-inverse">(( tag ))</span> &nbsp;
-                            </span>
+                                 id: <strong>(( image.id ))</strong>
+                            <br> date: <strong>(( image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
+                            <br> sensor: <strong>(( image.sensor ))</strong>
+                            <br> source: <strong>(( image.source ))</strong>
+                            <br> <span ng-repeat="tag in image.tags">
+                                    <span class="label label-info">(( tag ))</span> &nbsp;
+                                 </span>
                         </p>
                     </div>
                 </li>
