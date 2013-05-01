@@ -94,11 +94,26 @@ def _imageDictDbToApi(conn,d):
     d2['thumb_url'] = 'http://ea/thumbnails/64x64/%s/%s/%s.%s'%(d2['locator'][:2], d2['locator'][2:4], d2['locator'].replace('-',''), d2['format'])
     return d2
 
+
 def getDatabaseNames():
     sql = """ SELECT datname FROM pg_database ORDER BY datname """
     conn = getDbConnection('rigor') # hardcode the one we know exists
     rows = list(dbQueryDict(conn,sql))
     return [row['datname'] for row in rows if row['datname'] not in config.DB_BLACKLIST]
+
+
+def getSources(database_name):
+    sql = """ SELECT DISTINCT source FROM image ORDER BY source """
+    conn = getDbConnection(database_name)
+    rows = list(dbQueryDict(conn,sql))
+    rows = [row['source'] for row in rows]
+    # convert None to ''
+    if None in rows:
+        rows.remove(None)
+#         if not '' in rows:
+#             rows = [''] + rows
+    return rows
+
 
 def searchImages(queryDict):
     """
@@ -230,8 +245,12 @@ if __name__ == '__main__':
 #         debugDetail(pprint.pformat(image))
 
     debugMain('databases:')
-    for db in getDatabases():
+    for db in getDatabaseNames():
         debugDetail(db)
+
+    debugMain('sources:')
+    for source in getSources('rigor'):
+        debugDetail(source)
 
 
 

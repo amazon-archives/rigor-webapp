@@ -36,11 +36,13 @@ app.config['SECRET_KEY'] = 'fq348fnylq84ylnqx48yq3xlg8nlqy348q'
 def index():
     return render_template('index.html')
 
+
 @app.route('/browse')
 def index():
     return render_template('browse.html')
 
-# http://ea:5000/api/v1/search?a=1&has_tags=sign,sightpal&exclude_tags=hard&max_count=3
+
+# http://ea:5000/api/v1/search?a=1&database_name=rigor&has_tags=sign,sightpal&exclude_tags=hard&max_count=3
 @app.route('/api/v1/search', methods=['GET'])
 def searchImages():
     queryDict = {}
@@ -63,10 +65,17 @@ def searchImages():
         queryDict['page'] = int(queryDict['page'])
     debugMain('searchImages: %s'%queryDict)
     result = backend.searchImages(queryDict)
-    print pprint.pformat(result)
+    #print pprint.pformat(result)
     return jsonify(d=result)
 
-# http://ea:5000/api/v1/image/23659
+
+# http://ea:5000/api/v1/db
+@app.route('/api/v1/db', methods=['GET'])
+def getDatabaseNames():
+    return jsonify(d=backend.getDatabaseNames())
+
+
+# http://ea:5000/api/v1/db/rigor/image/23659
 @app.route('/api/v1/db/<database_name>/image/<id>', methods=['GET'])
 def getImage(database_name,id):
     result = backend.getImage(database_name=database_name,id=id)
@@ -74,10 +83,11 @@ def getImage(database_name,id):
     debugDetail(result)
     return jsonify(result)
 
-# http://ea:5000/api/v1/databases
-@app.route('/api/v1/db', methods=['GET'])
-def getDatabaseNames():
-    return jsonify(d=backend.getDatabaseNames())
+
+# http://ea:5000/api/v1/db/rigor/source
+@app.route('/api/v1/db/<database_name>/source', methods=['GET'])
+def getSources(database_name):
+    return jsonify(d=backend.getSources(database_name))
 
 #--------------------------------------------------------------------------------
 # MAIN

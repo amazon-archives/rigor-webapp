@@ -12,15 +12,23 @@ browseApp.config(function($interpolateProvider) {
 });
 
 browseApp.controller('BrowseController', function($scope, $http) {
-    $scope.images = [];
-    $scope.database_names = ['rigor']; // this will be populated via AJAX in a moment
-    $scope.filter = {
+
+    // A special value to represent that we should ignore this field
+    // when filtering.  this is equivalent to ''.
+    // When we convert $scope.filter to query params for the API, we
+    // omit any items which are ANY or ''.
+    var ANY = '(any)';
+
+    $scope.database_names = ['rigor']; // to be filled in by AJAX
+    $scope.sources = [];               // to be filled in by AJAX
+    $scope.filter = {                  // query params for filtering images
         database_name: 'rigor',
-        source: '',
+        source: ANY,
         sensor: '',
         has_tags: 'sign sightpal',
         exclude_tags: ''
     };
+    $scope.images = [];                // results of the filtering
 
     // fill in database_names
     console.log('getting database names...');
@@ -34,6 +42,20 @@ browseApp.controller('BrowseController', function($scope, $http) {
             console.log('    error');
         });
 
+    // fill in sources
+    console.log('getting sources...');
+    $http.get('/api/v1/db/'+$scope.filter.database_name+'/source')
+        .success(function(data,status,headers,config) {
+            $scope.sources = data['d'];
+            $scope.sources.unshift(ANY);  // put on front of list
+            console.log($scope.sources);
+            console.log('    success. got sources: ' + $scope.sources);
+        })
+        .error(function(data,status,headers,config) {
+            console.log('    error');
+        });
+
+    // TODO: when user changes database name, re-fetch sources
 
 
     var tokenizeString = function(s) {
@@ -57,9 +79,9 @@ browseApp.controller('BrowseController', function($scope, $http) {
         var filterParams = angular.copy($scope.filter);
         filterParams.has_tags = tokenizeString(filterParams.has_tags).join();
         filterParams.exclude_tags = tokenizeString(filterParams.exclude_tags).join();
-        // delete keys which have empty strings as values
+
         angular.forEach(filterParams, function(value,key) {
-            if (value === '') {
+            if (value === ANY || value === '') {
                 delete filterParams[key];
             }
         });

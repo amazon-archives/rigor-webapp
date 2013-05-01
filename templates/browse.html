@@ -32,7 +32,9 @@
                 </select>
 
                 <label>source</label>
-                <input type="text" class="span2" ng-model="filter.source">
+                <select class="span2" ng-model="filter.source">
+                    <option ng-repeat="source in sources">(( source ))</option>
+                </select>
 
                 <label>sensor</label>
                 <input type="text" class="span2" ng-model="filter.sensor">
