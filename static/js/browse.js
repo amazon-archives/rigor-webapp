@@ -13,7 +13,7 @@ browseApp.config(function($interpolateProvider) {
 
 browseApp.controller('BrowseController', function($scope, $http) {
     $scope.images = [];
-    $scope.database_names = ['rigor','todo:','put','database','names','here'];
+    $scope.database_names = ['rigor']; // this will be populated via AJAX in a moment
     $scope.filter = {
         database: 'rigor',
         source: '',
@@ -21,6 +21,19 @@ browseApp.controller('BrowseController', function($scope, $http) {
         has_tags: 'sign sightpal',
         exclude_tags: ''
     };
+
+    // fill in database_names
+    console.log('getting database names...');
+    $http.get('/api/v1/databases')
+        .success(function(data,status,headers,config) {
+            $scope.database_names = data['d']
+            console.log($scope.database_names)
+            console.log('    success. got database names: ' + $scope.database_names);
+        })
+        .error(function(data,status,headers,config) {
+            console.log('    error');
+        });
+
 
 
     var tokenizeString = function(s) {
