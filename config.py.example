@@ -1,7 +1,10 @@
 
 DB_USER = 'data'
-DB_PASSWORD = 'XXXXXXXXXXXXXXX'
+DB_PASSWORD = 'XXXXX'
 
 # database names to ignore
 DB_BLACKLIST = ['dave','postgres','template0','template1']
+
+# which database to default to on first pageload
+INITIAL_DB_NAME = 'rigor'
 

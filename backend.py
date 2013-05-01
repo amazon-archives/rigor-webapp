@@ -97,7 +97,7 @@ def _imageDictDbToApi(conn,d):
 
 def getDatabaseNames():
     sql = """ SELECT datname FROM pg_database ORDER BY datname """
-    conn = getDbConnection('rigor') # hardcode the one we know exists
+    conn = getDbConnection(config.INITIAL_DB_NAME) # hardcode the one we know exists
     rows = list(dbQueryDict(conn,sql))
     return [row['datname'] for row in rows if row['datname'] not in config.DB_BLACKLIST]
 

@@ -24,7 +24,7 @@ browseApp.controller('BrowseController', function($scope, $http) {
     $scope.sensors = [];               // to be filled in by AJAX
     $scope.search_has_occurred = false;
     $scope.filter = {                  // query params for filtering images
-        database_name: 'rigor',
+        database_name: 'rigor',  // TODO: this should be set to config.INITIAL_DB_NAME
         source: ANY,
         sensor: ANY,
         has_tags: 'sign sightpal',
