@@ -21,10 +21,11 @@ browseApp.controller('BrowseController', function($scope, $http) {
 
     $scope.database_names = ['rigor']; // to be filled in by AJAX
     $scope.sources = [];               // to be filled in by AJAX
+    $scope.sensors = [];               // to be filled in by AJAX
     $scope.filter = {                  // query params for filtering images
         database_name: 'rigor',
         source: ANY,
-        sensor: '',
+        sensor: ANY,
         has_tags: 'sign sightpal',
         exclude_tags: ''
     };
@@ -55,7 +56,20 @@ browseApp.controller('BrowseController', function($scope, $http) {
             console.log('    error');
         });
 
-    // TODO: when user changes database name, re-fetch sources
+    // fill in sensors
+    console.log('getting sensors...');
+    $http.get('/api/v1/db/'+$scope.filter.database_name+'/sensor')
+        .success(function(data,status,headers,config) {
+            $scope.sensors = data['d'];
+            $scope.sensors.unshift(ANY);  // put on front of list
+            console.log($scope.sensors);
+            console.log('    success. got sensors: ' + $scope.sensors);
+        })
+        .error(function(data,status,headers,config) {
+            console.log('    error');
+        });
+
+    // TODO: when user changes database name, re-fetch sources and sensors
 
 
     var tokenizeString = function(s) {

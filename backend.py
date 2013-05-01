@@ -102,6 +102,7 @@ def getDatabaseNames():
     return [row['datname'] for row in rows if row['datname'] not in config.DB_BLACKLIST]
 
 
+# TODO: better handling of None / NULL here
 def getSources(database_name):
     sql = """ SELECT DISTINCT source FROM image ORDER BY source """
     conn = getDbConnection(database_name)
@@ -114,8 +115,21 @@ def getSources(database_name):
 #             rows = [''] + rows
     return rows
 
+def getSensors(database_name):
+    sql = """ SELECT DISTINCT sensor FROM image ORDER BY sensor """
+    conn = getDbConnection(database_name)
+    rows = list(dbQueryDict(conn,sql))
+    rows = [row['sensor'] for row in rows]
+    # convert None to ''
+    if None in rows:
+        rows.remove(None)
+#         if not '' in rows:
+#             rows = [''] + rows
+    return rows
+
 
 def searchImages(queryDict):
+    # TODO: allow searching for NULL
     """
         {
             database_name: 'rigor',
@@ -251,6 +265,10 @@ if __name__ == '__main__':
     debugMain('sources:')
     for source in getSources('rigor'):
         debugDetail(source)
+
+    debugMain('sensors:')
+    for sensor in getSensors('rigor'):
+        debugDetail(sensor)
 
 
 

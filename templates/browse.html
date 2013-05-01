@@ -37,7 +37,9 @@
                 </select>
 
                 <label>sensor</label>
-                <input type="text" class="span2" ng-model="filter.sensor">
+                <select class="span2" ng-model="filter.sensor">
+                    <option ng-repeat="sensor in sensors">(( sensor ))</option>
+                </select>
 
                 <label>has_tags</label>
                 <input type="text" class="span2" ng-model="filter.has_tags">

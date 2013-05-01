@@ -89,6 +89,13 @@ def getImage(database_name,id):
 def getSources(database_name):
     return jsonify(d=backend.getSources(database_name))
 
+
+# http://ea:5000/api/v1/db/rigor/sensor
+@app.route('/api/v1/db/<database_name>/sensor', methods=['GET'])
+def getSensors(database_name):
+    return jsonify(d=backend.getSensors(database_name))
+
+
 #--------------------------------------------------------------------------------
 # MAIN
 
