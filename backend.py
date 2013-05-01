@@ -196,6 +196,7 @@ def getImage(id=None,uuid=None):
 
 # TODO:
 # get database names by running psql -l
+# SELECT datname FROM pg_database ORDER BY datname
 
 #--------------------------------------------------------------------------------
 # MAIN
