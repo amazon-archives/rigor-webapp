@@ -25,7 +25,7 @@
             <div class="well well-small">
 
             <h3> Filter </h3>
-            <form ng-submit="applyFilter()">
+            <form ng-submit="applyFilterAndResetPage()">
                 <label>database</label>
                 <select class="span2" ng-model="filter.database_name">
                     <option ng-repeat="dbname in database_names">(( dbname ))</option>

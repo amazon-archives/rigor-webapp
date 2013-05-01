@@ -88,6 +88,10 @@ browseApp.controller('BrowseController', function($scope, $http) {
     };
 
 
+    $scope.applyFilterAndResetPage = function() {
+        $scope.filter.page = 0;
+        $scope.applyFilter();
+    };
     $scope.applyFilter = function() {
         console.log('getting images...');
 
