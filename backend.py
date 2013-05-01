@@ -194,6 +194,11 @@ def getImage(id=None,uuid=None):
     else:
         1/0
 
+def getDatabases():
+    sql = """ SELECT datname FROM pg_database ORDER BY datname """
+    rows = list(dbQueryDict(CONN,sql))
+    return [row['datname'] for row in rows]
+
 # TODO:
 # get database names by running psql -l
 # SELECT datname FROM pg_database ORDER BY datname
@@ -209,18 +214,20 @@ CONN = getDbConnection()
 if __name__ == '__main__':
     #     print getImage(id=23731)
 #     print getImage(uuid='01bb6939-ac7f-4dbf-84c9-8136eaa3f6ea');
-    debugMain('testing searchImages')
-    images = searchImages({
-        #         'sensor': 'HTC Nexus One',
-        #         'source': 'Guangyu',
-        'has_tags': ['money'],
-        'exclude_tags': ['testdata'],
-        'max_count': 2,
-        'page': 0,
-    })
-    for image in images:
-        debugDetail(pprint.pformat(image))
-
+#     debugMain('testing searchImages')
+#     images = searchImages({
+#         #         'sensor': 'HTC Nexus One',
+#         #         'source': 'Guangyu',
+#         'has_tags': ['money'],
+#         'exclude_tags': ['testdata'],
+#         'max_count': 2,
+#         'page': 0,
+#     })
+#     for image in images:
+#         debugDetail(pprint.pformat(image))
+    debugMain('databases:')
+    for db in getDatabases():
+        debugDetail(db)
 
 
 

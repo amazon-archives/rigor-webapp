@@ -40,7 +40,7 @@ def index():
 def index():
     return render_template('browse.html')
 
-# http://localhost:5000/api/v1/search?a=1&has_tags=sign,sightpal&exclude_tags=hard&max_count=3
+# http://ea:5000/api/v1/search?a=1&has_tags=sign,sightpal&exclude_tags=hard&max_count=3
 @app.route('/api/v1/search', methods=['GET'])
 def searchImages():
     queryDict = {}
@@ -63,7 +63,7 @@ def searchImages():
     print pprint.pformat(result)
     return jsonify(d=result)
 
-# http://localhost:5000/api/v1/image/23659
+# http://ea:5000/api/v1/image/23659
 @app.route('/api/v1/image/<id>', methods=['GET'])
 def getImage(id):
     result = backend.getImage(id=id)
@@ -71,6 +71,10 @@ def getImage(id):
     debugDetail(result)
     return jsonify(result)
 
+# http://ea:5000/api/v1/databases
+@app.route('/api/v1/databases', methods=['GET'])
+def getDatabases():
+    return jsonify(d=backend.getDatabases())
 
 #--------------------------------------------------------------------------------
 # MAIN
