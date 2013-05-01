@@ -44,12 +44,15 @@ def index():
 @app.route('/api/v1/search', methods=['GET'])
 def searchImages():
     queryDict = {}
-    keyWhitelist = 'source sensor has_tags exclude_tags max_count page'.split()
+    keyWhitelist = 'database_name source sensor has_tags exclude_tags max_count page'.split()
+    # TODO: throw error if certain keys are missing
     for key,val in request.values.items():
         if key in keyWhitelist:
             if type(val) == unicode:
                 val = val.encode('utf-8')
             queryDict[key] = val
+        else:
+            debugDetail('discarding unknown key: %s = %s'%(key,val))
     if 'has_tags' in queryDict:
         queryDict['has_tags'] = queryDict['has_tags'].split(',')
     if 'exclude_tags' in queryDict:
@@ -64,17 +67,17 @@ def searchImages():
     return jsonify(d=result)
 
 # http://ea:5000/api/v1/image/23659
-@app.route('/api/v1/image/<id>', methods=['GET'])
-def getImage(id):
-    result = backend.getImage(id=id)
+@app.route('/api/v1/db/<database_name>/image/<id>', methods=['GET'])
+def getImage(database_name,id):
+    result = backend.getImage(database_name=database_name,id=id)
     debugMain('getImage.  id = %s'%id)
     debugDetail(result)
     return jsonify(result)
 
 # http://ea:5000/api/v1/databases
-@app.route('/api/v1/databases', methods=['GET'])
-def getDatabases():
-    return jsonify(d=backend.getDatabases())
+@app.route('/api/v1/db', methods=['GET'])
+def getDatabaseNames():
+    return jsonify(d=backend.getDatabaseNames())
 
 #--------------------------------------------------------------------------------
 # MAIN

@@ -19,8 +19,9 @@ import jsonschema
 #--------------------------------------------------------------------------------
 # DB HELPERS
 
-def getDbConnection():
-    return psycopg2.connect(config.DB_CONNECTION_STRING)
+def getDbConnection(database_name):
+    DB_CONNECTION_STRING = "host='ea' dbname='%s' user='%s' password='%s'"
+    return psycopg2.connect(DB_CONNECTION_STRING%(database_name,config.DB_USER,config.DB_PASSWORD))
 
 def getColumnNames(conn,table):
     """Return a list of column names for the given table.
@@ -69,7 +70,9 @@ def dbTimestampToUTCTime(dt):
 #--------------------------------------------------------------------------------
 # MAIN
 
-def imageDictDbToApi(d):
+def _imageDictDbToApi(conn,d):
+    """Given an image row from the database, convert it to an API-style object.
+    """
     # convert db timestamps to unix time
     # add tags
     d2 = dict(d)
@@ -80,7 +83,7 @@ def imageDictDbToApi(d):
     sql = """SELECT * FROM tag WHERE image_id = %s;"""
     values = (d['id'],)
     tags = []
-    for row in dbQueryDict(CONN,sql,values):
+    for row in dbQueryDict(conn,sql,values):
         tags.append(row['name'])
     d2['tags'] = tags
 
@@ -91,10 +94,16 @@ def imageDictDbToApi(d):
     d2['thumb_url'] = 'http://ea/thumbnails/64x64/%s/%s/%s.%s'%(d2['locator'][:2], d2['locator'][2:4], d2['locator'].replace('-',''), d2['format'])
     return d2
 
+def getDatabaseNames():
+    sql = """ SELECT datname FROM pg_database ORDER BY datname """
+    conn = getDbConnection('rigor') # hardcode the one we know exists
+    rows = list(dbQueryDict(conn,sql))
+    return [row['datname'] for row in rows if row['datname'] not in config.DB_BLACKLIST]
+
 def searchImages(queryDict):
     """
         {
-            db_version: 'whatever',
+            database_name: 'rigor',
     +       has_tags: ['hello', 'there'],
     +       exclude_tags: ['iphone'],
             confidence_range: [1,4],
@@ -110,6 +119,7 @@ def searchImages(queryDict):
     """
 
     schema = dict(
+        database_name = str,
         has_tags = [str],
         exclude_tags = [str],
         sensor = str,
@@ -165,12 +175,13 @@ def searchImages(queryDict):
         sql += '\nOFFSET %s'
         values.append(page * max_count)
 
-    results = list(dbQueryDict(CONN,sql,values))
-    results = [imageDictDbToApi(r) for r in results]
+    conn = getDbConnection(queryDict['database_name'])
+    results = list(dbQueryDict(conn,sql,values))
+    results = [_imageDictDbToApi(conn,r) for r in results]
     return results
 
 
-def getImage(id=None,uuid=None):
+def getImage(database_name,id=None,uuid=None):
     if id and uuid:
         1/0
     elif not id and not uuid:
@@ -186,38 +197,30 @@ def getImage(id=None,uuid=None):
         """
         values = ( uuid, )
 
-    rows = list(dbQueryDict(CONN,sql,values))
+    conn = getDbConnection(database_name)
+    rows = list(dbQueryDict(conn,sql,values))
     if len(rows) == 0:
         1/0
     elif len(rows) == 1:
-        return imageDictDbToApi(rows[0])
+        return _imageDictDbToApi(conn,rows[0])
     else:
         1/0
-
-def getDatabases():
-    sql = """ SELECT datname FROM pg_database ORDER BY datname """
-    rows = list(dbQueryDict(CONN,sql))
-    return [row['datname'] for row in rows]
-
-# TODO:
-# get database names by running psql -l
-# SELECT datname FROM pg_database ORDER BY datname
 
 #--------------------------------------------------------------------------------
 # MAIN
 
 # connect upon importing this module
 # this is messy and should be cleaned up later
-debugMain('connecting to db')
-CONN = getDbConnection()
 
 if __name__ == '__main__':
-    #     print getImage(id=23731)
-#     print getImage(uuid='01bb6939-ac7f-4dbf-84c9-8136eaa3f6ea');
+#     print getImage(id=23731)
+#     print getImage(database_name='rigor',uuid='01bb6939-ac7f-4dbf-84c9-8136eaa3f6ea');
+
 #     debugMain('testing searchImages')
 #     images = searchImages({
 #         #         'sensor': 'HTC Nexus One',
 #         #         'source': 'Guangyu',
+#         'database_name': 'rigor',
 #         'has_tags': ['money'],
 #         'exclude_tags': ['testdata'],
 #         'max_count': 2,
@@ -225,6 +228,7 @@ if __name__ == '__main__':
 #     })
 #     for image in images:
 #         debugDetail(pprint.pformat(image))
+
     debugMain('databases:')
     for db in getDatabases():
         debugDetail(db)

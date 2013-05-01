@@ -15,7 +15,7 @@ browseApp.controller('BrowseController', function($scope, $http) {
     $scope.images = [];
     $scope.database_names = ['rigor']; // this will be populated via AJAX in a moment
     $scope.filter = {
-        database: 'rigor',
+        database_name: 'rigor',
         source: '',
         sensor: '',
         has_tags: 'sign sightpal',
@@ -24,7 +24,7 @@ browseApp.controller('BrowseController', function($scope, $http) {
 
     // fill in database_names
     console.log('getting database names...');
-    $http.get('/api/v1/databases')
+    $http.get('/api/v1/db')
         .success(function(data,status,headers,config) {
             $scope.database_names = data['d']
             console.log($scope.database_names)

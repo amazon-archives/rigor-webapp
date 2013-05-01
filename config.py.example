@@ -1,5 +1,7 @@
 
+DB_USER = 'data'
+DB_PASSWORD = 'XXXXXXXXXXXXXXX'
 
-DB_CONNECTION_STRING = "host='XXX' dbname='XXX' user='XXX' password='XXX'"
-
+# database names to ignore
+DB_BLACKLIST = ['dave','postgres','template0','template1']
 
