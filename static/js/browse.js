@@ -33,6 +33,15 @@ browseApp.controller('BrowseController', function($scope, $http) {
     };
     $scope.images = [];                // results of the search
 
+    $scope.clickClearButton = function() {
+        $scope.query.source = ANY;
+        $scope.query.sensor = ANY;
+        $scope.query.has_tags = '';
+        $scope.query.exclude_tags = '';
+        $scope.query.page = 0;
+        $scope.doSearch();
+    };
+
     // fill in database_names
     console.log('getting database names...');
     $http.get('/api/v1/db')
