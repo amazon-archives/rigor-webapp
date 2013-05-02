@@ -13,9 +13,9 @@ browseApp.config(function($interpolateProvider) {
 
 browseApp.controller('BrowseController', function($scope, $http) {
 
-    // A special value to represent that we should ignore this field
-    // when filtering.  this is equivalent to ''.
-    // When we convert $scope.filter to query params for the API, we
+    // ANY is a special value to represent that we should ignore this field
+    // when searching.  this is equivalent to ''.
+    // When we convert $scope.query to query params for the API, we
     // omit any items which are ANY or ''.
     var ANY = '(any)';
 
@@ -23,7 +23,7 @@ browseApp.controller('BrowseController', function($scope, $http) {
     $scope.sources = [];               // to be filled in by AJAX
     $scope.sensors = [];               // to be filled in by AJAX
     $scope.search_has_occurred = false;
-    $scope.filter = {                  // query params for filtering images
+    $scope.query = {                  // query params for searching images
         database_name: 'rigor',  // TODO: this should be set to config.INITIAL_DB_NAME
         source: ANY,
         sensor: ANY,
@@ -31,7 +31,7 @@ browseApp.controller('BrowseController', function($scope, $http) {
         exclude_tags: '',
         page: 0
     };
-    $scope.images = [];                // results of the filtering
+    $scope.images = [];                // results of the search
 
     // fill in database_names
     console.log('getting database names...');
@@ -46,12 +46,12 @@ browseApp.controller('BrowseController', function($scope, $http) {
         });
 
     // when user changes database name, re-fetch sources and sensors
-    $scope.$watch('filter.database_name', function(newValue,oldValue) {
+    $scope.$watch('query.database_name', function(newValue,oldValue) {
         console.log('db name changed from ' + oldValue + ' to ' + newValue);
 
         // fill in sources
         console.log('getting sources...');
-        $http.get('/api/v1/db/'+$scope.filter.database_name+'/source')
+        $http.get('/api/v1/db/'+$scope.query.database_name+'/source')
             .success(function(data,status,headers,config) {
                 $scope.sources = data['d'];
                 $scope.sources.unshift(ANY);  // put on front of list
@@ -64,7 +64,7 @@ browseApp.controller('BrowseController', function($scope, $http) {
 
         // fill in sensors
         console.log('getting sensors...');
-        $http.get('/api/v1/db/'+$scope.filter.database_name+'/sensor')
+        $http.get('/api/v1/db/'+$scope.query.database_name+'/sensor')
             .success(function(data,status,headers,config) {
                 $scope.sensors = data['d'];
                 $scope.sensors.unshift(ANY);  // put on front of list
@@ -74,6 +74,8 @@ browseApp.controller('BrowseController', function($scope, $http) {
             .error(function(data,status,headers,config) {
                 console.log('    error');
             });
+        
+        // TODO: set query.source and query.sensor to legal values
 
     });
 
@@ -92,28 +94,28 @@ browseApp.controller('BrowseController', function($scope, $http) {
     };
 
 
-    $scope.applyFilterAndResetPage = function() {
-        $scope.filter.page = 0;
-        $scope.applyFilter();
+    $scope.searchButtonClick = function() {
+        $scope.query.page = 0;
+        $scope.doSearch();
     };
-    $scope.applyFilter = function() {
+    $scope.doSearch = function() {
         console.log('getting images...');
 
         $scope.search_has_occurred = true;
 
-        // clean up filter object for use as URL params
-        var filterParams = angular.copy($scope.filter);
-        filterParams.has_tags = tokenizeString(filterParams.has_tags).join();
-        filterParams.exclude_tags = tokenizeString(filterParams.exclude_tags).join();
+        // clean up query object for use as URL params
+        var queryParams = angular.copy($scope.query);
+        queryParams.has_tags = tokenizeString(queryParams.has_tags).join();
+        queryParams.exclude_tags = tokenizeString(queryParams.exclude_tags).join();
 
-        angular.forEach(filterParams, function(value,key) {
+        angular.forEach(queryParams, function(value,key) {
             if (value === ANY || value === '') {
-                delete filterParams[key];
+                delete queryParams[key];
             }
         });
-        console.log(filterParams);
+        console.log(queryParams);
 
-        $http.get('/api/v1/search',{params: filterParams})
+        $http.get('/api/v1/search',{params: queryParams})
             .success(function(data,status,headers,config) {
                 $scope.images = data['d'];
                 console.log('    success. got ' + $scope.images.length + ' images');
@@ -132,22 +134,21 @@ browseApp.controller('BrowseController', function($scope, $http) {
         return $scope.search_has_occurred;
     };
     $scope.prevButtonIsEnabled = function () {
-        return $scope.search_has_occurred && $scope.filter.page >= 1;
+        return $scope.search_has_occurred && $scope.query.page >= 1;
     };
 
     $scope.nextButtonClick = function() {
         if ($scope.nextButtonIsEnabled()) {
             console.log('next button');
-            $scope.filter.page += 1;
-            $scope.applyFilter();
+            $scope.query.page += 1;
+            $scope.doSearch();
         }
     };
-
     $scope.prevButtonClick = function() {
         if ($scope.prevButtonIsEnabled()) {
             console.log('prev button');
-            $scope.filter.page -= 1;
-            $scope.applyFilter();
+            $scope.query.page -= 1;
+            $scope.doSearch();
         }
     };
 

@@ -16,55 +16,63 @@
     <div class="row">
         <div class="span12 r-red">
 
-            <h2> Browse </h2>
+            <h2> Rigor </h2>
 
         </div>
     </div>
     <div class="row">
         <div class="span3 r-gray">
+
+            <!-- SEARCH -->
             <div class="well well-small">
+                <form ng-submit="searchButtonClick()">
+                    <label>database</label>
+                    <select class="span2" ng-model="query.database_name">
+                        <option ng-repeat="dbname in database_names">(( dbname ))</option>
+                    </select>
 
-            <h3> Filter </h3>
-            <form ng-submit="applyFilterAndResetPage()">
-                <label>database</label>
-                <select class="span2" ng-model="filter.database_name">
-                    <option ng-repeat="dbname in database_names">(( dbname ))</option>
-                </select>
+                    <label>source</label>
+                    <select class="span2" ng-model="query.source">
+                        <option ng-repeat="source in sources">(( source ))</option>
+                    </select>
 
-                <label>source</label>
-                <select class="span2" ng-model="filter.source">
-                    <option ng-repeat="source in sources">(( source ))</option>
-                </select>
+                    <label>sensor</label>
+                    <select class="span2" ng-model="query.sensor">
+                        <option ng-repeat="sensor in sensors">(( sensor ))</option>
+                    </select>
 
-                <label>sensor</label>
-                <select class="span2" ng-model="filter.sensor">
-                    <option ng-repeat="sensor in sensors">(( sensor ))</option>
-                </select>
+                    <label>has_tags</label>
+                    <input type="text" class="span2" ng-model="query.has_tags">
 
-                <label>has_tags</label>
-                <input type="text" class="span2" ng-model="filter.has_tags">
+                    <label>exclude_tags</label>
+                    <input type="text" class="span2" ng-model="query.exclude_tags">
 
-                <label>exclude_tags</label>
-                <input type="text" class="span2" ng-model="filter.exclude_tags">
+                    <p><button type="submit" class="btn btn-primary">Search</button></p>
+                </form>
+            </div>
 
-                <p><button type="submit" class="btn btn-primary">Go</button></p>
-            </form>
-
+            <!-- RESULT STATS -->
+            <div class="well well-small">
+                <h4> (( images.length )) Results &rarr; </h4>
+                <p>
+                    Stats will go here
+                </p>
             </div>
         </div>
-        <div class="span9 r-blue">
 
-            <h3> (( images.length )) Results (page (( filter.page ))) </h3>
+        <div class="span9 r-blue">
 
             <ul class="pager">
                 <li ng-class="{previous: true,  disabled: !prevButtonIsEnabled()}">
                     <a href="#" ng-click="prevButtonClick()">&larr; Prev</a>
                 </li>
+                <b> Page (( query.page )) </b>
                 <li ng-class="{next: true,  disabled: !nextButtonIsEnabled()}">
                     <a href="#" ng-click="nextButtonClick()">Next &rarr;</a>
                 </li>
             </ul>
 
+            <!-- IMAGES -->
             <ul class="thumbnails">
 
                 <li class="span3" ng-repeat="image in images">
@@ -76,7 +84,7 @@
                             <br> sensor: <strong>(( image.sensor ))</strong>
                             <br> source: <strong>(( image.source ))</strong>
                             <br> <span ng-repeat="tag in image.tags">
-                                    <span class="label label-info">(( tag ))</span> &nbsp;
+                                    <a href="#" class="label label-info">(( tag ))</a>
                                  </span>
                         </p>
                     </div>
