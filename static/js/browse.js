@@ -45,33 +45,37 @@ browseApp.controller('BrowseController', function($scope, $http) {
             console.log('    error');
         });
 
-    // fill in sources
-    console.log('getting sources...');
-    $http.get('/api/v1/db/'+$scope.filter.database_name+'/source')
-        .success(function(data,status,headers,config) {
-            $scope.sources = data['d'];
-            $scope.sources.unshift(ANY);  // put on front of list
-            console.log($scope.sources);
-            console.log('    success. got sources: ' + $scope.sources);
-        })
-        .error(function(data,status,headers,config) {
-            console.log('    error');
-        });
+    // when user changes database name, re-fetch sources and sensors
+    $scope.$watch('filter.database_name', function(newValue,oldValue) {
+        console.log('db name changed from ' + oldValue + ' to ' + newValue);
 
-    // fill in sensors
-    console.log('getting sensors...');
-    $http.get('/api/v1/db/'+$scope.filter.database_name+'/sensor')
-        .success(function(data,status,headers,config) {
-            $scope.sensors = data['d'];
-            $scope.sensors.unshift(ANY);  // put on front of list
-            console.log($scope.sensors);
-            console.log('    success. got sensors: ' + $scope.sensors);
-        })
-        .error(function(data,status,headers,config) {
-            console.log('    error');
-        });
+        // fill in sources
+        console.log('getting sources...');
+        $http.get('/api/v1/db/'+$scope.filter.database_name+'/source')
+            .success(function(data,status,headers,config) {
+                $scope.sources = data['d'];
+                $scope.sources.unshift(ANY);  // put on front of list
+                console.log($scope.sources);
+                console.log('    success. got sources: ' + $scope.sources);
+            })
+            .error(function(data,status,headers,config) {
+                console.log('    error');
+            });
 
-    // TODO: when user changes database name, re-fetch sources and sensors
+        // fill in sensors
+        console.log('getting sensors...');
+        $http.get('/api/v1/db/'+$scope.filter.database_name+'/sensor')
+            .success(function(data,status,headers,config) {
+                $scope.sensors = data['d'];
+                $scope.sensors.unshift(ANY);  // put on front of list
+                console.log($scope.sensors);
+                console.log('    success. got sensors: ' + $scope.sensors);
+            })
+            .error(function(data,status,headers,config) {
+                console.log('    error');
+            });
+
+    });
 
 
     var tokenizeString = function(s) {
