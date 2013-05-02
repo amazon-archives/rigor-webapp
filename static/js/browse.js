@@ -27,7 +27,7 @@ browseApp.controller('BrowseController', function($scope, $http) {
         database_name: 'rigor',  // TODO: this should be set to config.INITIAL_DB_NAME
         source: ANY,
         sensor: ANY,
-        has_tags: 'sign sightpal',
+        has_tags: '',
         exclude_tags: '',
         page: 0
     };
@@ -152,6 +152,8 @@ browseApp.controller('BrowseController', function($scope, $http) {
         }
     };
 
+    // start the page off with an actual search
+    $scope.doSearch();
 
 });
 
