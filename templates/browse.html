@@ -57,11 +57,11 @@
             <h3> (( images.length )) Results (page (( filter.page ))) </h3>
 
             <ul class="pager">
-                <li ng-class="{previous: true,  disabled: !search_has_occurred || filter.page <= 0}">
-                    <a href="#" ng-click="prevButton()">&larr; Prev</a>
+                <li ng-class="{previous: true,  disabled: !prevButtonIsEnabled()}">
+                    <a href="#" ng-click="prevButtonClick()">&larr; Prev</a>
                 </li>
-                <li ng-class="{next: true,  disabled: !search_has_occurred}">
-                    <a href="#" ng-click="nextButton()">Next &rarr;</a>
+                <li ng-class="{next: true,  disabled: !nextButtonIsEnabled()}">
+                    <a href="#" ng-click="nextButtonClick()">Next &rarr;</a>
                 </li>
             </ul>
 

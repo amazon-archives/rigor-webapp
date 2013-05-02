@@ -124,16 +124,23 @@ browseApp.controller('BrowseController', function($scope, $http) {
     };
 
 
-    $scope.nextButton = function() {
-        if ($scope.search_has_occurred) {
+    $scope.nextButtonIsEnabled = function () {
+        return $scope.search_has_occurred;
+    };
+    $scope.prevButtonIsEnabled = function () {
+        return $scope.search_has_occurred && $scope.filter.page >= 1;
+    };
+
+    $scope.nextButtonClick = function() {
+        if ($scope.nextButtonIsEnabled()) {
             console.log('next button');
             $scope.filter.page += 1;
             $scope.applyFilter();
         }
     };
 
-    $scope.prevButton = function() {
-        if ($scope.search_has_occurred && $scope.filter.page >= 1) {
+    $scope.prevButtonClick = function() {
+        if ($scope.prevButtonIsEnabled()) {
             console.log('prev button');
             $scope.filter.page -= 1;
             $scope.applyFilter();
