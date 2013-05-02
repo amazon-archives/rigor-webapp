@@ -152,6 +152,20 @@ browseApp.controller('BrowseController', function($scope, $http) {
         }
     };
 
+    $scope.clickTag = function(tag) {
+        var existingTagSearch = tokenizeString($scope.query.has_tags);
+        // if we're not already searching for this tags...
+        if (existingTagSearch.indexOf(tag) == -1) {
+            // add the tag to the has_tags string
+            if ($scope.query.has_tags === '') {
+                $scope.query.has_tags = tag;
+            } else {
+                $scope.query.has_tags += ' ' + tag;
+            }
+            $scope.doSearch();
+        }
+    };
+
     // start the page off with an actual search
     $scope.doSearch();
 
