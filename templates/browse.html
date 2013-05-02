@@ -25,7 +25,7 @@
 
             <!-- SEARCH -->
             <div class="well well-small">
-                <form ng-submit="searchButtonClick()">
+                <form ng-submit="clickSearchButton()">
                     <label>database</label>
                     <select class="span2" ng-model="query.database_name">
                         <option ng-repeat="dbname in database_names">(( dbname ))</option>
@@ -64,11 +64,11 @@
 
             <ul class="pager">
                 <li ng-class="{previous: true,  disabled: !prevButtonIsEnabled()}">
-                    <a href="#" ng-click="prevButtonClick()">&larr; Prev</a>
+                    <a href="#" ng-click="clickPrevButton()">&larr; Prev</a>
                 </li>
                 <b> Page (( query.page )) </b>
                 <li ng-class="{next: true,  disabled: !nextButtonIsEnabled()}">
-                    <a href="#" ng-click="nextButtonClick()">Next &rarr;</a>
+                    <a href="#" ng-click="clickNextButton()">Next &rarr;</a>
                 </li>
             </ul>
 

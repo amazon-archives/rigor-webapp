@@ -94,7 +94,7 @@ browseApp.controller('BrowseController', function($scope, $http) {
     };
 
 
-    $scope.searchButtonClick = function() {
+    $scope.clickSearchButton = function() {
         $scope.query.page = 0;
         $scope.doSearch();
     };
@@ -137,14 +137,14 @@ browseApp.controller('BrowseController', function($scope, $http) {
         return $scope.search_has_occurred && $scope.query.page >= 1;
     };
 
-    $scope.nextButtonClick = function() {
+    $scope.clickNextButton = function() {
         if ($scope.nextButtonIsEnabled()) {
             console.log('next button');
             $scope.query.page += 1;
             $scope.doSearch();
         }
     };
-    $scope.prevButtonClick = function() {
+    $scope.clickPrevButton = function() {
         if ($scope.prevButtonIsEnabled()) {
             console.log('prev button');
             $scope.query.page -= 1;
