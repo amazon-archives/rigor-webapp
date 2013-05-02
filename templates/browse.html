@@ -14,18 +14,18 @@
 <div class="container">
 
     <div class="row">
-        <div class="span12 r-red">
+        <div class="span12">
 
             <h2> Rigor </h2>
 
         </div>
     </div>
     <div class="row">
-        <div class="span3 r-gray">
+        <div class="span3">
 
             <!-- SEARCH -->
             <div class="well well-small">
-                <form ng-submit="clickSearchButton()">
+                <form ng-submit="clickSearchButton()" class="no-bottom-margin">
                     <label>database</label>
                     <select class="span2" ng-model="query.database_name">
                         <option ng-repeat="dbname in database_names">(( dbname ))</option>
@@ -47,7 +47,10 @@
                     <label>exclude_tags</label>
                     <input type="text" class="span2" ng-model="query.exclude_tags">
 
-                    <p><button type="submit" class="btn btn-primary">Search</button></p>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                        <button type="submit" class="btn">Clear</button>
+                    </div>
                 </form>
             </div>
 
@@ -60,7 +63,7 @@
             </div>
         </div>
 
-        <div class="span9 r-blue">
+        <div class="span9">
 
             <ul class="pager">
                 <li ng-class="{previous: true,  disabled: !prevButtonIsEnabled()}">
@@ -77,7 +80,7 @@
 
                 <li class="span3" ng-repeat="image in images">
                     <div class="thumbnail">
-                        <img ng-src="(( image.thumb_url ))" width=128 class="r-white">
+                        <img ng-src="(( image.thumb_url ))" width=128>
                         <p>
                                  id: <strong>(( image.id ))</strong>
                             <br> date: <strong>(( image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
