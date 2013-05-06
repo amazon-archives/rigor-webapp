@@ -64,9 +64,9 @@ def searchImages():
     if 'page' in queryDict:
         queryDict['page'] = int(queryDict['page'])
     debugMain('searchImages: %s'%queryDict)
-    result = backend.searchImages(queryDict)
+    full_count, result = backend.searchImages(queryDict)
     #print pprint.pformat(result)
-    return jsonify(d=result)
+    return jsonify(full_count = full_count, images=result)
 
 
 # http://ea:5000/api/v1/db

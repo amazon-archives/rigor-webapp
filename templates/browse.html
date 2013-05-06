@@ -57,7 +57,7 @@
 
             <!-- RESULT STATS -->
             <div class="well well-small">
-                <h4> (( images.length )) Results &rarr; </h4>
+                <h4> (( full_count )) Results &rarr; </h4>
                 <p>
                     Stats will go here
                 </p>
@@ -80,7 +80,7 @@
                 <li ng-class="{previous: true,  disabled: !prevButtonIsEnabled()}">
                     <a href="#" ng-click="clickPrevButton()">&larr; Prev</a>
                 </li>
-                <b> Page (( query.page+1 )) </b>
+                <b> Page (( query.page+1 )) of (( last_page + 1 )) </b>
                 <li ng-class="{next: true,  disabled: !nextButtonIsEnabled()}">
                     <a href="#" ng-click="clickNextButton()">Next &rarr;</a>
                 </li>

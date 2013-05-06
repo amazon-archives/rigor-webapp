@@ -129,6 +129,9 @@ def getSensors(database_name):
 
 
 def searchImages(queryDict):
+    """
+        Returns (full_count, [images])
+    """
     # TODO: allow searching for NULL
     """
         {
@@ -158,7 +161,7 @@ def searchImages(queryDict):
     )
     jsonschema.validate(schema,queryDict, allowExtraKeys=False, allowMissingKeys=True)
 
-    sql = """SELECT * FROM image"""
+    sql = """SELECT *, COUNT(*) OVER() as full_count FROM image"""
     clauses = []
     values = []
 
@@ -206,8 +209,15 @@ def searchImages(queryDict):
 
     conn = getDbConnection(queryDict['database_name'])
     results = list(dbQueryDict(conn,sql,values))
+    # remove full_count
+    if results:
+        full_count = int(results[0]['full_count']) # do int() to convert it from a long int
+        for r in results:
+            del r['full_count']
+    else:
+        full_count = 0
     results = [_imageDictDbToApi(conn,r) for r in results]
-    return results
+    return (full_count,results)
 
 
 def getImage(database_name,id=None,uuid=None):
@@ -245,30 +255,31 @@ if __name__ == '__main__':
 #     print getImage(id=23731)
 #     print getImage(database_name='rigor',uuid='01bb6939-ac7f-4dbf-84c9-8136eaa3f6ea');
 
-#     debugMain('testing searchImages')
-#     images = searchImages({
-#         #         'sensor': 'HTC Nexus One',
-#         #         'source': 'Guangyu',
-#         'database_name': 'rigor',
-#         'has_tags': ['money'],
-#         'exclude_tags': ['testdata'],
-#         'max_count': 2,
-#         'page': 0,
-#     })
-#     for image in images:
-#         debugDetail(pprint.pformat(image))
+    debugMain('testing searchImages')
+    full_count, images = searchImages({
+        #         'sensor': 'HTC Nexus One',
+        #         'source': 'Guangyu',
+        'database_name': 'rigor',
+        'has_tags': ['money'],
+        'exclude_tags': ['testdata'],
+        'max_count': 2,
+        'page': 0,
+    })
+    debugDetail('full count = %s'%repr(full_count))
+    for image in images:
+        debugDetail(pprint.pformat(image))
 
-    debugMain('databases:')
-    for db in getDatabaseNames():
-        debugDetail(db)
-
-    debugMain('sources:')
-    for source in getSources('rigor'):
-        debugDetail(source)
-
-    debugMain('sensors:')
-    for sensor in getSensors('rigor'):
-        debugDetail(sensor)
+#     debugMain('databases:')
+#     for db in getDatabaseNames():
+#         debugDetail(db)
+# 
+#     debugMain('sources:')
+#     for source in getSources('rigor'):
+#         debugDetail(source)
+# 
+#     debugMain('sensors:')
+#     for sensor in getSensors('rigor'):
+#         debugDetail(sensor)
 
 
 

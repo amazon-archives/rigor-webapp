@@ -29,9 +29,12 @@ browseApp.controller('BrowseController', function($scope, $http) {
         sensor: ANY,
         has_tags: '',
         exclude_tags: '',
-        page: 0
+        page: 0,
+        max_count: 50
     };
     $scope.images = [];                // results of the search
+    $scope.full_count = 0;
+    $scope.last_page = 0;
 
     $scope.clickClearButton = function() {
         $scope.query.source = ANY;
@@ -126,8 +129,12 @@ browseApp.controller('BrowseController', function($scope, $http) {
 
         $http.get('/api/v1/search',{params: queryParams})
             .success(function(data,status,headers,config) {
-                $scope.images = data['d'];
+                $scope.images = data['images'];
+                $scope.full_count = data['full_count'];
+                $scope.last_page = Math.floor($scope.full_count / $scope.query.max_count);
                 console.log('    success. got ' + $scope.images.length + ' images');
+                console.log('    full_count = ' + $scope.full_count);
+                console.log('    last_page = ' + $scope.last_page);
                 //// convert timestamps from seconds to milliseconds
                 //for (var ii in $scope.entries) {
                 //    $scope.entries[ii].timestamp *= 1000;
@@ -140,7 +147,7 @@ browseApp.controller('BrowseController', function($scope, $http) {
 
 
     $scope.nextButtonIsEnabled = function () {
-        return $scope.search_has_occurred;
+        return $scope.search_has_occurred && $scope.query.page < $scope.last_page;
     };
     $scope.prevButtonIsEnabled = function () {
         return $scope.search_has_occurred && $scope.query.page >= 1;
