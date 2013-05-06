@@ -92,6 +92,7 @@ def _imageDictDbToApi(conn,d):
 
     # add image urls
     d2['thumb_url'] = 'http://ea/thumbnails/64x64/%s/%s/%s.%s'%(d2['locator'][:2], d2['locator'][2:4], d2['locator'].replace('-',''), d2['format'])
+    d2['url'] = 'http://ea/images/%s/%s/%s.%s'%(d2['locator'][:2], d2['locator'][2:4], d2['locator'].replace('-',''), d2['format'])
     return d2
 
 
@@ -216,6 +217,8 @@ def searchImages(queryDict):
             del r['full_count']
     else:
         full_count = 0
+    for r in results:
+        r['database_name'] = queryDict['database_name']
     results = [_imageDictDbToApi(conn,r) for r in results]
     return (full_count,results)
 
@@ -253,21 +256,21 @@ def getImage(database_name,id=None,uuid=None):
 
 if __name__ == '__main__':
 #     print getImage(id=23731)
-#     print getImage(database_name='rigor',uuid='01bb6939-ac7f-4dbf-84c9-8136eaa3f6ea');
+    print getImage(database_name='rigor',uuid='01bb6939-ac7f-4dbf-84c9-8136eaa3f6ea');
 
-    debugMain('testing searchImages')
-    full_count, images = searchImages({
-        #         'sensor': 'HTC Nexus One',
-        #         'source': 'Guangyu',
-        'database_name': 'rigor',
-        'has_tags': ['money'],
-        'exclude_tags': ['testdata'],
-        'max_count': 2,
-        'page': 0,
-    })
-    debugDetail('full count = %s'%repr(full_count))
-    for image in images:
-        debugDetail(pprint.pformat(image))
+#     debugMain('testing searchImages')
+#     full_count, images = searchImages({
+#         #         'sensor': 'HTC Nexus One',
+#         #         'source': 'Guangyu',
+#         'database_name': 'rigor',
+#         'has_tags': ['money'],
+#         'exclude_tags': ['testdata'],
+#         'max_count': 2,
+#         'page': 0,
+#     })
+#     debugDetail('full count = %s'%repr(full_count))
+#     for image in images:
+#         debugDetail(pprint.pformat(image))
 
 #     debugMain('databases:')
 #     for db in getDatabaseNames():

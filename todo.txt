@@ -18,8 +18,8 @@ top navbar
 
 
 
-
-
+on search, reset view to thumb view
+on loading detail view, fetch image if needed
 
 
 

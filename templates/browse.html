@@ -16,7 +16,7 @@
     <div class="row">
         <div class="span12">
 
-            <h2> Rigor </h2>
+            <h2><a href="#/(( query.database_name ))/browse"> Rigor </a></h2>
 
         </div>
     </div>
@@ -28,17 +28,17 @@
                 <form ng-submit="clickSearchButton()" class="no-bottom-margin">
                     <label>database</label>
                     <select class="span2" ng-model="query.database_name">
-                        <option ng-repeat="dbname in database_names">(( dbname ))</option>
+                        <option ng-repeat="dbname in search_form.database_names">(( dbname ))</option>
                     </select>
 
                     <label>source</label>
                     <select class="span2" ng-model="query.source">
-                        <option ng-repeat="source in sources">(( source ))</option>
+                        <option ng-repeat="source in search_form.sources">(( source ))</option>
                     </select>
 
                     <label>sensor</label>
                     <select class="span2" ng-model="query.sensor">
-                        <option ng-repeat="sensor in sensors">(( sensor ))</option>
+                        <option ng-repeat="sensor in search_form.sensors">(( sensor ))</option>
                     </select>
 
                     <label>has_tags</label>
@@ -57,7 +57,7 @@
 
             <!-- RESULT STATS -->
             <div class="well well-small">
-                <h4> (( full_count )) Results &rarr; </h4>
+                <h4> (( search_results.full_count )) Results &rarr; </h4>
                 <p>
                     Stats will go here
                 </p>
@@ -74,39 +74,12 @@
             </div>
         </div>
 
-        <div class="span9">
+        <div class="span9" ng-view>
 
-            <ul class="pager">
-                <li ng-class="{previous: true,  disabled: !prevButtonIsEnabled()}">
-                    <a href="#" ng-click="clickPrevButton()">&larr; Prev</a>
-                </li>
-                <b> Page (( query.page+1 )) of (( last_page + 1 )) </b>
-                <li ng-class="{next: true,  disabled: !nextButtonIsEnabled()}">
-                    <a href="#" ng-click="clickNextButton()">Next &rarr;</a>
-                </li>
-            </ul>
-
-            <!-- IMAGES -->
-            <ul class="thumbnails">
-
-                <li class="span3 thumbnail-height-fix" ng-repeat="image in images">
-                    <div class="thumbnail">
-                        <img ng-src="(( image.thumb_url ))" width=200>
-                        <p>
-                                 id: <strong>(( image.id ))</strong>
-                            <br> date: <strong>(( image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
-                            <br> sensor: <strong>(( image.sensor ))</strong>
-                            <br> source: <strong>(( image.source ))</strong>
-                            <br> <span ng-repeat="tag in image.tags">
-                                    <a href="#" ng-click="clickTag(tag)" class="label label-info">(( tag ))</a>
-                                 </span>
-                        </p>
-                    </div>
-                </li>
-
-            </ul>
+            <!-- THUMBS OR DETAIL VIEW HERE -->
 
         </div>
+
     </div>
 
 </div>

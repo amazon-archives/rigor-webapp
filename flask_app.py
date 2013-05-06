@@ -76,10 +76,10 @@ def getDatabaseNames():
 
 
 # http://ea:5000/api/v1/db/rigor/image/23659
-@app.route('/api/v1/db/<database_name>/image/<id>', methods=['GET'])
-def getImage(database_name,id):
-    result = backend.getImage(database_name=database_name,id=id)
-    debugMain('getImage.  id = %s'%id)
+@app.route('/api/v1/db/<database_name>/image/<uuid>', methods=['GET'])
+def getImage(database_name,uuid):
+    result = backend.getImage(database_name=database_name,uuid=uuid)
+    debugMain('getImage.  uuid = %s'%uuid)
     debugDetail(result)
     return jsonify(result)
 

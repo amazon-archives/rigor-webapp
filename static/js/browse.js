@@ -1,8 +1,8 @@
 "use strict";
 
 
-
 var browseApp = angular.module('browseApp', []);
+
 
 // make Angular use (( )) for template markup instead of {{ }}
 // to avoid a conflict with Flask's templates which also use {{ }}
@@ -11,7 +11,52 @@ browseApp.config(function($interpolateProvider) {
     $interpolateProvider.endSymbol('))');
 });
 
-browseApp.controller('BrowseController', function($scope, $http) {
+
+browseApp.config(['$routeProvider',function($routeProvider) {
+    $routeProvider
+        .when('/:database_name/browse', {
+            templateUrl: 'static/partials/browse-thumbs.html',
+            controller: 'BrowseThumbController'
+        })
+        .when('/:database_name/detail/:locator', {
+            templateUrl: 'static/partials/browse-detail.html',
+            controller: 'BrowseDetailController'
+        })
+        .otherwise({redirectTo: '/rigor/browse'});
+}]);
+
+browseApp.controller('BrowseDetailController', function($scope, $http, $routeParams) {
+    $scope.which = 'BrowseDetail';
+    $scope.detail = {
+        locator: $routeParams.locator, // the locator for the image being viewed
+        image: null,
+    };
+
+    // try to grab the image details from the list of search results
+    angular.forEach($scope.search_results.images, function(image,ii) {
+        if (image.locator === $scope.detail.locator) {
+            $scope.detail.image = image;
+        }
+    });
+
+    if ($scope.detail.image === null) {
+        console.log('image is not in search results.  fetching image details...');
+        $http.get('/api/v1/db/'+$scope.query.database_name+'/image/'+$scope.detail.locator)
+            .success(function(data,status,headers,config) {
+                $scope.detail.image = data;
+                console.log('    success. got image details: ' + $scope.search_form.database_names);
+            })
+            .error(function(data,status,headers,config) {
+                console.log('    error');
+            });
+    }
+});
+
+browseApp.controller('BrowseThumbController', function($scope, $routeParams) {
+    $scope.which = 'BrowseThumb';
+});
+
+browseApp.controller('BrowseController', function($scope, $http, $routeParams, $location) {
 
     // ANY is a special value to represent that we should ignore this field
     // when searching.  this is equivalent to ''.
@@ -19,22 +64,29 @@ browseApp.controller('BrowseController', function($scope, $http) {
     // omit any items which are ANY or ''.
     var ANY = '(any)';
 
-    $scope.database_names = ['rigor']; // to be filled in by AJAX
-    $scope.sources = [];               // to be filled in by AJAX
-    $scope.sensors = [];               // to be filled in by AJAX
-    $scope.search_has_occurred = false;
-    $scope.query = {                  // query params for searching images
-        database_name: 'rigor',  // TODO: this should be set to config.INITIAL_DB_NAME
+    $scope.which = 'Browse';
+
+    $scope.search_form = {
+        database_names: ['rigor'],   // to be filled in by AJAX
+        sources: [],                 // to be filled in by AJAX
+        sensors: []                  // to be filled in by AJAX
+    };
+    $scope.query = {               // query params for searching images
+        database_name: 'rigor',      // TODO: this should be set to config.INITIAL_DB_NAME
         source: ANY,
         sensor: ANY,
         has_tags: '',
         exclude_tags: '',
-        page: 0,
-        max_count: 50
+        max_count: 3,
+        page: 0
     };
-    $scope.images = [];                // results of the search
-    $scope.full_count = 0;
-    $scope.last_page = 0;
+    $scope.search_results = {
+        search_has_occurred: false,
+        images: [],                   // results of the search
+        full_count: 0,                // number of returned images (all pages)
+        last_page: 0                  // number of pages
+    };
+
 
     $scope.clickClearButton = function() {
         $scope.query.source = ANY;
@@ -49,9 +101,9 @@ browseApp.controller('BrowseController', function($scope, $http) {
     console.log('getting database names...');
     $http.get('/api/v1/db')
         .success(function(data,status,headers,config) {
-            $scope.database_names = data['d']
-            console.log($scope.database_names)
-            console.log('    success. got database names: ' + $scope.database_names);
+            $scope.search_form.database_names = data['d']
+            console.log($scope.search_form.database_names)
+            console.log('    success. got database names: ' + $scope.search_form.database_names);
         })
         .error(function(data,status,headers,config) {
             console.log('    error');
@@ -65,10 +117,10 @@ browseApp.controller('BrowseController', function($scope, $http) {
         console.log('getting sources...');
         $http.get('/api/v1/db/'+$scope.query.database_name+'/source')
             .success(function(data,status,headers,config) {
-                $scope.sources = data['d'];
-                $scope.sources.unshift(ANY);  // put on front of list
-                console.log($scope.sources);
-                console.log('    success. got sources: ' + $scope.sources);
+                $scope.search_form.sources = data['d'];
+                $scope.search_form.sources.unshift(ANY);  // put on front of list
+                console.log($scope.search_form.sources);
+                console.log('    success. got sources: ' + $scope.search_form.sources);
             })
             .error(function(data,status,headers,config) {
                 console.log('    error');
@@ -78,14 +130,17 @@ browseApp.controller('BrowseController', function($scope, $http) {
         console.log('getting sensors...');
         $http.get('/api/v1/db/'+$scope.query.database_name+'/sensor')
             .success(function(data,status,headers,config) {
-                $scope.sensors = data['d'];
-                $scope.sensors.unshift(ANY);  // put on front of list
-                console.log($scope.sensors);
-                console.log('    success. got sensors: ' + $scope.sensors);
+                $scope.search_form.sensors = data['d'];
+                $scope.search_form.sensors.unshift(ANY);  // put on front of list
+                console.log($scope.search_form.sensors);
+                console.log('    success. got sensors: ' + $scope.search_form.sensors);
             })
             .error(function(data,status,headers,config) {
                 console.log('    error');
             });
+
+        // update hash
+        $location.path('/'+$scope.query.database_name+'/browse');
         
         // TODO: set query.source and query.sensor to legal values
 
@@ -113,7 +168,7 @@ browseApp.controller('BrowseController', function($scope, $http) {
     $scope.doSearch = function() {
         console.log('getting images...');
 
-        $scope.search_has_occurred = true;
+        $scope.search_results.search_has_occurred = true;
 
         // clean up query object for use as URL params
         var queryParams = angular.copy($scope.query);
@@ -129,16 +184,12 @@ browseApp.controller('BrowseController', function($scope, $http) {
 
         $http.get('/api/v1/search',{params: queryParams})
             .success(function(data,status,headers,config) {
-                $scope.images = data['images'];
-                $scope.full_count = data['full_count'];
-                $scope.last_page = Math.floor($scope.full_count / $scope.query.max_count);
-                console.log('    success. got ' + $scope.images.length + ' images');
-                console.log('    full_count = ' + $scope.full_count);
-                console.log('    last_page = ' + $scope.last_page);
-                //// convert timestamps from seconds to milliseconds
-                //for (var ii in $scope.entries) {
-                //    $scope.entries[ii].timestamp *= 1000;
-                //}
+                $scope.search_results.images = data['images'];
+                $scope.search_results.full_count = data['full_count'];
+                $scope.search_results.last_page = Math.floor($scope.search_results.full_count / $scope.query.max_count);
+                console.log('    success. got ' + $scope.search_results.images.length + ' images');
+                console.log('    full_count = ' + $scope.search_results.full_count);
+                console.log('    last_page = ' + $scope.search_results.last_page);
             })
             .error(function(data,status,headers,config) {
                 console.log('    error');
@@ -147,10 +198,10 @@ browseApp.controller('BrowseController', function($scope, $http) {
 
 
     $scope.nextButtonIsEnabled = function () {
-        return $scope.search_has_occurred && $scope.query.page < $scope.last_page;
+        return $scope.search_results.search_has_occurred && $scope.query.page < $scope.search_results.last_page;
     };
     $scope.prevButtonIsEnabled = function () {
-        return $scope.search_has_occurred && $scope.query.page >= 1;
+        return $scope.search_results.search_has_occurred && $scope.query.page >= 1;
     };
 
     $scope.clickNextButton = function() {
@@ -171,7 +222,7 @@ browseApp.controller('BrowseController', function($scope, $http) {
     $scope.clickTag = function(tag) {
         var existingTagSearch = tokenizeString($scope.query.has_tags);
         // if we're not already searching for this tags...
-        if (existingTagSearch.indexOf(tag) == -1) {
+        if (existingTagSearch.indexOf(tag) === -1) {
             // add the tag to the has_tags string
             if ($scope.query.has_tags === '') {
                 $scope.query.has_tags = tag;
