@@ -1,0 +1,29 @@
+
+
+fix NULL situation
+
+routing
+
+image detail view
+    annotations
+
+result stats
+
+batch edit
+
+better pagination control
+
+top navbar
+
+
+
+
+
+
+
+
+
+
+
+
+
