@@ -32,12 +32,8 @@ app.config['SECRET_KEY'] = 'fq348fnylq84ylnqx48yq3xlg8nlqy348q'
 #--------------------------------------------------------------------------------
 # ROUTING
 
+
 @app.route('/')
-def index():
-    return render_template('index.html')
-
-
-@app.route('/browse')
 def index():
     return render_template('browse.html')
 

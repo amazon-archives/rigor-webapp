@@ -170,6 +170,8 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
         $scope.search_results.search_has_occurred = true;
 
+        //$location.search('source='+$scope.query.source);
+
         // clean up query object for use as URL params
         var queryParams = angular.copy($scope.query);
         queryParams.has_tags = tokenizeString(queryParams.has_tags).join();
