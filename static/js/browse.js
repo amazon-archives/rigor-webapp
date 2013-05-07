@@ -251,6 +251,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     $scope.switchToImage = function(ii) {
         if (ii >= 0 && ii < $scope.search_results.full_count) {
             console.log('switching to image '+ii);
+            $scope.detail.annotations = [];
 
             // have we gone out of our current page?
             // which direction?
@@ -279,6 +280,17 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 if (typeof $scope.detail.image == 'undefined') {
                     console.error('could not find image. ii = ' + ii);
                 }
+                // load annotations
+                console.log('loading annotations...');
+                $http.get('/api/v1/db/'+$scope.query.database_name+'/image/'+$scope.detail.image.locator+'/annotation')
+                    .success(function(data,status,headers,config) {
+                        $scope.detail.annotations = data['d']
+                        console.log('    success.');
+                        console.log($scope.detail.annotations)
+                    })
+                    .error(function(data,status,headers,config) {
+                        console.log('    error');
+                    });
             };
 
             if (needToDoSearch) {
