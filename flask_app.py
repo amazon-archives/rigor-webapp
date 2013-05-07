@@ -10,6 +10,7 @@ import pprint
 from flask import Flask
 from flask import render_template
 from flask import send_from_directory
+from flask import send_file
 from flask import jsonify
 from flask import request
 from flask import redirect
@@ -36,6 +37,36 @@ app.config['SECRET_KEY'] = 'fq348fnylq84ylnqx48yq3xlg8nlqy348q'
 @app.route('/')
 def index():
     return render_template('browse.html')
+
+@app.route('/thumb/<locator>.<ext>',methods=['GET'])
+def getThumbFile(locator,ext):
+    locator = locator.replace('-','').replace('/','').replace('..','')
+    ext = ext.replace('/','').replace('..','')
+    path = '/data/rigor/thumbnails/200x200/%s/%s/%s.%s'%(
+                locator[:2],
+                locator[2:4],
+                locator.replace('-',''),
+                ext
+            )
+    if os.path.exists(path):
+        return send_file(path)
+    else:
+        abort(404)
+
+@app.route('/image/<locator>.<ext>',methods=['GET'])
+def getImageFile(locator,ext):
+    locator = locator.replace('-','').replace('/','').replace('..','')
+    ext = ext.replace('/','').replace('..','')
+    path = '/data/rigor/images/%s/%s/%s.%s'%(
+                locator[:2],
+                locator[2:4],
+                locator.replace('-',''),
+                ext
+            )
+    if os.path.exists(path):
+        return send_file(path)
+    else:
+        abort(404)
 
 
 # http://ea:5000/api/v1/search?a=1&database_name=rigor&has_tags=sign,sightpal&exclude_tags=hard&max_count=3

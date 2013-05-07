@@ -91,8 +91,8 @@ def _imageDictDbToApi(conn,d):
     d2['stamp'] = dbTimestampToUTCTime(d['stamp'])
 
     # add image urls
-    d2['thumb_url'] = 'http://ea/thumbnails/64x64/%s/%s/%s.%s'%(d2['locator'][:2], d2['locator'][2:4], d2['locator'].replace('-',''), d2['format'])
-    d2['url'] = 'http://ea/images/%s/%s/%s.%s'%(d2['locator'][:2], d2['locator'][2:4], d2['locator'].replace('-',''), d2['format'])
+    d2['thumb_url'] = '/thumb/%s.%s'%(d2['locator'],d2['format'])
+    d2['url'] = '/image/%s.%s'%(d2['locator'],d2['format'])
     return d2
 
 

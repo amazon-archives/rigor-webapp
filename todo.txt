@@ -1,4 +1,7 @@
 
+use render paths instead of partials and nested scopes/controllers
+load images through flash
+
 
 fix NULL situation
 
