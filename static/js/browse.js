@@ -52,9 +52,10 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         database_name: 'rigor',      // TODO: this should be set to config.INITIAL_DB_NAME
         source: ANY,
         sensor: ANY,
-        has_tags: 'sightpal angle testing bigangle',
+        //has_tags: 'sightpal angle testing bigangle',
+        has_tags: 'document',
         exclude_tags: '',
-        max_count: 9,
+        max_count: 18,
         page: 0
     };
     $scope.search_results = {
@@ -364,9 +365,10 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
 
     // start the page off with an actual search
-    $scope.doSearch(function () {
+    $scope.doSearch();
+    /*function () {
         $scope.switchToImage(0);
-    });
+    });*/
 
 });
 

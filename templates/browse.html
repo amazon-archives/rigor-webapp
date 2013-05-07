@@ -92,10 +92,12 @@
                                      date: <strong>(( image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
                                 <br> sensor: <strong>(( image.sensor ))</strong>
                                 <br> source: <strong>(( image.source ))</strong>
-                                <br> <span ng-repeat="tag in image.tags">
+                            </p>
+                            <div style="height:44px">
+                                <span ng-repeat="tag in image.tags">
                                         <a href="" ng-click="clickTag(tag)" class="label label-info">(( tag ))</a>
                                      </span>
-                            </p>
+                            </div>
                         </div>
                     </li>
                 </ul>
