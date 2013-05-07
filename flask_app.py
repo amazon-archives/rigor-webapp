@@ -110,6 +110,13 @@ def getImage(database_name,locator):
     debugDetail(result)
     return jsonify(result)
 
+# http://ea:5000/api/v1/db/rigor/image/afa567f9f55b4283a1ead5682637ed4e/annotation
+@app.route('/api/v1/db/<database_name>/image/<locator>/annotation', methods=['GET'])
+def getImageAnnotations(database_name,locator):
+    result = backend.getImageAnnotations(database_name=database_name,locator=locator)
+    debugMain('getImageAnnotations.  locator = %s'%locator)
+    debugDetail(result)
+    return jsonify(d=result)
 
 # http://ea:5000/api/v1/db/rigor/source
 @app.route('/api/v1/db/<database_name>/source', methods=['GET'])

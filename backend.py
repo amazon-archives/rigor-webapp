@@ -95,6 +95,19 @@ def _imageDictDbToApi(conn,d):
     d2['url'] = '/image/%s.%s'%(d2['locator'],d2['format'])
     return d2
 
+def _annotationDictDbToApi(d):
+    d2 = dict(d)
+
+    # convert timestamp from datetime to unix time
+    d2['stamp'] = dbTimestampToUTCTime(d['stamp'])
+
+    # parse boundary values which are strings like "((1,2),(3,4),(5,6),(7,8))"
+    # convert them to json lists: [[1,2],[3,4] ... ]
+    if d2['domain'] in ('text','textcluster'):
+        d2['boundary'] = json.loads(d2['boundary'].replace('(','[').replace(')',']'))
+
+    return d2
+
 
 def getDatabaseNames():
     sql = """ SELECT datname FROM pg_database ORDER BY datname """
@@ -258,6 +271,39 @@ def getImage(database_name,id=None,locator=None):
     else:
         1/0
 
+
+def getImageAnnotations(database_name,locator):
+    # first look up image id
+    sql = """
+        SELECT * FROM image WHERE locator = %s;
+    """
+    values = ( locator, )
+
+    conn = getDbConnection(database_name)
+    rows = list(dbQueryDict(conn,sql,values))
+    if len(rows) == 0:
+        1/0
+    elif len(rows) == 1:
+        id = rows[0]['id']
+    else:
+        1/0
+    print id
+
+
+    # then look up annotations
+    sql = """
+        SELECT * FROM annotation
+        WHERE image_id = %s
+        AND domain = 'text'
+        ORDER BY id;
+    """
+    # TODO: add textcluster, blur, money domains
+    values = ( id, )
+
+    rows = list(dbQueryDict(conn,sql,values))
+    rows = [_annotationDictDbToApi(r) for r in rows]
+    return rows
+
 #--------------------------------------------------------------------------------
 # MAIN
 
@@ -266,7 +312,10 @@ def getImage(database_name,id=None,locator=None):
 
 if __name__ == '__main__':
 #     print getImage(id=23731)
-    print getImage(database_name='rigor',locator='01bb6939-ac7f-4dbf-84c9-8136eaa3f6ea');
+#     print getImage(database_name='rigor',locator='01bb6939-ac7f-4dbf-84c9-8136eaa3f6ea');
+
+    print yellow(pprint.pformat(getImage(database_name='rigor',locator='afa567f9-f55b-4283-a1ea-d5682637ed4e')))
+    print cyan(pprint.pformat(getImageAnnotations(database_name='rigor',locator='afa567f9-f55b-4283-a1ea-d5682637ed4e')))
 
 #     debugMain('testing searchImages')
 #     full_count, images = searchImages({
