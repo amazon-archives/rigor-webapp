@@ -14,4 +14,9 @@
 .rigor-sidebar-form-element {width:200px;}
 .rigor-sidebar-form-element2 {width:186px;}
 
+body {
+    //background: url('/static/img/cream_pixels.png');
+    //background: url('/static/img/debut_light.png');
+    //background: url('/static/img/cream_dust.png');
+}
 
