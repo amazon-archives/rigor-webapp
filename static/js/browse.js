@@ -52,7 +52,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         database_name: 'rigor',      // TODO: this should be set to config.INITIAL_DB_NAME
         source: ANY,
         sensor: ANY,
-        has_tags: 'document',
+        has_tags: 'sightpal angle testing bigangle',
         exclude_tags: '',
         max_count: 9,
         page: 0
@@ -251,22 +251,39 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         ctx.clearRect(0,0,$scope.detail.image.x_resolution, $scope.detail.image.y_resolution);
         console.log($scope.detail.annotations);
         angular.forEach($scope.detail.annotations, function(annotation,jj) {
-            console.log('    annotation ' + jj);
-            ctx.fillStyle = "hsla(35,100%,45%,0.4)";
-            ctx.strokeStyle = "hsla(35,100%,66%,0.4)";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            angular.forEach(annotation.boundary, function(point,kk) {
-                console.log('        point ' + point);
-                if (kk === 0) {
-                    ctx.moveTo(point[0],point[1]);
-                } else {
-                    ctx.lineTo(point[0],point[1]);
-                }
-            });
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
+            if (annotation.domain === 'text') {
+                console.log('    annotation ' + jj + ': domain = ' + annotation.domain);
+                ctx.fillStyle = "hsla(35,100%,45%,0.4)";
+                ctx.strokeStyle = "hsla(35,100%,66%,0.4)";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                angular.forEach(annotation.boundary, function(point,kk) {
+                    if (kk === 0) {
+                        ctx.moveTo(point[0],point[1]);
+                    } else {
+                        ctx.lineTo(point[0],point[1]);
+                    }
+                });
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+        });
+        angular.forEach($scope.detail.annotations, function(annotation,jj) {
+            if (annotation.domain === 'textcluster') {
+                console.log('    annotation ' + jj + ': domain = ' + annotation.domain);
+                ctx.beginPath();
+                ctx.moveTo(annotation.boundary[0][0],annotation.boundary[0][1]);
+                ctx.lineTo(annotation.boundary[1][0],annotation.boundary[1][1]);
+
+                ctx.strokeStyle = "hsla(260,80%,70%,0.5)";
+                ctx.lineWidth = 8;
+                ctx.stroke();
+
+                ctx.strokeStyle = "hsla(260,80%,30%,0.3)";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
         });
         console.log('-----------------------------------------');
     };
@@ -336,7 +353,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
     // start the page off with an actual search
     $scope.doSearch(function () {
-        $scope.switchToImage(1);
+        $scope.switchToImage(0);
     });
 
 });

@@ -294,7 +294,8 @@ def getImageAnnotations(database_name,locator):
     sql = """
         SELECT * FROM annotation
         WHERE image_id = %s
-        AND domain = 'text'
+        AND (domain = 'text'
+        OR domain = 'textcluster')
         ORDER BY id;
     """
     # TODO: add textcluster, blur, money domains
@@ -322,8 +323,11 @@ if __name__ == '__main__':
 #     print getImage(id=23731)
 #     print getImage(database_name='rigor',locator='01bb6939-ac7f-4dbf-84c9-8136eaa3f6ea');
 
-    print yellow(pprint.pformat(getImage(database_name='rigor',locator='afa567f9-f55b-4283-a1ea-d5682637ed4e')))
-    print cyan(pprint.pformat(getImageAnnotations(database_name='rigor',locator='afa567f9-f55b-4283-a1ea-d5682637ed4e')))
+#     print yellow(pprint.pformat(getImage(database_name='rigor',locator='afa567f9-f55b-4283-a1ea-d5682637ed4e')))
+#     print cyan(pprint.pformat(getImageAnnotations(database_name='rigor',locator='afa567f9-f55b-4283-a1ea-d5682637ed4e')))
+
+    print yellow(pprint.pformat(getImage(database_name='rigor',locator='0571f3fe-cb88-4818-b213-36f08b48f132')))
+    print cyan(pprint.pformat(getImageAnnotations(database_name='rigor',locator='0571f3fe-cb88-4818-b213-36f08b48f132')))
 
 #     debugMain('testing searchImages')
 #     full_count, images = searchImages({
