@@ -14,11 +14,31 @@ browseApp.config(function($interpolateProvider) {
 
 browseApp.controller('BrowseController', function($scope, $http, $routeParams, $location) {
 
+    //================================================================================
+    // CONSTANTS AND UTILS
+
     // ANY is a special value to represent that we should ignore this field
     // when searching.  this is equivalent to ''.
     // When we convert $scope.query to query params for the API, we
     // omit any items which are ANY or ''.
     var ANY = '(any)';
+
+    var tokenizeString = function(s) {
+        // given a string like "   tag1 tag2 \n   tag3 "
+        // return ['tag1','tag2','tag3']
+        var result = [];
+        angular.forEach(s.trim().split(' '), function(token,ii) {
+            token = token.trim();
+            if (token.length > 0) {
+                result.push(token);
+            }
+        });
+        return result;
+    };
+
+
+    //================================================================================
+    // SCOPES
 
     $scope.view_state = {            // which view mode we're in.
         render_path: 'thumbs'        // 'thumbs', 'detail'
@@ -49,6 +69,9 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     };
 
 
+    //================================================================================
+    // SEARCH FORM BUTTONS AND BEHAVIOR
+
     $scope.clickClearButton = function() {
         $scope.query.source = ANY;
         $scope.query.sensor = ANY;
@@ -58,17 +81,10 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         $scope.doSearch();
     };
 
-    // fill in database_names
-    console.log('getting database names...');
-    $http.get('/api/v1/db')
-        .success(function(data,status,headers,config) {
-            $scope.search_form.database_names = data['d']
-            console.log($scope.search_form.database_names)
-            console.log('    success. got database names: ' + $scope.search_form.database_names);
-        })
-        .error(function(data,status,headers,config) {
-            console.log('    error');
-        });
+    $scope.clickSearchButton = function() {
+        $scope.query.page = 0;
+        $scope.doSearch();
+    };
 
     // when user changes database name, re-fetch sources and sensors
     $scope.$watch('query.database_name', function(newValue,oldValue) {
@@ -108,24 +124,9 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     });
 
 
-    var tokenizeString = function(s) {
-        // given a string like "   tag1 tag2    tag3 "
-        // return ['tag1','tag2','tag3']
-        var result = [];
-        angular.forEach(s.trim().split(' '), function(token,ii) {
-            token = token.trim();
-            if (token.length > 0) {
-                result.push(token);
-            }
-        });
-        return result;
-    };
+    //================================================================================
+    // DO SEARCH
 
-
-    $scope.clickSearchButton = function() {
-        $scope.query.page = 0;
-        $scope.doSearch();
-    };
     $scope.doSearch = function() {
         $scope.view_state.render_path = 'thumbs';
         console.log('getting images...');
@@ -161,6 +162,9 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     };
 
 
+    //================================================================================
+    // THUMB PAGINATION
+
     $scope.nextButtonIsEnabled = function () {
         return $scope.search_results.search_has_occurred && $scope.query.page < $scope.search_results.last_page;
     };
@@ -183,8 +187,11 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         }
     };
 
+
+    //================================================================================
+    // MODIFY SEARCH BY CLICKING TAG IN DETAIL OR THUMB VIEW
+
     $scope.clickTag = function(tag) {
-        $scope.view_state.render_path = 'thumbs';
         var existingTagSearch = tokenizeString($scope.query.has_tags);
         // if we're not already searching for this tags...
         if (existingTagSearch.indexOf(tag) === -1) {
@@ -197,6 +204,10 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             $scope.doSearch();
         }
     };
+
+
+    //================================================================================
+    // SWITCH INTO DETAIL VIEW
 
     $scope.clickImage = function(locator) {
         console.log('clicked image: ' + locator);
@@ -229,6 +240,10 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         //});
     }
 
+
+    //================================================================================
+    // DETAIL VIEW PAGINATION
+
     $scope.switchToImage = function(ii) {
         if (ii >= 0 && ii < $scope.search_results.full_count) {
             console.log('switching to image '+ii);
@@ -247,6 +262,23 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     $scope.prevImageButtonIsEnabled = function () {
         return $scope.detail.ii >= 1;
     };
+
+
+    //================================================================================
+    // MAIN
+
+    // fill in database_names on page load
+    console.log('getting database names...');
+    $http.get('/api/v1/db')
+        .success(function(data,status,headers,config) {
+            $scope.search_form.database_names = data['d']
+            console.log($scope.search_form.database_names)
+            console.log('    success. got database names: ' + $scope.search_form.database_names);
+        })
+        .error(function(data,status,headers,config) {
+            console.log('    error');
+        });
+
 
     // start the page off with an actual search
     $scope.doSearch();
