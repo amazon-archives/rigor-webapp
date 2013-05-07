@@ -6,6 +6,7 @@
 //.r-white {background: #ffffff;}
 
 .no-bottom-margin {margin-bottom: 0px;}
+.no-top-margin {margin-top: 0px;}
 
 //.thumbnail-height-fix {height:500px;}
 
@@ -13,6 +14,8 @@
 
 .rigor-sidebar-form-element {width:200px;}
 .rigor-sidebar-form-element2 {width:186px;}
+
+.allow-large-image {max-width: none;}
 
 body {
     //background: url('/static/img/cream_pixels.png');

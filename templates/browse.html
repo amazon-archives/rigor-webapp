@@ -57,10 +57,10 @@
 
             <!-- RESULT STATS & BATCH EDIT-->
             <div class="well well-small">
-                <h4> (( search_results.full_count )) Images </h4>
+                <h4 class="no-top-margin"> (( search_results.full_count )) Images </h4>
                 <p>&nbsp;</p>
                 <h4> Batch Edit:  </h4>
-                <ul class='unstyled'>
+                <ul class='unstyled no-bottom-margin'>
                     <li><a href=""> <i class="icon-edit"></i> Characters </a></li>
                     <li><a href=""> <i class="icon-edit"></i> Words </a></li>
                     <li><a href=""> <i class="icon-edit"></i> Lines </a></li>
@@ -119,7 +119,7 @@
                 </ul>
 
                 <div class="row">
-                    <div class="span4">
+                    <div class="span4 well">
                         <p>
                              locator: <strong>(( detail.image.locator ))</strong>
                         <br> date: <strong>(( detail.image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
@@ -131,13 +131,14 @@
                         </p>
                     </div>
                     <div class="span4 well">
+                        <h4 class="no-top-margin"> Annotations </h4>
                         <div ng-repeat="annotation in detail.annotations">
                             (( annotation.model ))
                         </div>
                     </div>
                 </div>
 
-                <img ng-src="(( detail.image.url ))">
+                <img class="img-polaroid allow-large-image" ng-src="(( detail.image.url ))">
 
 
             </div>
