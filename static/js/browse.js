@@ -129,7 +129,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     //================================================================================
     // DO SEARCH
 
-    $scope.doSearch = function() {
+    $scope.doSearch = function(callback) {
         console.log('getting images...');
 
         $scope.search_results.search_has_occurred = true;
@@ -156,6 +156,9 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 console.log('    success. got ' + $scope.search_results.images.length + ' images');
                 console.log('    full_count = ' + $scope.search_results.full_count);
                 console.log('    last_page = ' + $scope.search_results.last_page);
+                if (typeof callback !== 'undefined') {
+                    callback();
+                }
             })
             .error(function(data,status,headers,config) {
                 console.log('    error');
@@ -250,32 +253,41 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
             // have we gone out of our current page?
             // which direction?
+            var needToDoSearch = false;
             if (ii < $scope.search_results.images[0].ii) {
                 console.log('went below current page.  searching again');
                 $scope.query.page -= 1;
-                // do search in background but don't switch to thumbs view
-                $scope.doSearch();
+                needToDoSearch = true;
             }
             if (ii > $scope.search_results.images[$scope.search_results.images.length-1].ii) {
                 console.log('went past current page.  searching again');
                 $scope.query.page += 1;
-                // do search in background but don't switch to thumbs view
-                $scope.doSearch();
+                needToDoSearch = true;
             }
 
-            // TODO: this part below needs to wait until the search has completed
-
-            // find image
-            $scope.detail.image = undefined;
-            angular.forEach($scope.search_results.images, function(image,jj) {
-                console.log('looking for ii = ' + ii + '.  this one is ' + image.ii);
-                if (image.ii === ii) {
-                    $scope.detail.image = image;
-                    console.log('    bingo');
+            var findDetailImage = function() {
+                // find image
+                $scope.detail.image = undefined;
+                angular.forEach($scope.search_results.images, function(image,jj) {
+                    console.log('looking for ii = ' + ii + '.  this one is ' + image.ii);
+                    if (image.ii === ii) {
+                        $scope.detail.image = image;
+                        console.log('    bingo');
+                    }
+                });
+                if (typeof $scope.detail.image == 'undefined') {
+                    console.error('could not find image. ii = ' + ii);
                 }
-            });
-            if (typeof $scope.detail.image == 'undefined') {
-                console.error('could not find image. ii = ' + ii);
+            };
+
+            if (needToDoSearch) {
+                // do search in background but don't switch to thumbs view
+                // wait for search to complete
+                // then update detail.image
+                $scope.doSearch(findDetailImage);
+            } else {
+                // just update detail.image now
+                findDetailImage();
             }
 
         }
