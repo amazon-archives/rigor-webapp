@@ -83,7 +83,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     };
 
     $scope.clickSearchButton = function() {
-        $scope.view_state.render_path = 'thumbs';
+        $scope.switchToThumbView();
         $scope.query.page = 0;
         $scope.doSearch();
     };
@@ -122,8 +122,6 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         $scope.query.source = ANY;
         $scope.query.sensor = ANY;
 
-        // // update hash
-        // $location.path('/'+$scope.query.database_name+'/browse');
     });
 
 
@@ -198,7 +196,9 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
     $scope.clickTag = function(tag) {
         var existingTagSearch = tokenizeString($scope.query.has_tags);
-        $scope.view_state.render_path = 'thumbs';
+
+        $scope.switchToThumbView();
+
         // if we're not already searching for this tags...
         if (existingTagSearch.indexOf(tag) === -1) {
             // add the tag to the has_tags string
@@ -227,6 +227,10 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         if (typeof $scope.detail.image == 'undefined') {
             console.error('could not find image. ii = ' + ii);
         }
+
+        // update hash
+        $location.path('/'+$scope.detail.image.database_name+'/image/'+$scope.detail.image.locator);
+
         // load annotations
         console.log('loading annotations...');
         $http.get('/api/v1/db/'+$scope.detail.image.database_name+'/image/'+$scope.detail.image.locator+'/annotation')
@@ -319,6 +323,9 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
     $scope.switchToThumbView = function() {
         $scope.view_state.render_path = 'thumbs';
+        // update hash
+        $location.path('/'+$scope.query.database_name+'/search');
+        console.log('XXXXXXXXX');
     };
 
     $scope.nextImageButtonIsEnabled = function () {
