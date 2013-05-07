@@ -23,3 +23,5 @@ body {
     //background: url('/static/img/cream_dust.png');
 }
 
+.dotted {border: 1px dashed red;}
+

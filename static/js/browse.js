@@ -234,10 +234,38 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 $scope.detail.annotations = data['d']
                 console.log('    success.');
                 console.log($scope.detail.annotations)
+
+                drawAnnotations();
             })
             .error(function(data,status,headers,config) {
                 console.log('    error');
             });
+
+    };
+
+    var drawAnnotations = function() {
+        var canvas = document.getElementById('image_canvas');
+        console.log('drawing annotations ---------------------');
+        console.log(canvas);
+        var ctx = canvas.getContext('2d');
+        ctx.clearRect(0,0,$scope.detail.image.x_resolution, $scope.detail.image.y_resolution);
+        console.log($scope.detail.annotations);
+        angular.forEach($scope.detail.annotations, function(annotation,jj) {
+            console.log('    annotation ' + jj);
+            ctx.fillStyle = "#ff9900";
+            ctx.beginPath();
+            angular.forEach(annotation.boundary, function(point,kk) {
+                console.log('        point ' + point);
+                if (kk === 0) {
+                    ctx.moveTo(point[0],point[1]);
+                } else {
+                    ctx.lineTo(point[0],point[1]);
+                }
+            });
+            ctx.closePath();
+            ctx.fill();
+        });
+        console.log('-----------------------------------------');
     };
 
     $scope.switchToImage = function(ii) {
@@ -304,7 +332,9 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
 
     // start the page off with an actual search
-    $scope.doSearch();
+    $scope.doSearch(function () {
+        $scope.switchToImage(1);
+    });
 
 });
 
