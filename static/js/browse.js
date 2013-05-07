@@ -213,27 +213,23 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
 
     //================================================================================
-    // SWITCH INTO DETAIL VIEW
+    // POPULATING DETAIL VIEW
 
-    $scope.clickImage = function(locator) {
-        console.log('clicked image: ' + locator);
-        $scope.view_state.render_path = 'detail';
-
-        // try to grab the image details from the list of search results
+    var findDetailImageAndGetAnnotations = function(ii) {
+        // find image
         $scope.detail.image = undefined;
-        angular.forEach($scope.search_results.images, function(image,ii) {
-            if (image.locator === locator) {
+        angular.forEach($scope.search_results.images, function(image,jj) {
+            if (image.ii === ii) {
                 $scope.detail.image = image;
-                console.log('found image');
+                console.log('    found image');
             }
         });
-        if (typeof $scope.detail.image === 'undefined') {
-            console.error('could not find image');
+        if (typeof $scope.detail.image == 'undefined') {
+            console.error('could not find image. ii = ' + ii);
         }
-
         // load annotations
         console.log('loading annotations...');
-        $http.get('/api/v1/db/'+$scope.query.database_name+'/image/'+$scope.detail.image.locator+'/annotation')
+        $http.get('/api/v1/db/'+$scope.detail.image.database_name+'/image/'+$scope.detail.image.locator+'/annotation')
             .success(function(data,status,headers,config) {
                 $scope.detail.annotations = data['d']
                 console.log('    success.');
@@ -242,15 +238,12 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             .error(function(data,status,headers,config) {
                 console.log('    error');
             });
-    }
-
-
-    //================================================================================
-    // DETAIL VIEW PAGINATION
+    };
 
     $scope.switchToImage = function(ii) {
         if (ii >= 0 && ii < $scope.search_results.full_count) {
             console.log('switching to image '+ii);
+            $scope.view_state.render_path = 'detail';
             $scope.detail.annotations = [];
 
             // have we gone out of our current page?
@@ -267,40 +260,16 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 needToDoSearch = true;
             }
 
-            var findDetailImage = function() {
-                // find image
-                $scope.detail.image = undefined;
-                angular.forEach($scope.search_results.images, function(image,jj) {
-                    console.log('looking for ii = ' + ii + '.  this one is ' + image.ii);
-                    if (image.ii === ii) {
-                        $scope.detail.image = image;
-                        console.log('    bingo');
-                    }
-                });
-                if (typeof $scope.detail.image == 'undefined') {
-                    console.error('could not find image. ii = ' + ii);
-                }
-                // load annotations
-                console.log('loading annotations...');
-                $http.get('/api/v1/db/'+$scope.query.database_name+'/image/'+$scope.detail.image.locator+'/annotation')
-                    .success(function(data,status,headers,config) {
-                        $scope.detail.annotations = data['d']
-                        console.log('    success.');
-                        console.log($scope.detail.annotations)
-                    })
-                    .error(function(data,status,headers,config) {
-                        console.log('    error');
-                    });
-            };
-
             if (needToDoSearch) {
                 // do search in background but don't switch to thumbs view
                 // wait for search to complete
                 // then update detail.image
-                $scope.doSearch(findDetailImage);
+                $scope.doSearch(function() {
+                    findDetailImageAndGetAnnotations(ii);
+                });
             } else {
                 // just update detail.image now
-                findDetailImage();
+                findDetailImageAndGetAnnotations(ii);
             }
 
         }
