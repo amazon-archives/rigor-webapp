@@ -116,11 +116,12 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 console.log('    error');
             });
 
+        // reset source and sensor to legal values
+        $scope.query.source = ANY;
+        $scope.query.sensor = ANY;
+
         // // update hash
         // $location.path('/'+$scope.query.database_name+'/browse');
-        
-        // TODO: set query.source and query.sensor to legal values
-
     });
 
 
