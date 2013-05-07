@@ -25,3 +25,11 @@ body {
 
 .dotted {border: 1px dashed red;}
 
+.overlap {
+    position: absolute;
+}
+.polaroid-style-padding {
+    padding: 5px;
+}
+
+

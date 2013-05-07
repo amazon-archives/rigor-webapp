@@ -252,7 +252,9 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         console.log($scope.detail.annotations);
         angular.forEach($scope.detail.annotations, function(annotation,jj) {
             console.log('    annotation ' + jj);
-            ctx.fillStyle = "#ff9900";
+            ctx.fillStyle = "hsla(35,100%,45%,0.4)";
+            ctx.strokeStyle = "hsla(35,100%,66%,0.4)";
+            ctx.lineWidth = 2;
             ctx.beginPath();
             angular.forEach(annotation.boundary, function(point,kk) {
                 console.log('        point ' + point);
@@ -264,6 +266,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             });
             ctx.closePath();
             ctx.fill();
+            ctx.stroke();
         });
         console.log('-----------------------------------------');
     };
