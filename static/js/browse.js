@@ -334,6 +334,17 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         return $scope.detail.image.ii >= 1;
     };
 
+    $scope.getDetailTextAnnotations = function() {
+        // just return the text annotations, not the textclusters
+        var result = [];
+        angular.forEach($scope.detail.annotations, function(annotation,jj) {
+            if (annotation.domain === 'text') {
+                result.push(annotation);
+            }
+        });
+        return result;
+    };
+
 
     //================================================================================
     // MAIN

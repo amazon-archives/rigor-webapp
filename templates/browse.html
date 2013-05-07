@@ -132,9 +132,11 @@
                     </div>
                     <div class="span4 well">
                         <h4 class="no-top-margin"> Annotations </h4>
-                        <div ng-repeat="annotation in detail.annotations">
-                            (( annotation.model ))
-                        </div>
+                        <ul>
+                            <li ng-repeat="annotation in getDetailTextAnnotations()">
+                                (( annotation.model ))
+                            </li>
+                        </ul>
                     </div>
                 </div>
 
