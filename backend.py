@@ -223,21 +223,21 @@ def searchImages(queryDict):
     return (full_count,results)
 
 
-def getImage(database_name,id=None,uuid=None):
-    if id and uuid:
+def getImage(database_name,id=None,locator=None):
+    if id and locator:
         1/0
-    elif not id and not uuid:
+    elif not id and not locator:
         1/0
     elif id:
         sql = """
             SELECT * FROM image WHERE id = %s;
         """
         values = ( id, )
-    elif uuid:
+    elif locator:
         sql = """
             SELECT * FROM image WHERE locator = %s;
         """
-        values = ( uuid, )
+        values = ( locator, )
 
     conn = getDbConnection(database_name)
     rows = list(dbQueryDict(conn,sql,values))
@@ -256,7 +256,7 @@ def getImage(database_name,id=None,uuid=None):
 
 if __name__ == '__main__':
 #     print getImage(id=23731)
-    print getImage(database_name='rigor',uuid='01bb6939-ac7f-4dbf-84c9-8136eaa3f6ea');
+    print getImage(database_name='rigor',locator='01bb6939-ac7f-4dbf-84c9-8136eaa3f6ea');
 
 #     debugMain('testing searchImages')
 #     full_count, images = searchImages({
