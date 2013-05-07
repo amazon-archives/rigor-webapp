@@ -52,7 +52,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         database_name: 'rigor',      // TODO: this should be set to config.INITIAL_DB_NAME
         source: ANY,
         sensor: ANY,
-        has_tags: '',
+        has_tags: 'document',
         exclude_tags: '',
         max_count: 9,
         page: 0
@@ -65,6 +65,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     };
     $scope.detail = {
         image: undefined,             // json for the image being viewed
+        annotations: []               // json for the annotations
     };
 
 
@@ -229,18 +230,18 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         if (typeof $scope.detail.image === 'undefined') {
             console.error('could not find image');
         }
-        //    if ($scope.detail.image === null) {
-        //        console.log('image is not in search results.  fetching image details...');
-        //        $http.get('/api/v1/db/'+$scope.query.database_name+'/image/'+$scope.detail.locator)
-        //            .success(function(data,status,headers,config) {
-        //                $scope.detail.image = data;
-        //                console.log('    success. got image details: ' + $scope.search_form.database_names);
-        //            })
-        //            .error(function(data,status,headers,config) {
-        //                console.log('    error');
-        //            });
-        //    }
-        //});
+
+        // load annotations
+        console.log('loading annotations...');
+        $http.get('/api/v1/db/'+$scope.query.database_name+'/image/'+$scope.detail.image.locator+'/annotation')
+            .success(function(data,status,headers,config) {
+                $scope.detail.annotations = data['d']
+                console.log('    success.');
+                console.log($scope.detail.annotations)
+            })
+            .error(function(data,status,headers,config) {
+                console.log('    error');
+            });
     }
 
 
