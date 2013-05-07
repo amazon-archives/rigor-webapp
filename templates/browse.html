@@ -89,9 +89,7 @@
                                 <img ng-src="(( image.thumb_url ))" width=200>
                             </a>
                             <p>
-                                     ii: <strong>(( image.ii ))</strong>
-                                <br> id: <strong>(( image.id ))</strong>
-                                <br> date: <strong>(( image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
+                                     date: <strong>(( image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
                                 <br> sensor: <strong>(( image.sensor ))</strong>
                                 <br> source: <strong>(( image.source ))</strong>
                                 <br> <span ng-repeat="tag in image.tags">
@@ -121,9 +119,7 @@
                 </ul>
 
                 <p>
-                     ii: <strong>(( detail.image.ii ))</strong>
-                <br> id: <strong>(( detail.image.id ))</strong>
-                <br> locator: <strong>(( detail.image.locator ))</strong>
+                     locator: <strong>(( detail.image.locator ))</strong>
                 <br> date: <strong>(( detail.image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
                 <br> sensor: <strong>(( detail.image.sensor ))</strong>
                 <br> source: <strong>(( detail.image.source ))</strong>
