@@ -16,7 +16,7 @@
     <div class="row">
         <div class="span12">
 
-            <h2><a href="#/(( query.database_name ))/browse"> Rigor </a></h2>
+            <h2><a href="#" ng-click="switchToThumbView()"> Rigor </a></h2>
 
         </div>
     </div>
@@ -57,7 +57,7 @@
 
             <!-- RESULT STATS -->
             <div class="well well-small">
-                <h4> (( search_results.full_count )) Results &rarr; </h4>
+                <h4> (( search_results.full_count )) Results </h4>
                 <p>
                     Stats will go here
                 </p>
@@ -74,9 +74,70 @@
             </div>
         </div>
 
-        <div class="span9" ng-view>
+        <div class="span9" ng-switch="view_state.render_path">
 
-            <!-- THUMBS OR DETAIL VIEW HERE -->
+            <!-- THUMBNAIL VIEW -->
+            <div ng-switch-when="thumbs">
+                <ul class="pager">
+                    <li ng-class="{previous: true,  disabled: !prevButtonIsEnabled()}">
+                        <a href="#" ng-click="clickPrevButton()">&larr; Prev</a>
+                    </li>
+                    <b> Page (( query.page+1 )) of (( search_results.last_page + 1 )) </b>
+                    <li ng-class="{next: true,  disabled: !nextButtonIsEnabled()}">
+                        <a href="#" ng-click="clickNextButton()">Next &rarr;</a>
+                    </li>
+                </ul>
+
+                <ul class="thumbnails">
+                    <li class="span3 thumbnail-height-fix" ng-repeat="image in search_results.images">
+                        <div class="thumbnail">
+                            <a href="#" ng-click="clickImage(image.locator)">
+                                <img ng-src="(( image.thumb_url ))" width=200>
+                            </a>
+                            <p>
+                                     id: <strong>(( image.id ))</strong>
+                                <br> date: <strong>(( image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
+                                <br> sensor: <strong>(( image.sensor ))</strong>
+                                <br> source: <strong>(( image.source ))</strong>
+                                <br> <span ng-repeat="tag in image.tags">
+                                        <a href="#" ng-click="clickTag(tag)" class="label label-info">(( tag ))</a>
+                                     </span>
+                            </p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- DETAIL VIEW -->
+            <div ng-switch-when="detail">
+                <ul class="pager">
+                    <li class="previous">
+                        <a href="#" ng-click="switchToThumbView()">&larr; Back to thumbs</a>
+                    </li>
+                </ul>
+                <ul class="pager">
+                    <li ng-class="{previous: true,  disabled: !prevImageButtonIsEnabled()}">
+                        <a href="#" ng-click="switchToImage(detail.ii-1)">&larr; Prev</a>
+                    </li>
+                    <b> Image (( detail.ii+1 )) of (( search_results.full_count )) </b>
+                    <li ng-class="{next: true,  disabled: !nextImageButtonIsEnabled()}">
+                        <a href="#" ng-click="switchToImage(detail.ii+1)">Next &rarr;</a>
+                    </li>
+                </ul>
+
+                <p>
+                     id: <strong>(( detail.image.id ))</strong>
+                <br> locator: <strong>(( detail.image.locator ))</strong>
+                <br> date: <strong>(( detail.image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
+                <br> sensor: <strong>(( detail.image.sensor ))</strong>
+                <br> source: <strong>(( detail.image.source ))</strong>
+                <br> <span ng-repeat="tag in detail.image.tags">
+                        <a href="#" ng-click="clickTag(tag)" class="label label-info">(( tag ))</a>
+                     </span>
+                </p>
+
+                <img ng-src="(( detail.image.url ))">
+            </div>
 
         </div>
 

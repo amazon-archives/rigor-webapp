@@ -12,50 +12,6 @@ browseApp.config(function($interpolateProvider) {
 });
 
 
-browseApp.config(['$routeProvider',function($routeProvider) {
-    $routeProvider
-        .when('/:database_name/browse', {
-            templateUrl: 'static/partials/browse-thumbs.html',
-            controller: 'BrowseThumbController'
-        })
-        .when('/:database_name/detail/:locator', {
-            templateUrl: 'static/partials/browse-detail.html',
-            controller: 'BrowseDetailController'
-        })
-        .otherwise({redirectTo: '/rigor/browse'});
-}]);
-
-browseApp.controller('BrowseDetailController', function($scope, $http, $routeParams) {
-    $scope.which = 'BrowseDetail';
-    $scope.detail = {
-        locator: $routeParams.locator, // the locator for the image being viewed
-        image: null,
-    };
-
-    // try to grab the image details from the list of search results
-    angular.forEach($scope.search_results.images, function(image,ii) {
-        if (image.locator === $scope.detail.locator) {
-            $scope.detail.image = image;
-        }
-    });
-
-    if ($scope.detail.image === null) {
-        console.log('image is not in search results.  fetching image details...');
-        $http.get('/api/v1/db/'+$scope.query.database_name+'/image/'+$scope.detail.locator)
-            .success(function(data,status,headers,config) {
-                $scope.detail.image = data;
-                console.log('    success. got image details: ' + $scope.search_form.database_names);
-            })
-            .error(function(data,status,headers,config) {
-                console.log('    error');
-            });
-    }
-});
-
-browseApp.controller('BrowseThumbController', function($scope, $routeParams) {
-    $scope.which = 'BrowseThumb';
-});
-
 browseApp.controller('BrowseController', function($scope, $http, $routeParams, $location) {
 
     // ANY is a special value to represent that we should ignore this field
@@ -64,27 +20,32 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     // omit any items which are ANY or ''.
     var ANY = '(any)';
 
-    $scope.which = 'Browse';
-
-    $scope.search_form = {
-        database_names: ['rigor'],   // to be filled in by AJAX
-        sources: [],                 // to be filled in by AJAX
-        sensors: []                  // to be filled in by AJAX
+    $scope.view_state = {            // which view mode we're in.
+        render_path: 'thumbs'        // 'thumbs', 'detail'
     };
-    $scope.query = {               // query params for searching images
+    $scope.search_form = {           // choices for drop-downs.  to be filled in via AJAX
+        database_names: ['rigor'],
+        sources: [],
+        sensors: []
+    };
+    $scope.query = {                 // query params for searching images
         database_name: 'rigor',      // TODO: this should be set to config.INITIAL_DB_NAME
         source: ANY,
         sensor: ANY,
         has_tags: '',
         exclude_tags: '',
-        max_count: 3,
+        max_count: 9,
         page: 0
     };
     $scope.search_results = {
-        search_has_occurred: false,
+        search_has_occurred: false,   // has a search occurred yet?
         images: [],                   // results of the search
         full_count: 0,                // number of returned images (all pages)
         last_page: 0                  // number of pages
+    };
+    $scope.detail = {
+        image: undefined,             // json for the image being viewed
+        ii: undefined,                // we are viewing image # 203 out of the search results
     };
 
 
@@ -139,8 +100,8 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 console.log('    error');
             });
 
-        // update hash
-        $location.path('/'+$scope.query.database_name+'/browse');
+        // // update hash
+        // $location.path('/'+$scope.query.database_name+'/browse');
         
         // TODO: set query.source and query.sensor to legal values
 
@@ -166,6 +127,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         $scope.doSearch();
     };
     $scope.doSearch = function() {
+        $scope.view_state.render_path = 'thumbs';
         console.log('getting images...');
 
         $scope.search_results.search_has_occurred = true;
@@ -222,6 +184,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     };
 
     $scope.clickTag = function(tag) {
+        $scope.view_state.render_path = 'thumbs';
         var existingTagSearch = tokenizeString($scope.query.has_tags);
         // if we're not already searching for this tags...
         if (existingTagSearch.indexOf(tag) === -1) {
@@ -233,6 +196,56 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             }
             $scope.doSearch();
         }
+    };
+
+    $scope.clickImage = function(locator) {
+        console.log('clicked image: ' + locator);
+        $scope.view_state.render_path = 'detail';
+
+        // try to grab the image details from the list of search results
+        $scope.detail.image = undefined;
+        $scope.detail.ii = undefined;
+        angular.forEach($scope.search_results.images, function(image,ii) {
+            if (image.locator === locator) {
+                $scope.detail.image = image;
+                $scope.detail.ii = ii;
+                console.log('found image');
+            }
+        });
+        if (typeof $scope.detail.image === 'undefined') {
+            console.error('could not find image');
+        }
+        //    if ($scope.detail.image === null) {
+        //        console.log('image is not in search results.  fetching image details...');
+        //        $http.get('/api/v1/db/'+$scope.query.database_name+'/image/'+$scope.detail.locator)
+        //            .success(function(data,status,headers,config) {
+        //                $scope.detail.image = data;
+        //                console.log('    success. got image details: ' + $scope.search_form.database_names);
+        //            })
+        //            .error(function(data,status,headers,config) {
+        //                console.log('    error');
+        //            });
+        //    }
+        //});
+    }
+
+    $scope.switchToImage = function(ii) {
+        if (ii >= 0 && ii < $scope.search_results.full_count) {
+            console.log('switching to image '+ii);
+            $scope.detail.ii = ii;
+            $scope.detail.image = $scope.search_results.images[ii];
+        }
+    };
+
+    $scope.switchToThumbView = function() {
+        $scope.view_state.render_path = 'thumbs';
+    };
+
+    $scope.nextImageButtonIsEnabled = function () {
+        return $scope.detail.ii < $scope.search_results.full_count-1;
+    };
+    $scope.prevImageButtonIsEnabled = function () {
+        return $scope.detail.ii >= 1;
     };
 
     // start the page off with an actual search
