@@ -245,14 +245,10 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
     var drawAnnotations = function() {
         var canvas = document.getElementById('image_canvas');
-        console.log('drawing annotations ---------------------');
-        console.log(canvas);
         var ctx = canvas.getContext('2d');
         ctx.clearRect(0,0,$scope.detail.image.x_resolution, $scope.detail.image.y_resolution);
-        console.log($scope.detail.annotations);
         angular.forEach($scope.detail.annotations, function(annotation,jj) {
             if (annotation.domain === 'text') {
-                console.log('    annotation ' + jj + ': domain = ' + annotation.domain);
                 ctx.fillStyle = "hsla(35,100%,45%,0.4)";
                 ctx.strokeStyle = "hsla(35,100%,66%,0.4)";
                 ctx.lineWidth = 2;
@@ -271,7 +267,6 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         });
         angular.forEach($scope.detail.annotations, function(annotation,jj) {
             if (annotation.domain === 'textcluster') {
-                console.log('    annotation ' + jj + ': domain = ' + annotation.domain);
                 ctx.beginPath();
                 ctx.moveTo(annotation.boundary[0][0],annotation.boundary[0][1]);
                 ctx.lineTo(annotation.boundary[1][0],annotation.boundary[1][1]);
@@ -285,7 +280,6 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 ctx.stroke();
             }
         });
-        console.log('-----------------------------------------');
     };
 
     $scope.switchToImage = function(ii) {

@@ -302,6 +302,8 @@ def getImageAnnotations(database_name,locator):
     values = ( id, )
 
     rows = list(dbQueryDict(conn,sql,values))
+    # there are a few bad rows which have no boundary.  throw them away
+    rows = [r for r in rows if not (r['domain'] in ('text','textcluster') and r['boundary'] is None)]
     rows = [_annotationDictDbToApi(r) for r in rows]
 
     # sort by y coordinate
