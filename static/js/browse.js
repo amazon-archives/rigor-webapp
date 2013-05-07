@@ -65,7 +65,6 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     };
     $scope.detail = {
         image: undefined,             // json for the image being viewed
-        ii: undefined,                // we are viewing image # 203 out of the search results
     };
 
 
@@ -73,6 +72,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     // SEARCH FORM BUTTONS AND BEHAVIOR
 
     $scope.clickClearButton = function() {
+        $scope.view_state.render_path = 'thumbs';
         $scope.query.source = ANY;
         $scope.query.sensor = ANY;
         $scope.query.has_tags = '';
@@ -82,6 +82,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     };
 
     $scope.clickSearchButton = function() {
+        $scope.view_state.render_path = 'thumbs';
         $scope.query.page = 0;
         $scope.doSearch();
     };
@@ -129,7 +130,6 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     // DO SEARCH
 
     $scope.doSearch = function() {
-        $scope.view_state.render_path = 'thumbs';
         console.log('getting images...');
 
         $scope.search_results.search_has_occurred = true;
@@ -194,6 +194,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
     $scope.clickTag = function(tag) {
         var existingTagSearch = tokenizeString($scope.query.has_tags);
+        $scope.view_state.render_path = 'thumbs';
         // if we're not already searching for this tags...
         if (existingTagSearch.indexOf(tag) === -1) {
             // add the tag to the has_tags string
@@ -216,11 +217,9 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
         // try to grab the image details from the list of search results
         $scope.detail.image = undefined;
-        $scope.detail.ii = undefined;
         angular.forEach($scope.search_results.images, function(image,ii) {
             if (image.locator === locator) {
                 $scope.detail.image = image;
-                $scope.detail.ii = ii;
                 console.log('found image');
             }
         });
@@ -248,8 +247,37 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     $scope.switchToImage = function(ii) {
         if (ii >= 0 && ii < $scope.search_results.full_count) {
             console.log('switching to image '+ii);
-            $scope.detail.ii = ii;
-            $scope.detail.image = $scope.search_results.images[ii];
+
+            // have we gone out of our current page?
+            // which direction?
+            if (ii < $scope.search_results.images[0].ii) {
+                console.log('went below current page.  searching again');
+                $scope.query.page -= 1;
+                // do search in background but don't switch to thumbs view
+                $scope.doSearch();
+            }
+            if (ii > $scope.search_results.images[$scope.search_results.images.length-1].ii) {
+                console.log('went past current page.  searching again');
+                $scope.query.page += 1;
+                // do search in background but don't switch to thumbs view
+                $scope.doSearch();
+            }
+
+            // TODO: this part below needs to wait until the search has completed
+
+            // find image
+            $scope.detail.image = undefined;
+            angular.forEach($scope.search_results.images, function(image,jj) {
+                console.log('looking for ii = ' + ii + '.  this one is ' + image.ii);
+                if (image.ii === ii) {
+                    $scope.detail.image = image;
+                    console.log('    bingo');
+                }
+            });
+            if (typeof $scope.detail.image == 'undefined') {
+                console.error('could not find image. ii = ' + ii);
+            }
+
         }
     };
 
@@ -258,10 +286,10 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     };
 
     $scope.nextImageButtonIsEnabled = function () {
-        return $scope.detail.ii < $scope.search_results.full_count-1;
+        return $scope.detail.image.ii < $scope.search_results.full_count-1;
     };
     $scope.prevImageButtonIsEnabled = function () {
-        return $scope.detail.ii >= 1;
+        return $scope.detail.image.ii >= 1;
     };
 
 

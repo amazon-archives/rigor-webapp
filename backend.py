@@ -210,6 +210,7 @@ def searchImages(queryDict):
 
     conn = getDbConnection(queryDict['database_name'])
     results = list(dbQueryDict(conn,sql,values))
+
     # remove full_count
     if results:
         full_count = int(results[0]['full_count']) # do int() to convert it from a long int
@@ -217,9 +218,18 @@ def searchImages(queryDict):
             del r['full_count']
     else:
         full_count = 0
+
+    # add database_name
     for r in results:
         r['database_name'] = queryDict['database_name']
+
+    # add ii
+    for ii,r in enumerate(results):
+        r['ii'] = ii + queryDict['page'] * queryDict['max_count']
+
+    # fill in tags, add image urls
     results = [_imageDictDbToApi(conn,r) for r in results]
+
     return (full_count,results)
 
 

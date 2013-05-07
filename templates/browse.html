@@ -95,7 +95,8 @@
                                 <img ng-src="(( image.thumb_url ))" width=200>
                             </a>
                             <p>
-                                     id: <strong>(( image.id ))</strong>
+                                     ii: <strong>(( image.ii ))</strong>
+                                <br> id: <strong>(( image.id ))</strong>
                                 <br> date: <strong>(( image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
                                 <br> sensor: <strong>(( image.sensor ))</strong>
                                 <br> source: <strong>(( image.source ))</strong>
@@ -117,16 +118,17 @@
                 </ul>
                 <ul class="pager">
                     <li ng-class="{previous: true,  disabled: !prevImageButtonIsEnabled()}">
-                        <a href="#" ng-click="switchToImage(detail.ii-1)">&larr; Prev</a>
+                        <a href="#" ng-click="switchToImage(detail.image.ii-1)">&larr; Prev</a>
                     </li>
-                    <b> Image (( detail.ii+1 )) of (( search_results.full_count )) </b>
+                    <b> Image (( detail.image.ii+1 )) of (( search_results.full_count )) </b>
                     <li ng-class="{next: true,  disabled: !nextImageButtonIsEnabled()}">
-                        <a href="#" ng-click="switchToImage(detail.ii+1)">Next &rarr;</a>
+                        <a href="#" ng-click="switchToImage(detail.image.ii+1)">Next &rarr;</a>
                     </li>
                 </ul>
 
                 <p>
-                     id: <strong>(( detail.image.id ))</strong>
+                     ii: <strong>(( detail.image.ii ))</strong>
+                <br> id: <strong>(( detail.image.id ))</strong>
                 <br> locator: <strong>(( detail.image.locator ))</strong>
                 <br> date: <strong>(( detail.image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
                 <br> sensor: <strong>(( detail.image.sensor ))</strong>
