@@ -72,13 +72,13 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     // SEARCH FORM BUTTONS AND BEHAVIOR
 
     $scope.clickClearButton = function() {
-        $scope.view_state.render_path = 'thumbs';
+        //$scope.view_state.render_path = 'thumbs';
         $scope.query.source = ANY;
         $scope.query.sensor = ANY;
         $scope.query.has_tags = '';
         $scope.query.exclude_tags = '';
         $scope.query.page = 0;
-        $scope.doSearch();
+        //$scope.doSearch();
     };
 
     $scope.clickSearchButton = function() {
