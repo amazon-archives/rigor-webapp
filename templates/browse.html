@@ -16,7 +16,7 @@
     <div class="row">
         <div class="span12">
 
-            <h2><a href="#" ng-click="switchToThumbView()"> Rigor </a></h2>
+            <h2><a href="#" ng-click="switchToThumbView()" class="black-link"> Rigor </a></h2>
 
         </div>
     </div>
@@ -27,50 +27,44 @@
             <div class="well well-small">
                 <form ng-submit="clickSearchButton()" class="no-bottom-margin">
                     <label>database</label>
-                    <select class="span2" ng-model="query.database_name">
+                    <select class='rigor-sidebar-form-element' ng-model="query.database_name">
                         <option ng-repeat="dbname in search_form.database_names">(( dbname ))</option>
                     </select>
 
                     <label>source</label>
-                    <select class="span2" ng-model="query.source">
+                    <select class="rigor-sidebar-form-element" ng-model="query.source">
                         <option ng-repeat="source in search_form.sources">(( source ))</option>
                     </select>
 
                     <label>sensor</label>
-                    <select class="span2" ng-model="query.sensor">
+                    <select class="rigor-sidebar-form-element" ng-model="query.sensor">
                         <option ng-repeat="sensor in search_form.sensors">(( sensor ))</option>
                     </select>
 
                     <label>has_tags</label>
-                    <!--<input type="text" class="span2" ng-model="query.exclude_tags">-->
-                    <textarea rows=3 class="span2" ng-model="query.has_tags"></textarea>
+                    <!--<input type="text" class="rigor-sidebar-form-element" ng-model="query.exclude_tags">-->
+                    <textarea rows=3 class="rigor-sidebar-form-element2" ng-model="query.has_tags"></textarea>
 
                     <label>exclude_tags</label>
-                    <textarea rows=3 class="span2" ng-model="query.excludet_tags"></textarea>
+                    <textarea rows=3 class="rigor-sidebar-form-element2" ng-model="query.excludet_tags"></textarea>
 
                     <div class="btn-group">
                         <!--<a href="#" ng-click="clickClearButton()" class="btn">Clear</a>-->
-                        <button type="submit" class="btn btn-primary">Search</button>
+                        <button type="submit" class="btn btn-primary"> Search </button>
                     </div>
                 </form>
             </div>
 
-            <!-- RESULT STATS -->
+            <!-- RESULT STATS & BATCH EDIT-->
             <div class="well well-small">
-                <h4> (( search_results.full_count )) Results </h4>
-                <p>
-                    Stats will go here
-                </p>
-            </div>
-
-            <!-- BATCH EDIT -->
-            <div class="well well-small">
-                <h4> Batch Edit </h4>
-                <p>
-                    Lines <br>
-                    Words <br>
-                    Characters
-                </p>
+                <h4> (( search_results.full_count )) Images </h4>
+                <p>&nbsp;</p>
+                <h4> Batch Edit:  </h4>
+                <ul class='unstyled'>
+                    <li><a href=""> <i class="icon-edit"></i> Characters </a></li>
+                    <li><a href=""> <i class="icon-edit"></i> Words </a></li>
+                    <li><a href=""> <i class="icon-edit"></i> Lines </a></li>
+                </ul>
             </div>
         </div>
 
@@ -113,7 +107,7 @@
             <div ng-switch-when="detail">
                 <ul class="pager">
                     <li class="previous">
-                        <a href="#" ng-click="switchToThumbView()">&larr; Back to thumbs</a>
+                    <a href="#" ng-click="switchToThumbView()"><i class="icon-th-large"></i> Back to thumbs</a>
                     </li>
                 </ul>
                 <ul class="pager">
