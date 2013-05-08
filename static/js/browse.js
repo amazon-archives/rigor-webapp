@@ -279,11 +279,21 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 ctx.lineTo(annotation.boundary[1][0],annotation.boundary[1][1]);
 
                 ctx.strokeStyle = "hsla(260,80%,70%,0.5)";
-                ctx.lineWidth = 8;
+                ctx.lineWidth = 7;
+                ctx.closePath();
                 ctx.stroke();
 
                 ctx.strokeStyle = "hsla(260,80%,30%,0.3)";
                 ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(annotation.boundary[0][0],annotation.boundary[0][1], 5, 0,2*Math.PI);
+                ctx.closePath();
+
+                ctx.strokeStyle = "hsla(260,80%,30%,0.3)";
+                ctx.fillStyle = "hsla(260,80%,70%,0.3)";
+                ctx.fill();
                 ctx.stroke();
             }
         });

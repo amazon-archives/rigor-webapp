@@ -1,17 +1,21 @@
 
+
+
+better tag chooser
+
+keyboard shortcuts
+
     load images through flask
 
-
-
-use render paths instead of partials and nested scopes/controllers
-
+    use render paths instead of partials and nested scopes/controllers
 
 fix NULL situation
 
 routing
 
-image detail view
-    annotations
+    image detail view
+
+    show image annotations
 
 result stats
 
@@ -21,11 +25,8 @@ better pagination control
 
 top navbar
 
-
-
-
-on search, reset view to thumb view
-on loading detail view, fetch image if needed
+    on search, reset view to thumb view
+    on loading detail view, fetch image if needed
 
 
 
