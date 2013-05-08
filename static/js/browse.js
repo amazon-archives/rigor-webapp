@@ -80,7 +80,9 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         $scope.query.has_tags = '';
         $scope.query.exclude_tags = '';
         $scope.query.page = 0;
-        //$scope.doSearch();
+
+        $scope.switchToThumbView();
+        $scope.doSearch();
     };
 
     $scope.clickSearchButton = function() {
