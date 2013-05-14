@@ -1,11 +1,6 @@
 #!/usr/bin/env python
 
 from __future__ import division
-import os
-import random
-import time
-import json
-import pprint
 import testlib
 
 
@@ -27,7 +22,7 @@ def clean(schema, input, allowMissingKeys=False):
     result = {}
     for key in schema.keys():
         if key not in input: continue
-        if isinstance(schema[key],dict):
+        if isinstance(schema[key], dict):
             result[key] = clean(schema[key], input[key], allowMissingKeys)
         else:
             result[key] = input[key]
@@ -67,15 +62,15 @@ def validate(schema, input, allowExtraKeys=False, allowMissingKeys=False, stack=
 
         actualVal = input[key]
         actualType = type(actualVal)
-        if not isinstance(actualVal,expectedType):
+        if not isinstance(actualVal, expectedType):
             # allow an int where we expected a float
             if actualType == int and expectedType == float:
                 pass
             else:
-                raise WrongTypeException('in %s: key %s should be %s but is %s which is type %s'%('/'+'.'.join([str(s) for s in stack]),repr(key),expectedType,repr(actualVal),actualType))
+                raise WrongTypeException('in %s: key %s should be %s but is %s which is type %s'%('/'+'.'.join([str(s) for s in stack]), repr(key), expectedType, repr(actualVal), actualType))
 
         if isinstance(actualVal,dict):
-            validate(expectedVal,actualVal,allowExtraKeys=allowExtraKeys,allowMissingKeys=allowMissingKeys,stack=stack+[key])
+            validate(expectedVal, actualVal, allowExtraKeys=allowExtraKeys, allowMissingKeys=allowMissingKeys, stack=stack+[key])
 
     return True
 
@@ -85,12 +80,12 @@ def validate(schema, input, allowExtraKeys=False, allowMissingKeys=False, stack=
 if __name__ == '__main__':
     testlib.begin('jsonschema')
 
-    schemaWithTypes = dict(a=str,b=str)
-    schemaWithExamples = dict(a='a',b='b')
+    schemaWithTypes = dict(a=str, b=str)
+    schemaWithExamples = dict(a='a', b='b')
     inputMatch = dict(schemaWithExamples)
-    inputExtra = dict(a='a',b='b',c='c')
+    inputExtra = dict(a='a', b='b', c='c')
     inputMissing = dict(a='a')
-    inputBadType = dict(a='a',b=123)
+    inputBadType = dict(a='a', b=123)
 
     #--------------------------
     # CLEAN
@@ -128,11 +123,11 @@ if __name__ == '__main__':
     #--------------------------
     # EXTRA KEYS, MISSING KEYS IN NESTED DICTS
 
-    schemaWithTypes = dict(nest=dict(a=str,b=str))
-    schemaWithExamples = dict(nest=dict(a='a',b='b'))
-    schemaWithExamples = dict(nest=dict(a='a',b='b'))
+    schemaWithTypes = dict(nest=dict(a=str, b=str))
+    schemaWithExamples = dict(nest=dict(a='a', b='b'))
+    schemaWithExamples = dict(nest=dict(a='a', b='b'))
     inputMatch = dict(schemaWithExamples)
-    inputExtra = dict(nest=dict(a='a',b='b',c='c'))
+    inputExtra = dict(nest=dict(a='a', b='b', c='c'))
     inputMissing = dict(nest=dict(a='a'))
 
     # perfect match
