@@ -44,12 +44,12 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         render_path: 'thumbs'        // 'thumbs', 'detail'
     };
     $scope.search_form = {           // choices for drop-downs.  to be filled in via AJAX
-        database_names: ['rigor'],
+        database_names: ['blindsight'],
         sources: [],
         sensors: []
     };
     $scope.query = {                 // query params for searching images
-        database_name: 'rigor',      // TODO: this should be set to config.INITIAL_DB_NAME
+        database_name: 'blindsight',      // TODO: this should be set to config.INITIAL_DB_NAME
         source: ANY,
         sensor: ANY,
         //has_tags: 'sightpal angle testing bigangle',
