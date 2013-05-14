@@ -137,7 +137,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
         $scope.search_results.search_has_occurred = true;
 
-        //$location.search('source='+$scope.query.source);
+        $location.search($scope.query);
 
         // clean up query object for use as URL params
         var queryParams = angular.copy($scope.query);
@@ -234,6 +234,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
         // update hash
         $location.path('/'+$scope.detail.image.database_name+'/image/'+$scope.detail.image.locator);
+        $location.search('');
 
         // load annotations
         console.log('loading annotations...');
@@ -339,7 +340,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         $scope.view_state.render_path = 'thumbs';
         // update hash
         $location.path('/'+$scope.query.database_name+'/search');
-        console.log('XXXXXXXXX');
+        $location.search($scope.query);
     };
 
     $scope.nextImageButtonIsEnabled = function () {
@@ -378,6 +379,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
 
     // start the page off with an actual search
+    $scope.switchToThumbView();
     $scope.doSearch();
     /*function () {
         $scope.switchToImage(0);
