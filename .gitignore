@@ -11,3 +11,6 @@ local*
 
 config.py
 
+run-pylint
+pylint*.html
+
