@@ -6,9 +6,10 @@ var browseApp = angular.module('browseApp', []);
 
 // make Angular use (( )) for template markup instead of {{ }}
 // to avoid a conflict with Flask's templates which also use {{ }}
-browseApp.config(function($interpolateProvider) {
+browseApp.config(function($interpolateProvider,$locationProvider) {
     $interpolateProvider.startSymbol('((');
     $interpolateProvider.endSymbol('))');
+    $locationProvider.html5Mode(false);
 });
 
 
