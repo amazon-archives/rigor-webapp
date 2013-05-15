@@ -94,38 +94,38 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
     // when user changes database name, re-fetch sources and sensors
     $scope.$watch('query.database_name', function(newValue,oldValue) {
-        console.log('db name changed from ' + oldValue + ' to ' + newValue);
-
-        // fill in sources
-        console.log('getting sources...');
-        $http.get('/api/v1/db/'+$scope.query.database_name+'/source')
-            .success(function(data,status,headers,config) {
-                $scope.search_form.sources = data['d'];
-                $scope.search_form.sources.unshift(ANY);  // put on front of list
-                console.log($scope.search_form.sources);
-                console.log('    success. got sources: ' + $scope.search_form.sources);
-            })
-            .error(function(data,status,headers,config) {
-                console.log('    error');
-            });
-
-        // fill in sensors
-        console.log('getting sensors...');
-        $http.get('/api/v1/db/'+$scope.query.database_name+'/sensor')
-            .success(function(data,status,headers,config) {
-                $scope.search_form.sensors = data['d'];
-                $scope.search_form.sensors.unshift(ANY);  // put on front of list
-                console.log($scope.search_form.sensors);
-                console.log('    success. got sensors: ' + $scope.search_form.sensors);
-            })
-            .error(function(data,status,headers,config) {
-                console.log('    error');
-            });
+        console.log('[watch database_name] ----------------------------------------\\');
+        console.log('[watch database_name] db name changed from ' + oldValue + ' to ' + newValue + ', so re-fetching sensors and sources');
 
         // reset source and sensor to legal values
         $scope.query.source = ANY;
         $scope.query.sensor = ANY;
 
+        // fill in sources
+        console.log('[watch database_name] getting sources...');
+        $http.get('/api/v1/db/'+$scope.query.database_name+'/source')
+            .success(function(data,status,headers,config) {
+                $scope.search_form.sources = data['d'];
+                $scope.search_form.sources.unshift(ANY);  // put on front of list
+                console.log('...[watch database_name] got sources: ' + $scope.search_form.sources);
+            })
+            .error(function(data,status,headers,config) {
+                console.log('...[watch database_name] error getting sources');
+            });
+
+        // fill in sensors
+        console.log('[watch database_name] getting sensors...');
+        $http.get('/api/v1/db/'+$scope.query.database_name+'/sensor')
+            .success(function(data,status,headers,config) {
+                $scope.search_form.sensors = data['d'];
+                $scope.search_form.sensors.unshift(ANY);  // put on front of list
+                console.log('...[watch database_name] got sensors: ' + $scope.search_form.sensors);
+            })
+            .error(function(data,status,headers,config) {
+                console.log('...[watch database_name] error getting sensors');
+            });
+
+        console.log('[watch database_name] ----------------------------------------/');
     });
 
 
@@ -133,7 +133,8 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     // DO SEARCH
 
     $scope.doSearch = function(callback) {
-        console.log('getting images...');
+        console.log('[do_search] ----------------------------------------\\');
+        console.log('[do_search] getting images...');
 
         $scope.search_results.search_has_occurred = true;
 
@@ -149,6 +150,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 delete queryParams[key];
             }
         });
+        console.log('[do_search] query = ');
         console.log(queryParams);
 
         $http.get('/api/v1/search',{params: queryParams})
@@ -156,16 +158,19 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 $scope.search_results.images = data['images'];
                 $scope.search_results.full_count = data['full_count'];
                 $scope.search_results.last_page = Math.floor($scope.search_results.full_count / $scope.query.max_count);
-                console.log('    success. got ' + $scope.search_results.images.length + ' images');
-                console.log('    full_count = ' + $scope.search_results.full_count);
-                console.log('    last_page = ' + $scope.search_results.last_page);
+                console.log('...[do_search] success. got ' + $scope.search_results.images.length + ' images');
+                console.log('...[do_search] full_count = ' + $scope.search_results.full_count);
+                console.log('...[do_search] last_page = ' + $scope.search_results.last_page);
                 if (typeof callback !== 'undefined') {
+                    console.log('...[do_search] running callback:');
                     callback();
                 }
             })
             .error(function(data,status,headers,config) {
-                console.log('    error');
+                console.log('...[do_search] error');
             });
+
+        console.log('[do_search] ----------------------------------------/');
     };
 
 
@@ -220,16 +225,17 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     // POPULATING DETAIL VIEW
 
     var findDetailImageAndGetAnnotations = function(ii) {
+        console.log('[find detail and annotations] ----------------------------------------\\');
         // find image
         $scope.detail.image = undefined;
         angular.forEach($scope.search_results.images, function(image,jj) {
             if (image.ii === ii) {
                 $scope.detail.image = image;
-                console.log('    found image');
+                console.log('[find detail and annotations] found image');
             }
         });
         if (typeof $scope.detail.image == 'undefined') {
-            console.error('could not find image. ii = ' + ii);
+            console.error('[find detail and annotations] could not find image. ii = ' + ii);
         }
 
         // update hash
@@ -237,19 +243,20 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         $location.search('');
 
         // load annotations
-        console.log('loading annotations...');
+        console.log('[find detail and annotations] loading annotations...');
         $http.get('/api/v1/db/'+$scope.detail.image.database_name+'/image/'+$scope.detail.image.locator+'/annotation')
             .success(function(data,status,headers,config) {
                 $scope.detail.annotations = data['d']
-                console.log('    success.');
-                console.log($scope.detail.annotations)
+                console.log('...[find detail and annotations] success.  got ' + $scope.detail.annotations.length + ' annotations');
+                console.log('...[find detail and annotations] drawing annotations');
 
                 drawAnnotations();
             })
             .error(function(data,status,headers,config) {
-                console.log('    error');
+                console.log('...[find detail and annotations] error');
             });
 
+        console.log('[find detail and annotations] ----------------------------------------/');
     };
 
     var drawAnnotations = function() {
@@ -301,9 +308,54 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         });
     };
 
+    // this is a hack
+    $scope.switchToImageByLocator = function(database_name, locator) {
+        console.log('[switch to image by locator] ----------------------------------------\\');
+        console.log('[switch to image by locator] switching to image ' + locator);
+        $scope.view_state.render_path = 'detail';
+        $scope.detail.annotations = [];
+
+        $scope.detail.image = {
+            ii: 0,
+            page: 1,
+            max_count: 1
+        };
+
+        // load image data
+        console.log('[switch to image by locator] loading image data...');
+        $http.get('/api/v1/db/'+database_name+'/image/'+locator)
+            .success(function(data,status,headers,config) {
+                $scope.detail.image = data
+                console.log('...[switch to image by locator] success.  got image data.');
+
+                // load annotations
+                console.log('...[switch to image by locator] loading annotations...');
+                $http.get('/api/v1/db/'+database_name+'/image/'+locator+'/annotation')
+                    .success(function(data,status,headers,config) {
+                        $scope.detail.annotations = data['d']
+                        console.log('......[switch to image by locator] success.  got ' + $scope.detail.annotations.length + ' annotatations');
+                        console.log('......[switch to image by locator] drawing annotations');
+
+                        drawAnnotations();
+                    })
+                    .error(function(data,status,headers,config) {
+                        console.log('......[switch to image by locator] error');
+                    });
+
+            })
+            .error(function(data,status,headers,config) {
+                console.log('...[switch to image by locator] error');
+            });
+
+        console.log('[switch to image by locator] ----------------------------------------/');
+    };
+
+
+
     $scope.switchToImage = function(ii) {
         if (ii >= 0 && ii < $scope.search_results.full_count) {
-            console.log('switching to image '+ii);
+            console.log('[switch to image by ii] ----------------------------------------\\');
+            console.log('[switch to image by ii] switching to image '+ii);
             $scope.view_state.render_path = 'detail';
             $scope.detail.annotations = [];
 
@@ -311,12 +363,12 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             // which direction?
             var needToDoSearch = false;
             if (ii < $scope.search_results.images[0].ii) {
-                console.log('went below current page.  searching again');
+                console.log('[switch to image by ii] went below current page.  searching again');
                 $scope.query.page -= 1;
                 needToDoSearch = true;
             }
             if (ii > $scope.search_results.images[$scope.search_results.images.length-1].ii) {
-                console.log('went past current page.  searching again');
+                console.log('[switch to image by ii] went past current page.  searching again');
                 $scope.query.page += 1;
                 needToDoSearch = true;
             }
@@ -332,10 +384,17 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 // just update detail.image now
                 findDetailImageAndGetAnnotations(ii);
             }
+            console.log('[switch to image by ii] ----------------------------------------/');
 
         }
     };
 
+    $scope.switchToThumbViewAndDoFirstSearchIfNeeded = function() {
+        $scope.switchToThumbView();
+        if (!$scope.search_results.search_has_occurred) {
+            $scope.doSearch();
+        }
+    };
     $scope.switchToThumbView = function() {
         $scope.view_state.render_path = 'thumbs';
         // update hash
@@ -365,22 +424,44 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     //================================================================================
     // MAIN
 
+
+
+
     // fill in database_names on page load
-    console.log('getting database names...');
+    console.log('[main] getting database names...');
     $http.get('/api/v1/db')
         .success(function(data,status,headers,config) {
             $scope.search_form.database_names = data['d']
-            console.log($scope.search_form.database_names)
-            console.log('    success. got database names: ' + $scope.search_form.database_names);
+            console.log('...[main] success. got database names: ' + $scope.search_form.database_names);
         })
         .error(function(data,status,headers,config) {
-            console.log('    error');
+            console.log('...[main] error');
         });
 
 
-    // start the page off with an actual search
-    $scope.switchToThumbView();
-    $scope.doSearch();
+    // load data from URL
+    angular.forEach($location.search(), function(value,key) {
+        if (key === 'page' || key === 'max_count') {
+            value = parseInt(value,10);
+        }
+        $scope.query[key] = value;
+    });
+
+    var path = $location.path();
+    if (path.indexOf('/image/') !== -1) {
+        console.log('[main] choosing DETAIL VIEW because of URL');
+        // image detail view
+        var parts = path.split('/');
+        var locator = parts[parts.length-1];
+        var database_name = parts[1];
+        $scope.switchToImageByLocator(database_name, locator);
+    } else {
+        console.log('[main] choosing THUMB VIEW because of URL');
+        // start the page off with an actual search
+        $scope.switchToThumbView();
+        $scope.doSearch();
+    }
+
     /*function () {
         $scope.switchToImage(0);
     });*/
