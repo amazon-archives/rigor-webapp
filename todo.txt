@@ -5,17 +5,9 @@ better tag chooser
 
 keyboard shortcuts
 
-    load images through flask
-
-    use render paths instead of partials and nested scopes/controllers
-
 fix NULL situation
 
-routing
-
-    image detail view
-
-    show image annotations
+make images into real links so they can be opened in a new tab
 
 result stats
 
@@ -25,7 +17,20 @@ better pagination control
 
 top navbar
 
+    load images through flask
+
+    use render paths instead of partials and nested scopes/controllers
+
+    test with slow connection
+
+    routing
+
+    image detail view
+
+    show image annotations
+
     on search, reset view to thumb view
+
     on loading detail view, fetch image if needed
 
 

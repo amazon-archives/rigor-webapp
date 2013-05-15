@@ -54,7 +54,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         source: ANY,
         sensor: ANY,
         //has_tags: 'sightpal angle testing bigangle',
-        has_tags: 'document',
+        has_tags: '',
         exclude_tags: '',
         max_count: 18,
         page: 0
@@ -454,6 +454,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         var parts = path.split('/');
         var locator = parts[parts.length-1];
         var database_name = parts[1];
+        $scope.query.database_name = database_name;
         $scope.switchToImageByLocator(database_name, locator);
     } else {
         console.log('[main] choosing THUMB VIEW because of URL');

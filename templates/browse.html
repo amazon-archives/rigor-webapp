@@ -101,6 +101,16 @@
                         </div>
                     </li>
                 </ul>
+
+                <ul class="pager">
+                    <li ng-class="{previous: true,  disabled: !prevButtonIsEnabled()}">
+                        <a href="" ng-click="clickPrevButton()">&larr; Prev</a>
+                    </li>
+                    <b> Page (( query.page+1 )) of (( search_results.last_page + 1 )) </b>
+                    <li ng-class="{next: true,  disabled: !nextButtonIsEnabled()}">
+                        <a href="" ng-click="clickNextButton()">Next &rarr;</a>
+                    </li>
+                </ul>
             </div>
 
             <!-- DETAIL VIEW -->
