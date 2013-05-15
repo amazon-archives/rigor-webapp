@@ -44,7 +44,6 @@ def index():
 
 @app.route('/thumb/<locator>.<ext>',methods=['GET'])
 def getThumbFile(locator, ext):
-    simulateSlow()
     locator = locator.replace('-','').replace('/','').replace('..','')
     ext = ext.replace('/','').replace('..','')
     path = '/data/rigor/thumbnails/200x200/%s/%s/%s.%s' % (

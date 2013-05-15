@@ -8,5 +8,5 @@ DB_BLACKLIST = ['dave','postgres','template0','template1']
 # which database to default to on first pageload
 INITIAL_DB_NAME = 'blindsight'
 
-FAKE_SLOW_DELAY = 1
+FAKE_SLOW_DELAY = 0
 
