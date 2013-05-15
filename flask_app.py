@@ -2,6 +2,7 @@
 
 from __future__ import division
 import os
+import time
 
 from flask import Flask
 from flask import render_template
@@ -17,6 +18,7 @@ from flask import abort
 
 from utils import *
 import backend
+import config
 
 #--------------------------------------------------------------------------------
 # FLASK
@@ -30,13 +32,19 @@ app.config['SECRET_KEY'] = 'fq348fnylq84ylnqx48yq3xlg8nlqy348q'
 #--------------------------------------------------------------------------------
 # ROUTING
 
+def simulateSlow():
+    if config.FAKE_SLOW_DELAY > 0:
+        time.sleep(config.FAKE_SLOW_DELAY)
+
 
 @app.route('/')
 def index():
+    simulateSlow()
     return render_template('browse.html')
 
 @app.route('/thumb/<locator>.<ext>',methods=['GET'])
 def getThumbFile(locator, ext):
+    simulateSlow()
     locator = locator.replace('-','').replace('/','').replace('..','')
     ext = ext.replace('/','').replace('..','')
     path = '/data/rigor/thumbnails/200x200/%s/%s/%s.%s' % (
@@ -52,6 +60,7 @@ def getThumbFile(locator, ext):
 
 @app.route('/image/<locator>.<ext>',methods=['GET'])
 def getImageFile(locator, ext):
+    simulateSlow()
     locator = locator.replace('-','').replace('/','').replace('..','')
     ext = ext.replace('/','').replace('..','')
     path = '/data/rigor/images/%s/%s/%s.%s' % (
@@ -69,6 +78,7 @@ def getImageFile(locator, ext):
 # http://ea:5000/api/v1/search?a=1&database_name=rigor&has_tags=sign,sightpal&exclude_tags=hard&max_count=3
 @app.route('/api/v1/search', methods=['GET'])
 def searchImages():
+    simulateSlow()
     queryDict = {}
     keyWhitelist = 'database_name source sensor has_tags exclude_tags max_count page'.split()
     # TODO: throw error if certain keys are missing
@@ -96,12 +106,13 @@ def searchImages():
 # http://ea:5000/api/v1/db
 @app.route('/api/v1/db', methods=['GET'])
 def getDatabaseNames():
+    simulateSlow()
     return jsonify(d=backend.getDatabaseNames())
-
 
 # http://ea:5000/api/v1/db/rigor/image/23659
 @app.route('/api/v1/db/<database_name>/image/<locator>', methods=['GET'])
 def getImage(database_name, locator):
+    simulateSlow()
     result = backend.getImage(database_name=database_name, locator=locator)
     debugMain('getImage.  locator = %s' % locator)
     return jsonify(result)
@@ -109,6 +120,7 @@ def getImage(database_name, locator):
 # http://ea:5000/api/v1/db/rigor/image/afa567f9f55b4283a1ead5682637ed4e/annotation
 @app.route('/api/v1/db/<database_name>/image/<locator>/annotation', methods=['GET'])
 def getImageAnnotations(database_name, locator):
+    simulateSlow()
     result = backend.getImageAnnotations(database_name=database_name, locator=locator)
     debugMain('getImageAnnotations.  locator = %s' % locator)
     return jsonify(d=result)
@@ -116,12 +128,14 @@ def getImageAnnotations(database_name, locator):
 # http://ea:5000/api/v1/db/rigor/source
 @app.route('/api/v1/db/<database_name>/source', methods=['GET'])
 def getSources(database_name):
+    simulateSlow()
     return jsonify(d=backend.getSources(database_name))
 
 
 # http://ea:5000/api/v1/db/rigor/sensor
 @app.route('/api/v1/db/<database_name>/sensor', methods=['GET'])
 def getSensors(database_name):
+    simulateSlow()
     return jsonify(d=backend.getSensors(database_name))
 
 
