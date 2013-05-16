@@ -79,7 +79,7 @@ def getImageFile(locator, ext):
 def searchImages():
     simulateSlow()
     queryDict = {}
-    keyWhitelist = 'database_name source sensor has_tags exclude_tags max_count page'.split()
+    keyWhitelist = 'database_name has_tags exclude_tags max_count page'.split()
     # TODO: throw error if certain keys are missing
     for key, val in request.values.items():
         if key in keyWhitelist:
@@ -124,18 +124,11 @@ def getImageAnnotations(database_name, locator):
     debugMain('getImageAnnotations.  locator = %s' % locator)
     return jsonify(d=result)
 
-# http://ea:5000/api/v1/db/rigor/source
-@app.route('/api/v1/db/<database_name>/source', methods=['GET'])
-def getSources(database_name):
+# http://ea:5000/api/v1/db/rigor/tag
+@app.route('/api/v1/db/<database_name>/tag', methods=['GET'])
+def getTags(database_name):
     simulateSlow()
-    return jsonify(d=backend.getSources(database_name))
-
-
-# http://ea:5000/api/v1/db/rigor/sensor
-@app.route('/api/v1/db/<database_name>/sensor', methods=['GET'])
-def getSensors(database_name):
-    simulateSlow()
-    return jsonify(d=backend.getSensors(database_name))
+    return jsonify(d=backend.getTags(database_name))
 
 
 #--------------------------------------------------------------------------------

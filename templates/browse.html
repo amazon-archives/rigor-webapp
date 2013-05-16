@@ -31,14 +31,9 @@
                         <option ng-repeat="dbname in search_form.database_names">(( dbname ))</option>
                     </select>
 
-                    <label>source</label>
-                    <select class="rigor-sidebar-form-element" ng-model="query.source">
-                        <option ng-repeat="source in search_form.sources">(( source ))</option>
-                    </select>
-
-                    <label>sensor</label>
-                    <select class="rigor-sidebar-form-element" ng-model="query.sensor">
-                        <option ng-repeat="sensor in search_form.sensors">(( sensor ))</option>
+                    <label>list of tags (read-only)</label>
+                    <select class="rigor-sidebar-form-element">
+                        <option ng-repeat="tag in search_form.tags">(( tag ))</option>
                     </select>
 
                     <label>has_tags</label>
@@ -90,10 +85,8 @@
                             </a>
                             <p>
                                      date: <strong>(( image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
-                                <br> sensor: <strong>(( image.sensor ))</strong>
-                                <br> source: <strong>(( image.source ))</strong>
                             </p>
-                            <div style="height:44px">
+                            <div style="height:80px">
                                 <span ng-repeat="tag in image.tags">
                                         <a href="" ng-click="clickTag(tag)" class="label label-info">(( tag ))</a>
                                      </span>
@@ -135,8 +128,6 @@
                         <p>
                              locator: <strong>(( detail.image.locator ))</strong>
                         <br> date: <strong>(( detail.image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
-                        <br> sensor: <strong>(( detail.image.sensor ))</strong>
-                        <br> source: <strong>(( detail.image.source ))</strong>
                         <br> <span ng-repeat="tag in detail.image.tags">
                                 <a href="" ng-click="clickTag(tag)" class="label label-info">(( tag ))</a>
                              </span>

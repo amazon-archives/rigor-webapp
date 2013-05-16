@@ -46,13 +46,10 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     };
     $scope.search_form = {           // choices for drop-downs.  to be filled in via AJAX
         database_names: ['blindsight'],
-        sources: [],
-        sensors: []
+        tags: []
     };
     $scope.query = {                 // query params for searching images
         database_name: 'blindsight',      // TODO: this should be set to config.INITIAL_DB_NAME
-        source: ANY,
-        sensor: ANY,
         //has_tags: 'sightpal angle testing bigangle',
         has_tags: '',
         exclude_tags: '',
@@ -75,9 +72,6 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     // SEARCH FORM BUTTONS AND BEHAVIOR
 
     $scope.clickClearButton = function() {
-        //$scope.view_state.render_path = 'thumbs';
-        $scope.query.source = ANY;
-        $scope.query.sensor = ANY;
         $scope.query.has_tags = '';
         $scope.query.exclude_tags = '';
         $scope.query.page = 0;
@@ -92,37 +86,22 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         $scope.doSearch();
     };
 
-    // when user changes database name, re-fetch sources and sensors
+    // when user changes database name, re-fetch tags
     $scope.$watch('query.database_name', function(newValue,oldValue) {
         console.log('[watch database_name] ----------------------------------------\\');
-        console.log('[watch database_name] db name changed from ' + oldValue + ' to ' + newValue + ', so re-fetching sensors and sources');
+        console.log('[watch database_name] db name changed from ' + oldValue + ' to ' + newValue + ', so re-fetching tags');
 
-        // reset source and sensor to legal values
-        $scope.query.source = ANY;
-        $scope.query.sensor = ANY;
+        $scope.search_form.tags = [];
 
-        // fill in sources
-        console.log('[watch database_name] getting sources...');
-        $http.get('/api/v1/db/'+$scope.query.database_name+'/source')
+        // fill in tags
+        console.log('[watch database_name] getting tags...');
+        $http.get('/api/v1/db/'+$scope.query.database_name+'/tag')
             .success(function(data,status,headers,config) {
-                $scope.search_form.sources = data['d'];
-                $scope.search_form.sources.unshift(ANY);  // put on front of list
-                console.log('...[watch database_name] got sources: ' + $scope.search_form.sources);
+                $scope.search_form.tags = data['d'];
+                console.log('...[watch database_name] got tags: ' + $scope.search_form.tags);
             })
             .error(function(data,status,headers,config) {
-                console.log('...[watch database_name] error getting sources');
-            });
-
-        // fill in sensors
-        console.log('[watch database_name] getting sensors...');
-        $http.get('/api/v1/db/'+$scope.query.database_name+'/sensor')
-            .success(function(data,status,headers,config) {
-                $scope.search_form.sensors = data['d'];
-                $scope.search_form.sensors.unshift(ANY);  // put on front of list
-                console.log('...[watch database_name] got sensors: ' + $scope.search_form.sensors);
-            })
-            .error(function(data,status,headers,config) {
-                console.log('...[watch database_name] error getting sensors');
+                console.log('...[watch database_name] error getting tags');
             });
 
         console.log('[watch database_name] ----------------------------------------/');
@@ -264,7 +243,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         var ctx = canvas.getContext('2d');
         ctx.clearRect(0,0,$scope.detail.image.x_resolution, $scope.detail.image.y_resolution);
         angular.forEach($scope.detail.annotations, function(annotation,jj) {
-            if (annotation.domain === 'text') {
+            if (annotation.domain === 'text:line') {
                 ctx.fillStyle = "hsla(35,100%,45%,0.4)";
                 ctx.strokeStyle = "hsla(35,100%,66%,0.4)";
                 ctx.lineWidth = 2;
@@ -282,7 +261,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             }
         });
         angular.forEach($scope.detail.annotations, function(annotation,jj) {
-            if (annotation.domain === 'textcluster') {
+            if (annotation.domain === 'text:lineorder') {
                 ctx.beginPath();
                 ctx.moveTo(annotation.boundary[0][0],annotation.boundary[0][1]);
                 ctx.lineTo(annotation.boundary[1][0],annotation.boundary[1][1]);
@@ -413,7 +392,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         // just return the text annotations, not the textclusters
         var result = [];
         angular.forEach($scope.detail.annotations, function(annotation,jj) {
-            if (annotation.domain === 'text') {
+            if (annotation.domain === 'text:line') {
                 result.push(annotation);
             }
         });

@@ -108,7 +108,7 @@ def _annotationDictDbToApi(d):
 
     # parse boundary values which are strings like "((1,2),(3,4),(5,6),(7,8))"
     # convert them to json lists: [[1,2],[3,4] ... ]
-    if d2['domain'] in ('text','textcluster'):
+    if d2['domain'] in ('text:line','text:lineorder'):
         d2['boundary'] = json.loads(d2['boundary'].replace('(','[').replace(')',']'))
 
     return d2
@@ -121,29 +121,11 @@ def getDatabaseNames():
     return [row['datname'] for row in rows if row['datname'] not in config.DB_BLACKLIST]
 
 
-# TODO: better handling of None / NULL here
-def getSources(database_name):
-    sql = """ SELECT DISTINCT source FROM image ORDER BY source """
+def getTags(database_name):
+    sql = """ SELECT DISTINCT name FROM tag ORDER BY name """
     conn = getDbConnection(database_name)
     rows = list(dbQueryDict(conn, sql))
-    rows = [row['source'] for row in rows]
-    # convert None to ''
-    if None in rows:
-        rows.remove(None)
-#         if not '' in rows:
-#             rows = [''] + rows
-    return rows
-
-def getSensors(database_name):
-    sql = """ SELECT DISTINCT sensor FROM image ORDER BY sensor """
-    conn = getDbConnection(database_name)
-    rows = list(dbQueryDict(conn, sql))
-    rows = [row['sensor'] for row in rows]
-    # convert None to ''
-    if None in rows:
-        rows.remove(None)
-#         if not '' in rows:
-#             rows = [''] + rows
+    rows = [row['name'] for row in rows]
     return rows
 
 
@@ -156,8 +138,6 @@ def searchImages(queryDict):
             has_tags: ['hello', 'there'],
             exclude_tags: ['iphone'],
             confidence_range: [1,4],    # TODO
-            sensor: 'iphone',
-            source: 'kevin',
             annotations: {              # TODO
                 'character': {'geo': true},
                 'word': {'text': false},
@@ -172,8 +152,6 @@ def searchImages(queryDict):
         database_name = str,
         has_tags = [str],
         exclude_tags = [str],
-        sensor = str,
-        source = str,
         max_count = int,
         page = int
     )
@@ -182,14 +160,6 @@ def searchImages(queryDict):
     sql = """SELECT *, COUNT(*) OVER() as full_count FROM image"""
     clauses = []
     values = []
-
-    if 'sensor' in queryDict:
-        clauses.append("""sensor = %s""")
-        values.append(queryDict['sensor'])
-
-    if 'source' in queryDict:
-        clauses.append("""source = %s""")
-        values.append(queryDict['source'])
 
     for tag in queryDict.get('has_tags', []):
         clauses.append(
@@ -298,21 +268,21 @@ def getImageAnnotations(database_name, locator):
     sql = """
         SELECT * FROM annotation
         WHERE image_id = %s
-        AND (domain = 'text'
-        OR domain = 'textcluster')
+        AND (domain = 'text:line'
+        OR domain = 'text:lineorder')
         ORDER BY id;
     """
     # TODO: add textcluster, blur, money domains
     values = ( id, )
 
     rows = list(dbQueryDict(conn, sql, values))
-    # there are a few bad rows which have no boundary.  throw them away
-    rows = [r for r in rows if not (r['domain'] in ('text','textcluster') and r['boundary'] is None)]
+    # remove rows with null boundaries
+    rows = [r for r in rows if not (r['domain'] in ('text:line','text:lineorder') and r['boundary'] is None)]
     rows = [_annotationDictDbToApi(r) for r in rows]
 
     # sort by y coordinate
     def sortKey(r):
-        if r['domain'] in ('text', 'textcluster'):
+        if r['domain'] in ('text:line', 'text:lineorder'):
             return ('a', r['boundary'][0][1])
         return ('b', r['stamp'])
     rows.sort(key = sortKey)
@@ -332,13 +302,13 @@ if __name__ == '__main__':
 #     print yellow(pprint.pformat(getImage(database_name='rigor',locator='afa567f9-f55b-4283-a1ea-d5682637ed4e')))
 #     print cyan(pprint.pformat(getImageAnnotations(database_name='rigor',locator='afa567f9-f55b-4283-a1ea-d5682637ed4e')))
 
-    print yellow(pprint.pformat(getImage(database_name='rigor', locator='0571f3fe-cb88-4818-b213-36f08b48f132')))
-    print cyan(pprint.pformat(getImageAnnotations(database_name='rigor', locator='0571f3fe-cb88-4818-b213-36f08b48f132')))
+#     print yellow(pprint.pformat(getImage(database_name='rigor', locator='0571f3fe-cb88-4818-b213-36f08b48f132')))
+#     print cyan(pprint.pformat(getImageAnnotations(database_name='rigor', locator='0571f3fe-cb88-4818-b213-36f08b48f132')))
+
+    print getTags('blindsight')
 
 #     debugMain('testing searchImages')
 #     full_count, images = searchImages({
-#         #         'sensor': 'HTC Nexus One',
-#         #         'source': 'Guangyu',
 #         'database_name': 'rigor',
 #         'has_tags': ['money'],
 #         'exclude_tags': ['testdata'],
@@ -353,13 +323,6 @@ if __name__ == '__main__':
 #     for db in getDatabaseNames():
 #         debugDetail(db)
 # 
-#     debugMain('sources:')
-#     for source in getSources('rigor'):
-#         debugDetail(source)
-# 
-#     debugMain('sensors:')
-#     for sensor in getSensors('rigor'):
-#         debugDetail(sensor)
 
 
 
