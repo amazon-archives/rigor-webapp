@@ -24,22 +24,22 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     // omit any items which are ANY or ''.
     var ANY = '(any)';
 
-    var FILLED_ANNOTATIONS = ['text:char','text:word','text:line'];
+    var FILLED_ANNOTATIONS = ['text:line','text:word','text:char']; // in the order we should draw them
     var OPEN_ANNOTATIONS = ['text:lineorder'];
     var ANNOTATION_COLORS = {
         'text:char': {
-            fillStyle: "hsla(90,100%,45%,0.4)",
-            strokeStyle: "hsla(90,100%,66%,0.4)",
+            fillStyle: "hsla(230,100%,45%,0.25)",
+            strokeStyle: "hsla(230,100%,66%,0.8)",
             lineWidth: 2
         },
         'text:word': {
-            fillStyle: "hsla(60,100%,45%,0.4)",
-            strokeStyle: "hsla(60,100%,66%,0.4)",
+            fillStyle: "hsla(140,70%,40%,0.25)",
+            strokeStyle: "hsla(140,70%,50%,0.8)",
             lineWidth: 2
         },
         'text:line': {
-            fillStyle: "hsla(35,100%,45%,0.4)",
-            strokeStyle: "hsla(35,100%,66%,0.4)",
+            fillStyle: "hsla(35,100%,45%,0.25)",
+            strokeStyle: "hsla(35,100%,66%,0.8)",
             lineWidth: 2
         },
         'text:lineorder': {

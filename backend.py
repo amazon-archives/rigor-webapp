@@ -18,6 +18,20 @@ import jsonschema
 class BackendError(Exception): pass   # generic error.  TODO: refine this
 
 #--------------------------------------------------------------------------------
+# CONFIG
+
+# which domains do we care about?
+# only these will be returned via the API
+ANNOTATION_DOMAINS = """
+
+    text:char
+    text:word
+    text:line
+    text:lineorder
+
+""".strip().split()
+
+#--------------------------------------------------------------------------------
 # DB HELPERS
 
 def getDbConnection(database_name):
@@ -108,7 +122,7 @@ def _annotationDictDbToApi(d):
 
     # parse boundary values which are strings like "((1,2),(3,4),(5,6),(7,8))"
     # convert them to json lists: [[1,2],[3,4] ... ]
-    if d2['domain'] in ('text:line','text:lineorder'):
+    if d2['domain'] in ANNOTATION_DOMAINS:
         d2['boundary'] = json.loads(d2['boundary'].replace('(','[').replace(')',']'))
 
     return d2
@@ -268,21 +282,22 @@ def getImageAnnotations(database_name, locator):
     sql = """
         SELECT * FROM annotation
         WHERE image_id = %s
-        AND (domain = 'text:line'
-        OR domain = 'text:lineorder')
         ORDER BY id;
     """
     # TODO: add textcluster, blur, money domains
     values = ( id, )
 
     rows = list(dbQueryDict(conn, sql, values))
+    # only keep the domains we care about
+    rows = [r for r in rows if r['domain'] in ANNOTATION_DOMAINS]
     # remove rows with null boundaries
-    rows = [r for r in rows if not (r['domain'] in ('text:line','text:lineorder') and r['boundary'] is None)]
+    rows = [r for r in rows if r['boundary'] is not None]
+
     rows = [_annotationDictDbToApi(r) for r in rows]
 
     # sort by y coordinate
     def sortKey(r):
-        if r['domain'] in ('text:line', 'text:lineorder'):
+        if isinstance(r['boundary'],list):
             return ('a', r['boundary'][0][1])
         return ('b', r['stamp'])
     rows.sort(key = sortKey)
