@@ -24,6 +24,32 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     // omit any items which are ANY or ''.
     var ANY = '(any)';
 
+    var FILLED_ANNOTATIONS = ['text:char','text:word','text:line'];
+    var OPEN_ANNOTATIONS = ['text:lineorder'];
+    var ANNOTATION_COLORS = {
+        'text:char': {
+            fillStyle: "hsla(90,100%,45%,0.4)",
+            strokeStyle: "hsla(90,100%,66%,0.4)",
+            lineWidth: 2
+        },
+        'text:word': {
+            fillStyle: "hsla(60,100%,45%,0.4)",
+            strokeStyle: "hsla(60,100%,66%,0.4)",
+            lineWidth: 2
+        },
+        'text:line': {
+            fillStyle: "hsla(35,100%,45%,0.4)",
+            strokeStyle: "hsla(35,100%,66%,0.4)",
+            lineWidth: 2
+        },
+        'text:lineorder': {
+            thickStrokeStyle: "hsla(260,80%,70%,0.5)",
+            thickLineWidth: 7,
+            thinStrokeStyle: "hsla(260,80%,30%,0.3)",
+            thinLineWidth: 2
+        }
+    };
+
     var tokenizeString = function(s) {
         // given a string like "   tag1 tag2 \n   tag3 "
         // return ['tag1','tag2','tag3']
@@ -242,49 +268,60 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         var canvas = document.getElementById('image_canvas');
         var ctx = canvas.getContext('2d');
         ctx.clearRect(0,0,$scope.detail.image.x_resolution, $scope.detail.image.y_resolution);
-        angular.forEach($scope.detail.annotations, function(annotation,jj) {
-            if (annotation.domain === 'text:line') {
-                ctx.fillStyle = "hsla(35,100%,45%,0.4)";
-                ctx.strokeStyle = "hsla(35,100%,66%,0.4)";
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                angular.forEach(annotation.boundary, function(point,kk) {
-                    if (kk === 0) {
-                        ctx.moveTo(point[0],point[1]);
-                    } else {
-                        ctx.lineTo(point[0],point[1]);
-                    }
-                });
-                ctx.closePath();
-                ctx.fill();
-                ctx.stroke();
-            }
+
+        angular.forEach(FILLED_ANNOTATIONS, function(thisDomain,kk) {
+            // set drawing style
+            ctx.fillStyle = ANNOTATION_COLORS[thisDomain].fillStyle;
+            ctx.strokeStyle = ANNOTATION_COLORS[thisDomain].strokeStyle;
+            ctx.lineWidth = ANNOTATION_COLORS[thisDomain].lineWidth;
+            
+            // find and draw thisDomain annotations
+            angular.forEach($scope.detail.annotations, function(annotation,jj) {
+                if (annotation.domain === thisDomain) {
+                    ctx.beginPath();
+                    angular.forEach(annotation.boundary, function(point,kk) {
+                        if (kk === 0) {
+                            ctx.moveTo(point[0],point[1]);
+                        } else {
+                            ctx.lineTo(point[0],point[1]);
+                        }
+                    });
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                }
+            });
         });
-        angular.forEach($scope.detail.annotations, function(annotation,jj) {
-            if (annotation.domain === 'text:lineorder') {
-                ctx.beginPath();
-                ctx.moveTo(annotation.boundary[0][0],annotation.boundary[0][1]);
-                ctx.lineTo(annotation.boundary[1][0],annotation.boundary[1][1]);
 
-                ctx.strokeStyle = "hsla(260,80%,70%,0.5)";
-                ctx.lineWidth = 7;
-                ctx.closePath();
-                ctx.stroke();
+        angular.forEach(OPEN_ANNOTATIONS, function(thisDomain,kk) {
+            // find and draw thisDomain annotations
+            angular.forEach($scope.detail.annotations, function(annotation,jj) {
+                if (annotation.domain === thisDomain) {
+                    ctx.beginPath();
+                    ctx.moveTo(annotation.boundary[0][0],annotation.boundary[0][1]);
+                    ctx.lineTo(annotation.boundary[1][0],annotation.boundary[1][1]);
 
-                ctx.strokeStyle = "hsla(260,80%,30%,0.3)";
-                ctx.lineWidth = 2;
-                ctx.stroke();
+                    ctx.strokeStyle = ANNOTATION_COLORS[thisDomain].thickStrokeStyle;
+                    ctx.lineWidth = ANNOTATION_COLORS[thisDomain].thickLineWidth;
+                    ctx.closePath();
+                    ctx.stroke();
 
-                ctx.beginPath();
-                ctx.arc(annotation.boundary[0][0],annotation.boundary[0][1], 5, 0,2*Math.PI);
-                ctx.closePath();
+                    ctx.strokeStyle = ANNOTATION_COLORS[thisDomain].thinStrokeStyle;
+                    ctx.lineWidth = ANNOTATION_COLORS[thisDomain].thinLineWidth;
+                    ctx.stroke();
 
-                ctx.strokeStyle = "hsla(260,80%,30%,0.3)";
-                ctx.fillStyle = "hsla(260,80%,70%,0.3)";
-                ctx.fill();
-                ctx.stroke();
-            }
+                    ctx.beginPath();
+                    ctx.arc(annotation.boundary[0][0],annotation.boundary[0][1], 5, 0,2*Math.PI);
+                    ctx.closePath();
+
+                    ctx.strokeStyle = ANNOTATION_COLORS[thisDomain].thinStrokeStyle;
+                    ctx.fillStyle = ANNOTATION_COLORS[thisDomain].thickStrokeStyle;
+                    ctx.fill();
+                    ctx.stroke();
+                }
+            });
         });
+
     };
 
     // this is a hack
