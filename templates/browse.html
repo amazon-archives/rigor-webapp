@@ -127,6 +127,7 @@
                     <div class="span4 well">
                         <p>
                              locator: <strong>(( detail.image.locator ))</strong>
+                        <br> id: <strong>(( detail.image.id ))</strong>
                         <br> date: <strong>(( detail.image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
                         <br> <span ng-repeat="tag in detail.image.tags">
                                 <a href="" ng-click="clickTag(tag)" class="label label-info">(( tag ))</a>
