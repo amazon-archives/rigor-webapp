@@ -84,7 +84,8 @@
                                 <img ng-src="(( image.thumb_url ))" width=200>
                             </a>
                             <p>
-                                     date: <strong>(( image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
+                                <strong>(( image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
+                                / id: (( image.id ))
                             </p>
                             <div style="height:80px">
                                 <span ng-repeat="tag in image.tags">
@@ -126,9 +127,8 @@
                 <div class="row">
                     <div class="span4 well">
                         <p>
-                             locator: <strong>(( detail.image.locator ))</strong>
+                             date: <strong>(( detail.image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
                         <br> id: <strong>(( detail.image.id ))</strong>
-                        <br> date: <strong>(( detail.image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
                         <br> <span ng-repeat="tag in detail.image.tags">
                                 <a href="" ng-click="clickTag(tag)" class="label label-info">(( tag ))</a>
                              </span>
