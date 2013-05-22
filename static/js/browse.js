@@ -26,23 +26,31 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
     var FILLED_ANNOTATIONS = ['text:line','text:word','text:char']; // in the order we should draw them
     var OPEN_ANNOTATIONS = ['text:lineorder'];
+    var ANNOTATION_TEXT_FONT_SIZE = 16;
+    var ANNOTATION_TEXT_BACKGROUND_STYLE = 'hsla(0,0%,100%,0.8)';
     var ANNOTATION_COLORS = {
         'text:char': {
             fillStyle: "hsla(200,100%,45%,0.2)",
             strokeStyle: "hsla(200,100%,70%,0.8)",
+            textStyle: "hsla(200,60%,40%,0.9)",
             lineWidth: 2,
+            textYOffset: 0,
             circleRad: 3
         },
         'text:word': {
             fillStyle: "hsla(130,70%,40%,0.25)",
             strokeStyle: "hsla(130,70%,30%,0.8)",
+            textStyle: "hsla(130,60%,40%,0.9)",
             lineWidth: 2,
+            textYOffset: 1,
             circleRad: 5
         },
         'text:line': {
             fillStyle: "hsla(25,100%,45%,0.25)",
             strokeStyle: "hsla(25,100%,80%,0.8)",
+            textStyle: "hsla(25,60%,40%,0.9)",
             lineWidth: 2,
+            textYOffset: 2,
             circleRad: 7
         },
         'text:lineorder': {
@@ -273,7 +281,6 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         ctx.clearRect(0,0,$scope.detail.image.x_resolution, $scope.detail.image.y_resolution);
 
         angular.forEach(FILLED_ANNOTATIONS, function(thisDomain,kk) {
-            
             // find and draw thisDomain annotations
             angular.forEach($scope.detail.annotations, function(annotation,jj) {
                 if (annotation.domain === thisDomain) {
@@ -294,14 +301,16 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                     ctx.closePath();
                     ctx.fill();
                     ctx.stroke();
-                    
+                   
+                    // thicker line on top
                     ctx.beginPath();
                     ctx.moveTo(annotation.boundary[0][0],annotation.boundary[0][1]);
                     ctx.lineTo(annotation.boundary[1][0],annotation.boundary[1][1]);
                     ctx.closePath();
                     ctx.lineWidth = 4;
-                    ctx.stroke(); // foo
+                    ctx.stroke();
 
+                    // circle in top left corner
                     ctx.beginPath();
                     var rad = ANNOTATION_COLORS[thisDomain].circleRad;
                     ctx.arc(annotation.boundary[0][0],annotation.boundary[0][1], rad, 0,2*Math.PI);
@@ -309,10 +318,39 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                     ctx.lineWidth = 2;
                     ctx.stroke();
 
+
                 }
             });
         });
 
+        // overlay text of the annotations
+        angular.forEach(FILLED_ANNOTATIONS, function(thisDomain,kk) {
+            // find and draw thisDomain annotations
+            angular.forEach($scope.detail.annotations, function(annotation,jj) {
+                if (annotation.domain === thisDomain) {
+                    ctx.font = ANNOTATION_TEXT_FONT_SIZE + 'px Arial';
+
+                    // background box
+                    var textWidth = ctx.measureText(annotation.model).width;
+                    var border = 1;
+                    ctx.fillStyle = ANNOTATION_TEXT_BACKGROUND_STYLE;
+                    ctx.fillRect(
+                        annotation.boundary[0][0] - border,
+                        annotation.boundary[0][1] - border - ANNOTATION_TEXT_FONT_SIZE*(0.8+ANNOTATION_COLORS[thisDomain].textYOffset),
+                        textWidth + border*2,
+                        ANNOTATION_TEXT_FONT_SIZE*0.8 + border*2
+                    );
+
+                    // text itself
+                    ctx.fillStyle = ANNOTATION_COLORS[thisDomain].textStyle;
+                    ctx.fillText(annotation.model,
+                                annotation.boundary[0][0],
+                                annotation.boundary[0][1] - ANNOTATION_TEXT_FONT_SIZE*ANNOTATION_COLORS[thisDomain].textYOffset);
+                }
+            });
+        });
+
+        // text:lineorder lines
         angular.forEach(OPEN_ANNOTATIONS, function(thisDomain,kk) {
             // find and draw thisDomain annotations
             angular.forEach($scope.detail.annotations, function(annotation,jj) {
