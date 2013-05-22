@@ -28,19 +28,22 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     var OPEN_ANNOTATIONS = ['text:lineorder'];
     var ANNOTATION_COLORS = {
         'text:char': {
-            fillStyle: "hsla(230,100%,45%,0.25)",
-            strokeStyle: "hsla(230,100%,66%,0.8)",
-            lineWidth: 2
+            fillStyle: "hsla(200,100%,45%,0.2)",
+            strokeStyle: "hsla(200,100%,70%,0.8)",
+            lineWidth: 2,
+            circleRad: 3
         },
         'text:word': {
-            fillStyle: "hsla(140,70%,40%,0.25)",
-            strokeStyle: "hsla(140,70%,50%,0.8)",
-            lineWidth: 2
+            fillStyle: "hsla(130,70%,40%,0.25)",
+            strokeStyle: "hsla(130,70%,30%,0.8)",
+            lineWidth: 2,
+            circleRad: 5
         },
         'text:line': {
-            fillStyle: "hsla(35,100%,45%,0.25)",
-            strokeStyle: "hsla(35,100%,66%,0.8)",
-            lineWidth: 2
+            fillStyle: "hsla(25,100%,45%,0.25)",
+            strokeStyle: "hsla(25,100%,80%,0.8)",
+            lineWidth: 2,
+            circleRad: 7
         },
         'text:lineorder': {
             thickStrokeStyle: "hsla(260,80%,70%,0.5)",
@@ -270,14 +273,16 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         ctx.clearRect(0,0,$scope.detail.image.x_resolution, $scope.detail.image.y_resolution);
 
         angular.forEach(FILLED_ANNOTATIONS, function(thisDomain,kk) {
-            // set drawing style
-            ctx.fillStyle = ANNOTATION_COLORS[thisDomain].fillStyle;
-            ctx.strokeStyle = ANNOTATION_COLORS[thisDomain].strokeStyle;
-            ctx.lineWidth = ANNOTATION_COLORS[thisDomain].lineWidth;
             
             // find and draw thisDomain annotations
             angular.forEach($scope.detail.annotations, function(annotation,jj) {
                 if (annotation.domain === thisDomain) {
+
+                    // set drawing style
+                    ctx.fillStyle = ANNOTATION_COLORS[thisDomain].fillStyle;
+                    ctx.strokeStyle = ANNOTATION_COLORS[thisDomain].strokeStyle;
+                    ctx.lineWidth = ANNOTATION_COLORS[thisDomain].lineWidth;
+
                     ctx.beginPath();
                     angular.forEach(annotation.boundary, function(point,kk) {
                         if (kk === 0) {
@@ -289,6 +294,21 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                     ctx.closePath();
                     ctx.fill();
                     ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(annotation.boundary[0][0],annotation.boundary[0][1]);
+                    ctx.lineTo(annotation.boundary[1][0],annotation.boundary[1][1]);
+                    ctx.closePath();
+                    ctx.lineWidth = 4;
+                    ctx.stroke(); // foo
+
+                    ctx.beginPath();
+                    var rad = ANNOTATION_COLORS[thisDomain].circleRad;
+                    ctx.arc(annotation.boundary[0][0],annotation.boundary[0][1], rad, 0,2*Math.PI);
+                    ctx.closePath();
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
                 }
             });
         });
