@@ -25,7 +25,7 @@
 
             <!-- SEARCH -->
             <div class="well well-small">
-                <form ng-submit="clickSearchButton()" class="no-bottom-margin">
+                <form ng-submit="clickSearchFormSearchButton()" class="no-bottom-margin">
                     <label>database</label>
                     <select class='rigor-sidebar-form-element' ng-model="query.database_name">
                         <option ng-repeat="dbname in search_form.database_names">(( dbname ))</option>
@@ -45,7 +45,7 @@
 
                     <div class="btn-group">
                         <button type="submit" class="btn btn-primary"> Search </button>
-                        <a href="" ng-click="clickClearButton()" class="btn">Clear</a>
+                        <a href="" ng-click="clickSearchFormClearButton()" class="btn">Clear</a>
                     </div>
                 </form>
             </div>
@@ -68,11 +68,11 @@
             <!-- THUMBNAIL VIEW -->
             <div ng-switch-when="thumbs">
                 <ul class="pager">
-                    <li ng-class="{previous: true,  disabled: !prevButtonIsEnabled()}">
+                    <li ng-class="{previous: true,  disabled: !thumbViewPrevButtonIsEnabled()}">
                         <a href="" ng-click="clickPrevButton()">&larr; Prev</a>
                     </li>
                     <b> Page (( query.page+1 )) of (( search_results.last_page + 1 )) </b>
-                    <li ng-class="{next: true,  disabled: !nextButtonIsEnabled()}">
+                    <li ng-class="{next: true,  disabled: !thumbViewNextButtonIsEnabled()}">
                         <a href="" ng-click="clickNextButton()">Next &rarr;</a>
                     </li>
                 </ul>
@@ -97,11 +97,11 @@
                 </ul>
 
                 <ul class="pager">
-                    <li ng-class="{previous: true,  disabled: !prevButtonIsEnabled()}">
+                    <li ng-class="{previous: true,  disabled: !thumbViewPrevButtonIsEnabled()}">
                         <a href="" ng-click="clickPrevButton()">&larr; Prev</a>
                     </li>
                     <b> Page (( query.page+1 )) of (( search_results.last_page + 1 )) </b>
-                    <li ng-class="{next: true,  disabled: !nextButtonIsEnabled()}">
+                    <li ng-class="{next: true,  disabled: !thumbViewNextButtonIsEnabled()}">
                         <a href="" ng-click="clickNextButton()">Next &rarr;</a>
                     </li>
                 </ul>
@@ -115,11 +115,11 @@
                     </li>
                 </ul>
                 <ul class="pager">
-                    <li ng-class="{previous: true,  disabled: !prevImageButtonIsEnabled()}">
+                    <li ng-class="{previous: true,  disabled: !detailViewPrevButtonIsEnabled()}">
                         <a href="" ng-click="switchToImage(detail.image.ii-1)">&larr; Prev</a>
                     </li>
                     <b> Image (( detail.image.ii+1 )) of (( search_results.full_count )) </b>
-                    <li ng-class="{next: true,  disabled: !nextImageButtonIsEnabled()}">
+                    <li ng-class="{next: true,  disabled: !detailViewNextButtonIsEnabled()}">
                         <a href="" ng-click="switchToImage(detail.image.ii+1)">Next &rarr;</a>
                     </li>
                 </ul>

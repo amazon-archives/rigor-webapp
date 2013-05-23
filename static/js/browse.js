@@ -108,7 +108,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     //================================================================================
     // SEARCH FORM BUTTONS AND BEHAVIOR
 
-    $scope.clickClearButton = function() {
+    $scope.clickSearchFormClearButton = function() {
         $scope.query.has_tags = '';
         $scope.query.exclude_tags = '';
         $scope.query.page = 0;
@@ -117,7 +117,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         $scope.doSearch();
     };
 
-    $scope.clickSearchButton = function() {
+    $scope.clickSearchFormSearchButton = function() {
         $scope.switchToThumbView();
         $scope.query.page = 0;
         $scope.doSearch();
@@ -193,22 +193,22 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     //================================================================================
     // THUMB PAGINATION
 
-    $scope.nextButtonIsEnabled = function () {
+    $scope.thumbViewNextButtonIsEnabled = function () {
         return $scope.search_results.search_has_occurred && $scope.query.page < $scope.search_results.last_page;
     };
-    $scope.prevButtonIsEnabled = function () {
+    $scope.thumbViewPrevButtonIsEnabled = function () {
         return $scope.search_results.search_has_occurred && $scope.query.page >= 1;
     };
 
     $scope.clickNextButton = function() {
-        if ($scope.nextButtonIsEnabled()) {
+        if ($scope.thumbViewNextButtonIsEnabled()) {
             console.log('next button');
             $scope.query.page += 1;
             $scope.doSearch();
         }
     };
     $scope.clickPrevButton = function() {
-        if ($scope.prevButtonIsEnabled()) {
+        if ($scope.thumbViewPrevButtonIsEnabled()) {
             console.log('prev button');
             $scope.query.page -= 1;
             $scope.doSearch();
@@ -232,6 +232,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             } else {
                 $scope.query.has_tags += ' ' + tag;
             }
+            // and refresh the search
             $scope.doSearch();
         }
     };
@@ -476,10 +477,10 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         $location.search($scope.query);
     };
 
-    $scope.nextImageButtonIsEnabled = function () {
+    $scope.detailViewNextButtonIsEnabled = function () {
         return $scope.detail.image.ii < $scope.search_results.full_count-1;
     };
-    $scope.prevImageButtonIsEnabled = function () {
+    $scope.detailViewPrevButtonIsEnabled = function () {
         return $scope.detail.image.ii >= 1;
     };
 
@@ -497,9 +498,6 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
     //================================================================================
     // MAIN
-
-
-
 
     // fill in database_names on page load
     console.log('[main] getting database names...');
