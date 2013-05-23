@@ -16,7 +16,7 @@
     <div class="row">
         <div class="span12">
 
-            <h2><a href="" ng-click="switchToThumbView()" class="black-link"> Rigor </a></h2>
+            <h2><a href="" ng-click="switchToThumbViewAndDoFirstSearchIfNeeded()" class="black-link"> Rigor </a></h2>
 
         </div>
     </div>
@@ -51,7 +51,7 @@
             </div>
 
             <!-- RESULT STATS & BATCH EDIT-->
-            <div class="well well-small">
+            <div class="well well-small" ng-hide="!search_results.search_has_occurred">
                 <h4 class="no-top-margin"> (( search_results.full_count )) Images </h4>
                 <p>&nbsp;</p>
                 <h4> Batch Edit:  </h4>
@@ -109,12 +109,12 @@
 
             <!-- DETAIL VIEW -->
             <div ng-switch-when="detail">
-                <ul class="pager">
+                <ul class="pager" ng-hide="!search_results.search_has_occurred">
                     <li class="previous">
-                    <a href="" ng-click="switchToThumbViewAndDoFirstSearchIfNeeded()"><i class="icon-th-large"></i> Back to thumbs</a>
+                    <a href="" ng-click="switchToThumbViewAndDoFirstSearchIfNeeded()"><i class="icon-th-large"></i> Thumbs</a>
                     </li>
                 </ul>
-                <ul class="pager">
+                <ul class="pager" ng-hide="!search_results.search_has_occurred">
                     <li ng-class="{previous: true,  disabled: !detailViewPrevButtonIsEnabled()}">
                         <a href="" ng-click="switchToImage(detail.image.ii-1)">&larr; Prev</a>
                     </li>
