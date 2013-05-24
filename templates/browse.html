@@ -39,11 +39,6 @@
                         <option ng-repeat="dbname in search_form.database_names">(( dbname ))</option>
                     </select>
 
-                    <label>list of tags (read-only)</label>
-                    <select class="rigor-sidebar-form-element">
-                        <option ng-repeat="tag in search_form.tags">(( tag ))</option>
-                    </select>
-
                     <label>has_tags</label>
                     <input type="text" class="rigor-sidebar-form-element2" ng-model="query.has_tags">
                     <!--<textarea rows=3 class="rigor-sidebar-form-element2" ng-model="query.has_tags"></textarea>-->
@@ -55,6 +50,9 @@
                         <button type="submit" class="btn btn-primary"> Search </button>
                         <a href="" ng-click="clickSearchFormClearButton()" class="btn">Clear</a>
                     </div>
+
+
+
 
                     <br>
                     <br>
@@ -69,7 +67,6 @@
                         ng-multiple
                         ui-select2="search_form.has_tags_select2_settings"
                     />
-
 
                     <b>choices:</b> ((query.has_tags_select2_choices | json))
                     <br>
