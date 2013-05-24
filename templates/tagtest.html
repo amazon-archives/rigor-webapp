@@ -1,0 +1,76 @@
+<!doctype html>
+<html xmlns:ng="http://angularjs.org">
+<head>
+    <meta charset="utf-8">
+    <title>AngularJS Plunker</title>
+  
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/base/jquery-ui.css">
+    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="http://ivaynberg.github.com/select2/select2-3.2/select2.css" rel="stylesheet"/>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+    <script src="/static/js/vendor/bootstrap.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular.js"></script>
+    <script src="/static/js/vendor/angular-ui-0.3.2.js"></script>
+    <script src="http://ivaynberg.github.com/select2/select2-3.2/select2.js"></script>
+
+    <script>
+        // app.js
+
+        var demoApp = angular.module('demoApp', ['ui']);
+
+        demoApp.config(function($interpolateProvider) {
+            $interpolateProvider.startSymbol('((');
+            $interpolateProvider.endSymbol('))');
+        });
+
+        angular.module('demoApp').controller('MainCtrl', function($scope, $timeout) {
+            $scope.state = "Will load shortly...";
+            
+            $scope.select2options = {
+                tags: ['green','red','blue'],
+                tokenSeparators: [",", " "]
+            };
+            
+            $scope.choices = ['red'];
+            
+            $scope.state = 'Loaded';
+
+            $timeout(
+                function() {
+                    $scope.select2options.tags.push('purple');
+                    $scope.select2options.tags.push('orange');
+                    $scope.select2options.tags.push('yellow');
+                    console.log('added more colors');
+                }, 1000
+            );
+        });
+
+        //angular.element(document).ready(function() {
+        //    console.log('[demoApp] running angular.bootstrap()');
+        //});
+    </script>
+</head>
+
+<body ng-app="demoApp" ng-controller="MainCtrl">
+
+    <h5>state: ((state))</h5>
+    <h5>select2options: ((select2options|json))</h5>
+    <h5>choices: ((choices))</h5>
+    <p>
+    <p>
+        Input:
+        <input
+            type="hidden"
+            class="input-large"
+            ng-model="choices"
+            ng-multiple
+            ui-select2="select2options"
+        />
+    </p>
+
+</body>
+</html>
+
+

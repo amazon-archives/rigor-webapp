@@ -42,6 +42,11 @@ def index():
     simulateSlow()
     return render_template('browse.html')
 
+@app.route('/tagtest')
+def index():
+    simulateSlow()
+    return render_template('tagtest.html')
+
 @app.route('/thumb/<locator>.<ext>',methods=['GET'])
 def getThumbFile(locator, ext):
     locator = locator.replace('-','').replace('/','').replace('..','')
