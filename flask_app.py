@@ -4,11 +4,14 @@ from __future__ import division
 import os
 import time
 
+import functools
+
 from flask import Flask
 from flask import render_template
 from flask import send_file
 from flask import jsonify
 from flask import request
+from flask import Response
 from flask import abort
 
 # from flask import flash
@@ -20,14 +23,40 @@ from utils import *
 import backend
 import config
 
+
+#--------------------------------------------------------------------------------
+# HELPERS
+
+def check_auth(username, password):
+    """This function is called to check if a username /
+    password combination is valid.
+    """
+    return username == 'blindsight' and password == 'rigor!!!!!'
+
+def authenticate():
+    """Sends a 401 response that enables basic auth"""
+    return Response(
+        'Could not verify your access level for that URL.\n'
+        'You have to login with proper credentials', 401,
+        {'WWW-Authenticate': 'Basic realm="Login Required"'}
+    )
+
+def use_basic_auth(f):
+    @functools.wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
+
 #--------------------------------------------------------------------------------
 # FLASK
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'fq348fnylq84ylnqx48yq3xlg8nlqy348q'
 
-#--------------------------------------------------------------------------------
-# MODELS
 
 #--------------------------------------------------------------------------------
 # ROUTING
@@ -38,11 +67,13 @@ def simulateSlow():
 
 
 @app.route('/')
+@use_basic_auth
 def index():
     simulateSlow()
     return render_template('browse.html')
 
 @app.route('/tagtest')
+@use_basic_auth
 def tagTest():
     simulateSlow()
     return render_template('tagtest.html')
@@ -63,6 +94,7 @@ def getThumbFile(locator, ext):
         abort(404)
 
 @app.route('/image/<locator>.<ext>',methods=['GET'])
+@use_basic_auth
 def getImageFile(locator, ext):
     simulateSlow()
     locator = locator.replace('-','').replace('/','').replace('..','')
@@ -81,6 +113,7 @@ def getImageFile(locator, ext):
 
 # http://ea:5000/api/v1/search?a=1&database_name=rigor&has_tags=sign,sightpal&exclude_tags=hard&max_count=3
 @app.route('/api/v1/search', methods=['GET'])
+@use_basic_auth
 def searchImages():
     simulateSlow()
     queryDict = {}
@@ -109,12 +142,14 @@ def searchImages():
 
 # http://ea:5000/api/v1/db
 @app.route('/api/v1/db', methods=['GET'])
+@use_basic_auth
 def getDatabaseNames():
     simulateSlow()
     return jsonify(d=backend.getDatabaseNames())
 
 # http://ea:5000/api/v1/db/rigor/image/23659
 @app.route('/api/v1/db/<database_name>/image/<locator>', methods=['GET'])
+@use_basic_auth
 def getImage(database_name, locator):
     simulateSlow()
     result = backend.getImage(database_name=database_name, locator=locator)
@@ -123,6 +158,7 @@ def getImage(database_name, locator):
 
 # http://ea:5000/api/v1/db/rigor/image/afa567f9f55b4283a1ead5682637ed4e/annotation
 @app.route('/api/v1/db/<database_name>/image/<locator>/annotation', methods=['GET'])
+@use_basic_auth
 def getImageAnnotations(database_name, locator):
     simulateSlow()
     result = backend.getImageAnnotations(database_name=database_name, locator=locator)
@@ -131,6 +167,7 @@ def getImageAnnotations(database_name, locator):
 
 # http://ea:5000/api/v1/db/rigor/tag
 @app.route('/api/v1/db/<database_name>/tag', methods=['GET'])
+@use_basic_auth
 def getTags(database_name):
     simulateSlow()
     return jsonify(d=backend.getTags(database_name))
