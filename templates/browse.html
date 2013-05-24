@@ -51,8 +51,17 @@
                     <label>exclude_tags</label>
                     <input type="text" class="rigor-sidebar-form-element2" ng-model="query.exclude_tags">
 
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary"> Search </button>
+                        <a href="" ng-click="clickSearchFormClearButton()" class="btn">Clear</a>
+                    </div>
 
-                    <label>new tag chooser</label>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+
+                    <label>new tag chooser, not hooked up yet</label>
                     <input
                         type="hidden"
                         class="rigor-sidebar-form-element2"
@@ -61,21 +70,12 @@
                         ui-select2="search_form.has_tags_select2_settings"
                     />
 
-                    <div>
-                        choices: ((query.has_tags_select2_choices))
-                    </div>
-                    <br>
-                    <div>
-                        settings: ((search_form.has_tags_select2_settings))
-                    </div>
-                    <br>
-    
 
+                    <b>choices:</b> ((query.has_tags_select2_choices | json))
+                    <br>
+                    <b>settings:</b> ((search_form.has_tags_select2_settings | json))
+                    <br>
 
-                    <div class="btn-group">
-                        <button type="submit" class="btn btn-primary"> Search </button>
-                        <a href="" ng-click="clickSearchFormClearButton()" class="btn">Clear</a>
-                    </div>
                 </form>
             </div>
 

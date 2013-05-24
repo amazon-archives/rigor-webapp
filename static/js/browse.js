@@ -134,12 +134,14 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         console.log('[watch database_name] db name changed from ' + oldValue + ' to ' + newValue + ', so re-fetching tags');
 
         $scope.search_form.tags = [];
+        $scope.search_form.has_tags_select2_settings.tags = [];
 
         // fill in tags
         console.log('[watch database_name] getting tags...');
         $http.get('/api/v1/db/'+$scope.query.database_name+'/tag')
             .success(function(data,status,headers,config) {
                 $scope.search_form.tags = data['d'];
+                $scope.search_form.has_tags_select2_settings.tags = data['d'];
                 console.log('...[watch database_name] got tags: ' + $scope.search_form.tags);
             })
             .error(function(data,status,headers,config) {
