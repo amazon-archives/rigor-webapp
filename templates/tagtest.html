@@ -26,47 +26,51 @@
         });
 
         angular.module('demoApp').controller('MainCtrl', function($scope, $timeout) {
-            $scope.state = "Will load shortly...";
-            
-            $scope.select2options = {
+            $scope.select2settings = {
                 tags: ['green','red','blue'],
                 tokenSeparators: [",", " "]
             };
-            
-            $scope.choices = ['red'];
-            
-            $scope.state = 'Loaded';
+            $scope.select2chosenTags = ['red'];
 
             $timeout(
                 function() {
-                    $scope.select2options.tags.push('purple');
-                    $scope.select2options.tags.push('orange');
-                    $scope.select2options.tags.push('yellow');
+                    $scope.select2settings.tags.push('purple');
+                    $scope.select2settings.tags.push('orange');
+                    $scope.select2settings.tags.push('yellow');
                     console.log('added more colors');
                 }, 1000
             );
+
+            $scope.getTags = function() {
+                var result = [];
+                angular.forEach($scope.select2chosenTags, function(item,ii) {
+                    if (typeof item === 'string' || item instanceof String) {
+                        result.push(item);
+                    } else {
+                        result.push(item.id);
+                    }
+                });
+                return result;
+            };
         });
 
-        //angular.element(document).ready(function() {
-        //    console.log('[demoApp] running angular.bootstrap()');
-        //});
     </script>
 </head>
 
 <body ng-app="demoApp" ng-controller="MainCtrl">
 
-    <h5>state: ((state))</h5>
-    <h5>select2options: ((select2options|json))</h5>
-    <h5>choices: ((choices))</h5>
+    <h5>select2settings: ((select2settings|json))</h5>
+    <h5>select2chosenTags: ((select2chosenTags))</h5>
+    <h5>getTags(): (( getTags() ))</h5>
     <p>
     <p>
         Input:
         <input
             type="hidden"
             class="input-large"
-            ng-model="choices"
+            ng-model="select2chosenTags"
             ng-multiple
-            ui-select2="select2options"
+            ui-select2="select2settings"
         />
     </p>
 
