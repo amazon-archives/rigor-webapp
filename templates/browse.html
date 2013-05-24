@@ -5,8 +5,16 @@
     <meta name="HandheldFriendly" content="true" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/static/css/vendor/bootstrap.css" />
+    <link rel="stylesheet" href="/static/css/vendor/select2-3.2.0.css" />
     <link rel="stylesheet" href="/static/css/rigor.css" />
+
+    <script src="/static/js/vendor/jquery-1.9.1.js"></script>
+    <script src="/static/js/vendor/select2-3.2.0.js"></script>
+
     <script src="/static/js/vendor/angular-1.0.6.js" type="text/javascript" charset="utf-8"></script>
+
+    <script src="/static/js/vendor/angular-ui-0.3.2.js"></script>
+
     <script src="/static/js/browse.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
@@ -42,6 +50,27 @@
 
                     <label>exclude_tags</label>
                     <input type="text" class="rigor-sidebar-form-element2" ng-model="query.exclude_tags">
+
+
+                    <label>new tag chooser</label>
+                    <input
+                        type="hidden"
+                        class="rigor-sidebar-form-element2"
+                        ng-model="query.has_tags_select2_choices"
+                        ng-multiple
+                        ui-select2="search_form.has_tags_select2_settings"
+                    />
+
+                    <div>
+                        choices: ((query.has_tags_select2_choices))
+                    </div>
+                    <br>
+                    <div>
+                        settings: ((search_form.has_tags_select2_settings))
+                    </div>
+                    <br>
+    
+
 
                     <div class="btn-group">
                         <button type="submit" class="btn btn-primary"> Search </button>

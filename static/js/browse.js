@@ -1,7 +1,7 @@
 "use strict";
 
 
-var browseApp = angular.module('browseApp', []);
+var browseApp = angular.module('browseApp', ['ui']);
 
 
 // make Angular use (( )) for template markup instead of {{ }}
@@ -83,12 +83,17 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     };
     $scope.search_form = {           // choices for drop-downs.  to be filled in via AJAX
         database_names: ['blindsight'],
-        tags: []
+        tags: [],
+        has_tags_select2_settings: {
+            tags: ['red','green','blue'],
+            tokenSeparators: [',', ' ']
+        }
     };
     $scope.query = {                 // query params for searching images
         database_name: 'blindsight',      // TODO: this should be set to config.INITIAL_DB_NAME
         //has_tags: 'sightpal angle testing bigangle',
         has_tags: '',
+        has_tags_select2_choices: [],
         exclude_tags: '',
         max_count: 18,
         page: 0

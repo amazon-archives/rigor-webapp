@@ -43,7 +43,7 @@ def index():
     return render_template('browse.html')
 
 @app.route('/tagtest')
-def index():
+def tagTest():
     simulateSlow()
     return render_template('tagtest.html')
 
