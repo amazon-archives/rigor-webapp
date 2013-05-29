@@ -68,9 +68,8 @@
                         ui-select2="search_form.has_tags_select2_settings"
                     />
 
-                    <b>choices:</b> ((query.has_tags_select2_choices | json))
-                    <br>
-                    <b>settings:</b> ((search_form.has_tags_select2_settings | json))
+                    <b>choices:</b>
+                        <span ng-repeat="tag in getHasTagsChoices()"> (( tag )) </span>
                     <br>
 
                 </form>

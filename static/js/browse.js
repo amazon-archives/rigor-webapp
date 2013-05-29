@@ -85,7 +85,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         database_names: ['blindsight'],
         tags: [],
         has_tags_select2_settings: {
-            tags: ['red','green','blue'],
+            tags: [],
             tokenSeparators: [',', ' ']
         }
     };
@@ -128,20 +128,37 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         $scope.doSearch();
     };
 
+    $scope.getHasTagsChoices = function() {
+        var result = [];
+        angular.forEach($scope.query.has_tags_select2_choices, function(obj,ii) {
+            result.push(obj.text);
+        });
+        return result
+    };
+
+    $scope.setHasTagsOptions = function(tags) {
+        // empty out the tag list while keeping it the same list object in memory
+        // dump the tags into the select2 tag list while keeping it the same list object
+        var select2tags = $scope.search_form.has_tags_select2_settings.tags;
+        while (select2tags.length > 0) {
+            select2tags.pop();
+        }
+        select2tags.push.apply(select2tags,tags);
+    };
+
     // when user changes database name, re-fetch tags
     $scope.$watch('query.database_name', function(newValue,oldValue) {
         console.log('[watch database_name] ----------------------------------------\\');
         console.log('[watch database_name] db name changed from ' + oldValue + ' to ' + newValue + ', so re-fetching tags');
 
         $scope.search_form.tags = [];
-        $scope.search_form.has_tags_select2_settings.tags = [];
 
         // fill in tags
         console.log('[watch database_name] getting tags...');
         $http.get('/api/v1/db/'+$scope.query.database_name+'/tag')
             .success(function(data,status,headers,config) {
                 $scope.search_form.tags = data['d'];
-                $scope.search_form.has_tags_select2_settings.tags = data['d'];
+                $scope.setHasTagsOptions(data['d']);
                 console.log('...[watch database_name] got tags: ' + $scope.search_form.tags);
             })
             .error(function(data,status,headers,config) {
