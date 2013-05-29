@@ -2,6 +2,7 @@
 
 from __future__ import division
 import os
+import sys
 import time
 
 import functools
@@ -179,5 +180,10 @@ def getTags(database_name):
 if __name__ == '__main__':
     print '--------------------------------------------------------------------------------'
     debugMain('ready')
-    app.run(debug=True, port=5000, host='0.0.0.0', use_evalex=False)
+    ARGS = sys.argv[1:]
+    if len(ARGS) != 1:
+        print 'usage: flask_app.py PORTNUMBER'
+        sys.exit(0)
+    port = int(ARGS[0])
+    app.run(debug=True, port=port, host='0.0.0.0', use_evalex=False)
 
