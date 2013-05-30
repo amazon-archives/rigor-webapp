@@ -75,6 +75,43 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     };
 
 
+
+
+
+    //================================================================================
+    //================================================================================
+    // SEARCH FORM
+/*
+    $scope.view_state_obj = {            // which view mode we're in.
+        render_path: 'thumbs'        // 'thumbs', 'detail'
+    };
+
+    $scope.thumb_view_obj = {
+        search_form_obj: {
+            database_names: ['blindsight'],
+            available_tags: [],
+        };
+    };
+    $scope.thumb_view_obj.search_form_obj = {};
+
+    $scope.detail_view_obj = {};
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //================================================================================
     // SCOPES
 
@@ -106,9 +143,9 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     };
     $scope.detail = {
         image: undefined,             // json for the image being viewed
-        annotations: []               // json for the annotations
+        annotations: [],              // json for the annotations
+        show_annotations: true
     };
-
 
     //================================================================================
     // SEARCH FORM BUTTONS AND BEHAVIOR
@@ -349,31 +386,33 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         });
 
         // overlay text of the annotations
-        angular.forEach(FILLED_ANNOTATIONS, function(thisDomain,kk) {
-            // find and draw thisDomain annotations
-            angular.forEach($scope.detail.annotations, function(annotation,jj) {
-                if (annotation.domain === thisDomain) {
-                    ctx.font = ANNOTATION_TEXT_FONT_SIZE + 'px Arial';
+        if ($scope.detail.show_annotations) {
+            angular.forEach(FILLED_ANNOTATIONS, function(thisDomain,kk) {
+                // find and draw thisDomain annotations
+                angular.forEach($scope.detail.annotations, function(annotation,jj) {
+                    if (annotation.domain === thisDomain) {
+                        ctx.font = ANNOTATION_TEXT_FONT_SIZE + 'px Arial';
 
-                    // background box
-                    var textWidth = ctx.measureText(annotation.model).width;
-                    var border = 1;
-                    ctx.fillStyle = ANNOTATION_TEXT_BACKGROUND_STYLE;
-                    ctx.fillRect(
-                        annotation.boundary[0][0] - border,
-                        annotation.boundary[0][1] - border - ANNOTATION_TEXT_FONT_SIZE*(0.8+ANNOTATION_COLORS[thisDomain].textYOffset),
-                        textWidth + border*2,
-                        ANNOTATION_TEXT_FONT_SIZE*0.8 + border*2
-                    );
+                        // background box
+                        var textWidth = ctx.measureText(annotation.model).width;
+                        var border = 1;
+                        ctx.fillStyle = ANNOTATION_TEXT_BACKGROUND_STYLE;
+                        ctx.fillRect(
+                            annotation.boundary[0][0] - border,
+                            annotation.boundary[0][1] - border - ANNOTATION_TEXT_FONT_SIZE*(0.8+ANNOTATION_COLORS[thisDomain].textYOffset),
+                            textWidth + border*2,
+                            ANNOTATION_TEXT_FONT_SIZE*0.8 + border*2
+                        );
 
-                    // text itself
-                    ctx.fillStyle = ANNOTATION_COLORS[thisDomain].textStyle;
-                    ctx.fillText(annotation.model,
-                                annotation.boundary[0][0],
-                                annotation.boundary[0][1] - ANNOTATION_TEXT_FONT_SIZE*ANNOTATION_COLORS[thisDomain].textYOffset);
-                }
+                        // text itself
+                        ctx.fillStyle = ANNOTATION_COLORS[thisDomain].textStyle;
+                        ctx.fillText(annotation.model,
+                                    annotation.boundary[0][0],
+                                    annotation.boundary[0][1] - ANNOTATION_TEXT_FONT_SIZE*ANNOTATION_COLORS[thisDomain].textYOffset);
+                    }
+                });
             });
-        });
+        };
 
         // text:lineorder lines
         angular.forEach(OPEN_ANNOTATIONS, function(thisDomain,kk) {
@@ -517,6 +556,15 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             }
         });
         return result;
+    };
+
+    $scope.toggleAnnotationText = function() {
+        $scope.detail.show_annotations =  ! $scope.detail.show_annotations;
+        drawAnnotations();
+    };
+
+    $scope.annotationButtonText = function() {
+        return $scope.detail.show_annotations ? "on" : "off";
     };
 
 

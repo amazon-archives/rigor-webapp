@@ -162,6 +162,11 @@
                                 <a href="" ng-click="clickTag(tag)" class="label label-info">(( tag ))</a>
                              </span>
                         </p>
+                        annotation text:
+                        <a href="" ng-click="toggleAnnotationText()"
+                            ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': detail.show_annotations, 'btn-danger-xxxx': !detail.show_annotations}">
+                            (( annotationButtonText() ))
+                        </a>
                     </div>
                     <!--
                     <div class="span4 well">
