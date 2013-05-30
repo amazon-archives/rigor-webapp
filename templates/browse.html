@@ -162,11 +162,47 @@
                                 <a href="" ng-click="clickTag(tag)" class="label label-info">(( tag ))</a>
                              </span>
                         </p>
+
+                        <div>
                         annotation text:
-                        <a href="" ng-click="toggleAnnotationText()"
-                            ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': detail.show_annotations, 'btn-danger-xxxx': !detail.show_annotations}">
-                            (( annotationButtonText() ))
-                        </a>
+                        <div class="btn-group">
+                            <a href="" ng-click="toggleAnnotationText('text:char')"
+                                ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': isAnnotationTextEnabled('text:char')}">
+                                char
+                            </a>
+                            <a href="" ng-click="toggleAnnotationText('text:word')"
+                                ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': isAnnotationTextEnabled('text:word')}">
+                                word
+                            </a>
+                            <a href="" ng-click="toggleAnnotationText('text:line')"
+                                ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': isAnnotationTextEnabled('text:line')}">
+                                line
+                            </a>
+                        </div>
+                        </div>
+
+                        <div>
+                        annotation geom:
+                        <div class="btn-group">
+                            <a href="" ng-click="toggleAnnotationGeom('text:char')"
+                                ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': isAnnotationGeomEnabled('text:char')}">
+                                char
+                            </a>
+                            <a href="" ng-click="toggleAnnotationGeom('text:word')"
+                                ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': isAnnotationGeomEnabled('text:word')}">
+                                word
+                            </a>
+                            <a href="" ng-click="toggleAnnotationGeom('text:line')"
+                                ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': isAnnotationGeomEnabled('text:line')}">
+                                line
+                            </a>
+                            <a href="" ng-click="toggleAnnotationGeom('text:lineorder')"
+                                ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': isAnnotationGeomEnabled('text:lineorder')}">
+                                lineorder
+                            </a>
+                        </div>
+                        </div>
+
                     </div>
                     <!--
                     <div class="span4 well">
