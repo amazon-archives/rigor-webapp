@@ -67,9 +67,9 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     };
 
     var tokenizeString = function(s) {
-        // given a string like "   tag1 tag2 \n   tag3 "
-        // return ['tag1','tag2','tag3']
-        // assume that white space separates tokens, not commas
+        // Given a string like "   tag1 tag2 \n   tag3 "
+        // Return ['tag1','tag2','tag3']
+        // Assume that white space separates tokens, not commas.
         var result = [];
         angular.forEach(s.trim().split(' '), function(token,ii) {
             token = token.trim();
@@ -96,8 +96,9 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         view: undefined,   // 'thumbs' or 'detail'
 
         switchView: function(new_view,params) {
+            // Shut down the current view and set up the new one by calling enter() and exit().
             // new_view should be a string like 'thumbs' or 'detail'
-            // params should be a dict
+            // params should be a dict to be passed along to the new view.
             var current_view = $scope.ViewChooser.view;
             console.log('[ViewChooser.switchView] starting to change view from '+current_view+' to '+new_view);
             console.log('[ViewChooser.switchView]    params = ' + JSON.stringify(params));
@@ -118,7 +119,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
     $scope.SearchAndThumbView = {
         // possible values for the dropdowns
-        database_name_choices: ['a','b','c'],
+        database_name_choices: [],
         tag_choices: [],
 
         // state of the form elements
@@ -146,78 +147,81 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         enter: function(params) {
             // params should be {} or {query: {...} }
             console.log('[SearchAndThumbView.enter]');
-            $scope.SearchAndThumbView.loadDatabaseNameChoices();
+            // if we don't have database names yet, fetch them
+            if ($scope.SearchAndThumbView.database_name_choices.length === 0) {
+                $scope.SearchAndThumbView.fetchDatabaseNameChoices();
+            }
+            // TODO: if query is given in params, load it and launch a search maybe
         },
         exit: function() {
             console.log('[SearchAndThumbView.exit]');
         },
 
-        loadDatabaseNameChoices: function(database_name) {
-            console.log('[SearchAndThumbView.loadDbNameChoices] getting database names...');
+        fetchDatabaseNameChoices: function(database_name) {
+            // Get the possible database names from the server and store in database_name_choices
+            console.log('[SearchAndThumbView.fetchDatabaseNameChoices] getting database names...');
             $http.get('/api/v1/db')
                 .success(function(data,status,headers,config) {
                     $scope.SearchAndThumbView.database_name_choices = data['d'];
-                    console.log('...[SearchAndThumbView.loadDbNameChoices] success. got database names: ' + data['d']);
+                    console.log('...[SearchAndThumbView.fetchDatabaseNameChoices] success. got database names: ' + data['d']);
                 })
                 .error(function(data,status,headers,config) {
-                    console.log('...[SearchAndThumbView.loadDbNameChoices] error');
+                    console.log('...[SearchAndThumbView.fetchDatabaseNameChoices] error');
                 });
         },
 
         doSearch: function(callback) {
+            // Send the query object off as a search.
+            // When the search is done, run the callback if there is one.
             console.log('[SearchAndThumbView.doSearch] doing search...');
-
-
-            console.log('[SearchAndThumbView.doSearch] ----------------------------------------\\');
-            console.log('[SearchAndThumbView.doSearch] getting images...');
 
             $scope.SearchAndThumbView.result_state = 'loading';
 
+            // make a copy of the query object and reformat it for the REST API
             var query = angular.copy($scope.SearchAndThumbView.query);
-            console.log(query);
             query.has_tags = query.has_tags.join(',');
 
             // set URL bar
             $location.search(query);
 
-            // clean up query object for use as URL params
-            console.log('[SearchAndThumbView.doSearch] query = ');
-            console.log(query);
+            console.log('[SearchAndThumbView.doSearch] query = ' + JSON.stringify(query));
 
             $http.get('/api/v1/search',{params: query})
                 .success(function(data,status,headers,config) {
                     $scope.SearchAndThumbView.result_images = data['images'];
                     $scope.SearchAndThumbView.result_full_count = data['full_count'];
                     $scope.SearchAndThumbView.result_last_page = Math.floor($scope.SearchAndThumbView.result_full_count / query.max_count);
-                    console.log('...[SearchAndThumbView.doSearch] success. got ' + $scope.SearchAndThumbView.result_images.length + ' images');
-                    console.log('...[SearchAndThumbView.doSearch] full_count = ' + $scope.SearchAndThumbView.result_full_count);
-                    console.log('...[SearchAndThumbView.doSearch] last_page = ' + $scope.SearchAndThumbView.result_last_page);
+                    console.log('...[SearchAndThumbView.doSearch] success. got ' + $scope.SearchAndThumbView.result_images.length + ' images.  full_count = ' + $scope.SearchAndThumbView.result_full_count + ', last_page = ' + $scope.SearchAndThumbView.result_last_page);
+                    $scope.SearchAndThumbView.result_state = 'full';
                     if (typeof callback !== 'undefined') {
                         console.log('...[SearchAndThumbView.doSearch] running callback:');
                         callback();
                     }
-                    $scope.SearchAndThumbView.result_state = 'full';
                 })
                 .error(function(data,status,headers,config) {
                     console.log('...[SearchAndThumbView.doSearch] error');
                 });
-
-            console.log('[SearchAndThumbView.doSearch] ----------------------------------------/');
         },
 
         thumbViewNextButtonIsEnabled: function() {
+            // Should the Next button be enabled in the thumb grid?
             return $scope.SearchAndThumbView.result_state === 'full' && $scope.SearchAndThumbView.query.page < $scope.SearchAndThumbView.result_last_page;
         },
         thumbViewPrevButtonIsEnabled: function() {
+            // Should the Prev button be enabled in the thumb grid?
             return $scope.SearchAndThumbView.result_state === 'full' && $scope.SearchAndThumbView.query.page >= 1;
         },
 
         setHasTags: function(tags) {
+            // Set has_tags to the given list of tags.
+            // Affects both the search form field and the query object.
             $scope.SearchAndThumbView.has_tags_user_input = tags.join(' ');
             $scope.SearchAndThumbView.query.has_tags = tags;
         },
 
         clickTag: function(tag) {
+            // When clicking a tag in the thumb grid, add the tag to the has_tags query.
+            // Do the search again if the tag was not already in the query.
             console.log('[SearchAndThumbView.clickTag('+tag+')]');
             // if this tag is not in the query already
             if ($scope.SearchAndThumbView.query.has_tags.indexOf(tag) === -1) {
@@ -232,6 +236,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         },
 
         clickClearButton: function() {
+            // Set has_tags to [], page to 0, and do the search again.
             $scope.SearchAndThumbView.setHasTags( [] );
             $scope.SearchAndThumbView.query.page = 0;
             $scope.SearchAndThumbView.doSearch();
