@@ -127,12 +127,13 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         db_name_choices: ['a','b','c'],
         tag_choices: [],
 
-        // state of the select2 tag chooser
+        // state of the form elements
         has_tags_select2_settings: {
             tags: [],
             tokenSeparators: [',', ' ']
         },
         has_tags_select2_user_input: [],
+        has_tags_user_input: '',
 
         // the query dict for doing searches
         query: {
@@ -152,11 +153,45 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         enter: function(params) {
             // params should be {} or {query: {...} }
             console.log('[SearchAndThumbView.enter]');
+            $scope.SearchAndThumbView.loadDbNameChoices();
         },
         exit: function() {
             console.log('[SearchAndThumbView.exit]');
-        }
+        },
+
+        loadDbNameChoices: function(db_name) {
+            console.log('[SearchAndThumbView.loadDbNameChoices] getting database names...');
+            $http.get('/api/v1/db')
+                .success(function(data,status,headers,config) {
+                    $scope.SearchAndThumbView.db_name_choices = data['d'];
+                    console.log('...[SearchAndThumbView.loadDbNameChoices] success. got database names: ' + data['d']);
+                })
+                .error(function(data,status,headers,config) {
+                    console.log('...[SearchAndThumbView.loadDbNameChoices] error');
+                });
+        },
     };
+
+    // when the db name changes, fetch tags for that db
+    $scope.$watch('SearchAndThumbView.query.db_name', function(newValue,oldValue) {
+        console.log('[SearchAndThumbView watch query.db_name] getting tags for '+newValue+'...');
+        $http.get('/api/v1/db/'+$scope.SearchAndThumbView.query.db_name+'/tag')
+            .success(function(data,status,headers,config) {
+                $scope.SearchAndThumbView.tag_choices = data['d'];
+                // TODO: push into select2 also
+                console.log('...[SearchAndThumbView watch query.db_name] got ' + data['d'].length + ' tags');
+            })
+            .error(function(data,status,headers,config) {
+                console.log('...[SearchAndThumbView watch query.db_name] error getting tags');
+            });
+    });
+
+    // keep the query up to date as the form changes
+    $scope.$watch('SearchAndThumbView.has_tags_user_input', function(newValue,oldValue) {
+        // convert space-separated tags to comma-separated for the API
+        $scope.SearchAndThumbView.query.has_tags = tokenizeString($scope.SearchAndThumbView.has_tags_user_input).join(', ');
+    });
+
 
     //--------------------------------------------------------------------------------
     // DETAIL
