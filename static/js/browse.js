@@ -132,8 +132,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         // the query dict for doing searches
         query: {
             database_name: 'blindsight',      // TODO: this should be set to config.INITIAL_DB_NAME
-            has_tags: '', // comma separated
-            exclude_tags: '', // comma separated
+            has_tags: [], // actual list
             max_count: 18,
             page: 0
         },
@@ -174,7 +173,9 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
             $scope.SearchAndThumbView.result_state = 'loading';
 
-            var query = $scope.SearchAndThumbView.query;
+            var query = angular.copy($scope.SearchAndThumbView.query);
+            console.log(query);
+            query.has_tags = query.has_tags.join(',');
 
             // set URL bar
             $location.search(query);
@@ -211,19 +212,31 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             return $scope.SearchAndThumbView.result_state === 'full' && $scope.SearchAndThumbView.query.page >= 1;
         },
 
+        setHasTags: function(tags) {
+            $scope.SearchAndThumbView.has_tags_user_input = tags.join(' ');
+            $scope.SearchAndThumbView.query.has_tags = tags;
+        },
+
         clickTag: function(tag) {
             console.log('[SearchAndThumbView.clickTag('+tag+')]');
-
-            // if this tag is not in the query already:
-            if (  (','+$scope.SearchAndThumbView.query.has_tags+',').indexOf(','+tag+',') === -1) {
+            // if this tag is not in the query already
+            if ($scope.SearchAndThumbView.query.has_tags.indexOf(tag) === -1) {
                 // add the tag to the has_tags form
-                $scope.SearchAndThumbView.has_tags_user_input += ' ' + tag;
-                $scope.SearchAndThumbView.has_tags_user_input.trim();
+                var existing_tags = $scope.SearchAndThumbView.query.has_tags;
+                existing_tags.push(tag)
+                $scope.SearchAndThumbView.setHasTags( existing_tags );
+
                 // and refresh the search
                 $scope.SearchAndThumbView.doSearch();
             }
-
         },
+
+        clickClearButton: function() {
+            $scope.SearchAndThumbView.setHasTags( [] );
+            $scope.SearchAndThumbView.query.page = 0;
+            $scope.SearchAndThumbView.doSearch();
+        }
+
     };
 
     // when the db name changes, fetch tags for that db
@@ -243,7 +256,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     // keep the query up to date as the form changes
     $scope.$watch('SearchAndThumbView.has_tags_user_input', function(newValue,oldValue) {
         // convert space-separated tags to comma-separated for the API
-        $scope.SearchAndThumbView.query.has_tags = tokenizeString($scope.SearchAndThumbView.has_tags_user_input).join(',');
+        $scope.SearchAndThumbView.query.has_tags = tokenizeString($scope.SearchAndThumbView.has_tags_user_input);
     });
 
 
