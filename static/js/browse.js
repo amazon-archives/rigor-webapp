@@ -210,6 +210,20 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         thumbViewPrevButtonIsEnabled: function() {
             return $scope.SearchAndThumbView.result_state === 'full' && $scope.SearchAndThumbView.query.page >= 1;
         },
+
+        clickTag: function(tag) {
+            console.log('[SearchAndThumbView.clickTag('+tag+')]');
+
+            // if this tag is not in the query already:
+            if (  (','+$scope.SearchAndThumbView.query.has_tags+',').indexOf(','+tag+',') === -1) {
+                // add the tag to the has_tags form
+                $scope.SearchAndThumbView.has_tags_user_input += ' ' + tag;
+                $scope.SearchAndThumbView.has_tags_user_input.trim();
+                // and refresh the search
+                $scope.SearchAndThumbView.doSearch();
+            }
+
+        },
     };
 
     // when the db name changes, fetch tags for that db
