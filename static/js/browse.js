@@ -68,9 +68,14 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         }
     };
 
+    $scope.TODO = function() {
+        console.log('TODO');
+    };
+
     var tokenizeString = function(s) {
         // given a string like "   tag1 tag2 \n   tag3 "
         // return ['tag1','tag2','tag3']
+        // assume that white space separates tokens, not commas
         var result = [];
         angular.forEach(s.trim().split(' '), function(token,ii) {
             token = token.trim();
@@ -84,7 +89,6 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
 
 
-    /*
 
 
     //================================================================================
@@ -94,33 +98,33 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     //--------------------------------------------------------------------------------
     // VIEW CHOOSER
 
-    $scope.view_chooser = {
-        view: 'thumbs'   // 'thumbs' or 'detail'
+    $scope.ViewChooser = {
+        view: undefined,   // 'thumbs' or 'detail'
 
         switchView: function(new_view,params) {
             // new_view should be a string like 'thumbs' or 'detail'
             // params should be a dict
-
-            var current_view = $scope.view_chooser.view;
-            if (current_view === new_view) { return; }
-
+            var current_view = $scope.ViewChooser.view;
+            console.log('[ViewChooser.switchView] starting to change view from '+current_view+' to '+new_view);
+            console.log('[ViewChooser.switchView]    params = ' + JSON.stringify(params));
+            if (current_view === new_view) { return; } // TODO: this shoud re-init the current view with the params
             // leave old view
-            if (current_view === 'thumbs') { $scope.thumb_grid__.exit(); }
-            if (current_view === 'detail') { $scope.detail__.exit(); }
-
+            if (current_view === 'thumbs') { $scope.SearchAndThumbView.exit(); }
+            if (current_view === 'detail') { $scope.DetailView.exit(); }
+            $scope.ViewChooser.view = new_view;
             // enter new view
-            if (new_view === 'thumbs') { $scope.thumb_grid__.enter(params); }
-            if (new_view === 'detail') { $scope.detail__.enter(params); }
-
-        },
+            if (new_view === 'thumbs') { $scope.SearchAndThumbView.enter(params); }
+            if (new_view === 'detail') { $scope.DetailView.enter(params); }
+            console.log('[ViewChooser.switchView] done changing from '+current_view+' to '+new_view);
+        }
     };
 
     //--------------------------------------------------------------------------------
     // SEARCH FORM AND THUMB GRID
 
-    $scope.search_and_browse__ = {
+    $scope.SearchAndThumbView = {
         // possible values for the dropdowns
-        db_name_choices: [],
+        db_name_choices: ['a','b','c'],
         tag_choices: [],
 
         // state of the select2 tag chooser
@@ -128,28 +132,36 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             tags: [],
             tokenSeparators: [',', ' ']
         },
-        has_tags_select2_input: [],
+        has_tags_select2_user_input: [],
 
         // the query dict for doing searches
-        query: {},
+        query: {
+            db_name: 'blindsight',      // TODO: this should be set to config.INITIAL_DB_NAME
+            has_tags: '', // comma separated
+            exclude_tags: '', // comma separated
+            max_count: 18,
+            page: 0
+        },
 
         // search results
-        result_state: 'empty',
+        result_state: 'empty',      // empty, loading, full
         result_images: [],                   // results of the search
         result_full_count: 0,                // number of returned images (all pages)
-        result_last_page: 0                  // number of pages
+        result_last_page: 0,                 // number of pages
 
         enter: function(params) {
             // params should be {} or {query: {...} }
-        };
+            console.log('[SearchAndThumbView.enter]');
+        },
         exit: function() {
-        };
+            console.log('[SearchAndThumbView.exit]');
+        }
     };
 
     //--------------------------------------------------------------------------------
     // DETAIL
 
-    $scope.detail__ = {
+    $scope.DetailView = {
         // what to fetch
         image_id: undefined,
         db_name: undefined,
@@ -164,26 +176,33 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
         enter: function(params) {
             // params should be {db_name: 'rigor', id: 2423}
-        };
+            console.log('[DetailView.enter]');
+        },
         exit: function() {
-        };
+            console.log('[DetailView.exit]');
+        }
     };
 
-    */
+    //--------------------------------------------------------------------------------
+    // MAIN
+
+    console.log('--------------------------------------------------------------\\');
+    $scope.ViewChooser.switchView('thumbs',{});
+    console.log('--------------------------------------------------------------/');
+
+
+
+
+
+    //================================================================================
+    //================================================================================
 
 
 
 
 
 
-
-
-
-
-
-
-
-
+/*
     //================================================================================
     // SCOPES
 
@@ -691,9 +710,11 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         $scope.doSearch();
     }
 
-    /*function () {
-        $scope.switchToImage(0);
-    });*/
+//    function () {
+//        $scope.switchToImage(0);
+//    });
+
+*/
 
 });
 

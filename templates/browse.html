@@ -24,210 +24,70 @@
     <div class="row">
         <div class="span12">
 
-            <h2><a href="" ng-click="switchToThumbViewAndDoFirstSearchIfNeeded()" class="black-link"> Rigor </a></h2>
+            <h2><a href="" class="black-link"> Rigor </a></h2>
 
         </div>
     </div>
-    <div class="row">
-        <div class="span3">
 
-            <!-- SEARCH -->
-            <div class="well well-small">
-                <form ng-submit="clickSearchFormSearchButton()" class="no-bottom-margin">
-                    <label>database</label>
-                    <select class='rigor-sidebar-form-element' ng-model="query.database_name">
-                        <option ng-repeat="dbname in search_form.database_names">(( dbname ))</option>
-                    </select>
+    <div ng-switch="ViewChooser.view">
+        <!-- SEARCH AND THUMB VIEW -->
+        <div ng-switch-when="thumbs">
 
-                    <label>has_tags</label>
-                    <input type="text" class="rigor-sidebar-form-element2" ng-model="query.has_tags">
-                    <!--<textarea rows=3 class="rigor-sidebar-form-element2" ng-model="query.has_tags"></textarea>-->
+            <div class="row">
 
-                    <label>exclude_tags</label>
-                    <input type="text" class="rigor-sidebar-form-element2" ng-model="query.exclude_tags">
+                <!-- SEARCH FORM -->
+                <div class="span3">
+                    <div class="well well-small">
 
-                    <div class="btn-group">
-                        <button type="submit" class="btn btn-primary"> Search </button>
-                        <a href="" ng-click="clickSearchFormClearButton()" class="btn">Clear</a>
-                    </div>
+                        <form ng-submit="TODO()" class="no-bottom-margin">
+                            <label>database</label>
+                            <select class='rigor-sidebar-form-element' ng-model="SearchAndThumbView.query.db_name">
+                                <option ng-repeat="dbname in SearchAndThumbView.db_name_choices">(( dbname ))</option>
+                            </select>
 
+                            <label>has_tags</label>
+                            <input type="text" class="rigor-sidebar-form-element2" ng-model="SearchAndThumbView.query.has_tags">
 
+                            <label>exclude_tags</label>
+                            <input type="text" class="rigor-sidebar-form-element2" ng-model="SearchAndThumbView.query.exclude_tags">
 
-
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-
-                    <label>new tag chooser, not hooked up yet</label>
-                    <input
-                        type="hidden"
-                        class="rigor-sidebar-form-element2"
-                        ng-model="query.has_tags_select2_choices"
-                        ng-multiple
-                        ui-select2="search_form.has_tags_select2_settings"
-                    />
-
-                    <b>choices:</b>
-                        <span ng-repeat="tag in getHasTagsChoices()"> (( tag )) </span>
-                    <br>
-
-                </form>
-            </div>
-
-            <!-- RESULT STATS & BATCH EDIT-->
-            <div class="well well-small" ng-hide="!search_results.search_has_occurred">
-                <h4 class="no-top-margin"> (( search_results.full_count )) Images </h4>
-                <p>&nbsp;</p>
-                <h4> Batch Edit:  </h4>
-                <ul class='unstyled no-bottom-margin'>
-                    <li><a href=""> <i class="icon-edit"></i> Characters </a></li>
-                    <li><a href=""> <i class="icon-edit"></i> Words </a></li>
-                    <li><a href=""> <i class="icon-edit"></i> Lines </a></li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="span9" ng-switch="view_state.render_path">
-
-            <!-- THUMBNAIL VIEW -->
-            <div ng-switch-when="thumbs">
-                <ul class="pager">
-                    <li ng-class="{previous: true,  disabled: !thumbViewPrevButtonIsEnabled()}">
-                        <a href="" ng-click="clickPrevButton()">&larr; Prev</a>
-                    </li>
-                    <b> Page (( query.page+1 )) of (( search_results.last_page + 1 )) </b>
-                    <li ng-class="{next: true,  disabled: !thumbViewNextButtonIsEnabled()}">
-                        <a href="" ng-click="clickNextButton()">Next &rarr;</a>
-                    </li>
-                </ul>
-
-                <ul class="thumbnails">
-                    <li class="span3 thumbnail-height-fix" ng-repeat="image in search_results.images">
-                        <div class="thumbnail">
-                            <!-- fixed-size div to enforce regularity in the thumbnail grid -->
-                            <div style="width:210px; height:200px; text-align:center;">
-                                <a href="" ng-click="switchToImage(image.ii)">
-                                    <img ng-src="(( image.thumb_url ))">
-                                </a>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary"> Search </button>
+                                <a href="" ng-click="TODO()" class="btn">Clear</a>
                             </div>
-                            <p>
-                                <strong>(( image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
-                                / id: (( image.id ))
-                            </p>
-                            <!-- fixed height tag area to enforce regularity in the thumbnail grid -->
-                            <div style="height:80px">
-                                <span ng-repeat="tag in image.tags">
-                                    <a href="" ng-click="clickTag(tag)" class="label label-info">(( tag ))</a>
-                                 </span>
+
+                            <!-- debug output -->
+                            <div>
+                                <b>query:</b><br>
+                                (( SearchAndThumbView.query | json ))
                             </div>
-                        </div>
-                    </li>
-                </ul>
 
-                <ul class="pager">
-                    <li ng-class="{previous: true,  disabled: !thumbViewPrevButtonIsEnabled()}">
-                        <a href="" ng-click="clickPrevButton()">&larr; Prev</a>
-                    </li>
-                    <b> Page (( query.page+1 )) of (( search_results.last_page + 1 )) </b>
-                    <li ng-class="{next: true,  disabled: !thumbViewNextButtonIsEnabled()}">
-                        <a href="" ng-click="clickNextButton()">Next &rarr;</a>
-                    </li>
-                </ul>
-            </div>
+                        </form>
 
-            <!-- DETAIL VIEW -->
-            <div ng-switch-when="detail">
-                <ul class="pager" ng-hide="!search_results.search_has_occurred">
-                    <li class="previous">
-                    <a href="" ng-click="switchToThumbViewAndDoFirstSearchIfNeeded()"><i class="icon-th-large"></i> Thumbs</a>
-                    </li>
-                </ul>
-                <ul class="pager" ng-hide="!search_results.search_has_occurred">
-                    <li ng-class="{previous: true,  disabled: !detailViewPrevButtonIsEnabled()}">
-                        <a href="" ng-click="switchToImage(detail.image.ii-1)">&larr; Prev</a>
-                    </li>
-                    <b> Image (( detail.image.ii+1 )) of (( search_results.full_count )) </b>
-                    <li ng-class="{next: true,  disabled: !detailViewNextButtonIsEnabled()}">
-                        <a href="" ng-click="switchToImage(detail.image.ii+1)">Next &rarr;</a>
-                    </li>
-                </ul>
 
-                <div class="row">
-                    <div class="span4 well">
-                        <p>
-                             date: <strong>(( detail.image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
-                        <br> id: <strong>(( detail.image.id ))</strong>
-                        <br> <span ng-repeat="tag in detail.image.tags">
-                                <a href="" ng-click="clickTag(tag)" class="label label-info">(( tag ))</a>
-                             </span>
-                        </p>
-
-                        <div>
-                        annotation text:
-                        <div class="btn-group">
-                            <a href="" ng-click="toggleAnnotationText('text:char')"
-                                ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': isAnnotationTextEnabled('text:char')}">
-                                char
-                            </a>
-                            <a href="" ng-click="toggleAnnotationText('text:word')"
-                                ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': isAnnotationTextEnabled('text:word')}">
-                                word
-                            </a>
-                            <a href="" ng-click="toggleAnnotationText('text:line')"
-                                ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': isAnnotationTextEnabled('text:line')}">
-                                line
-                            </a>
-                        </div>
-                        </div>
-
-                        <div>
-                        annotation geom:
-                        <div class="btn-group">
-                            <a href="" ng-click="toggleAnnotationGeom('text:char')"
-                                ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': isAnnotationGeomEnabled('text:char')}">
-                                char
-                            </a>
-                            <a href="" ng-click="toggleAnnotationGeom('text:word')"
-                                ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': isAnnotationGeomEnabled('text:word')}">
-                                word
-                            </a>
-                            <a href="" ng-click="toggleAnnotationGeom('text:line')"
-                                ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': isAnnotationGeomEnabled('text:line')}">
-                                line
-                            </a>
-                            <a href="" ng-click="toggleAnnotationGeom('text:lineorder')"
-                                ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': isAnnotationGeomEnabled('text:lineorder')}">
-                                lineorder
-                            </a>
-                        </div>
-                        </div>
 
                     </div>
-                    <!--
-                    <div class="span4 well">
-                        <h4 class="no-top-margin"> Text Annotations </h4>
-                        <ul>
-                            <li ng-repeat="annotation in getDetailTextAnnotations()">
-                                (( annotation.model ))
-                            </li>
-                        </ul>
-                    </div>
-                    -->
                 </div>
 
-                <img class="img-polaroid overlap allow-large-image" ng-src="(( detail.image.url ))">
-                <canvas
-                    class="polaroid-style-padding overlap allow-large-image"
-                    id="image_canvas"
-                    width="(( detail.image.x_resolution ))"
-                    height="(( detail.image.y_resolution ))"
-                ></canvas>
+                <!-- THUMB GRID -->
+                <div class="span9" ng-switch="SearchAndThumbView.result_state">
 
+                    <div ng-switch-when="empty">
+                        <i> (empty) </i>
+                    </div>
+                    <div ng-switch-when="loading">
+                        <b> loading... </b>
+                    </div>
+                    <div ng-switch-when="full">
+                        full
+                    </div>
+
+                </div>
 
             </div>
 
         </div>
+        <!-- END SEARCH AND THUMB VIEW -->
 
     </div>
 
