@@ -203,13 +203,25 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 });
         },
 
-        thumbViewNextButtonIsEnabled: function() {
+        nextButtonIsEnabled: function() {
             // Should the Next button be enabled in the thumb grid?
             return $scope.SearchAndThumbView.result_state === 'full' && $scope.SearchAndThumbView.query.page < $scope.SearchAndThumbView.result_last_page;
         },
-        thumbViewPrevButtonIsEnabled: function() {
+        prevButtonIsEnabled: function() {
             // Should the Prev button be enabled in the thumb grid?
             return $scope.SearchAndThumbView.result_state === 'full' && $scope.SearchAndThumbView.query.page >= 1;
+        },
+        clickNextButton: function() {
+            if ($scope.SearchAndThumbView.nextButtonIsEnabled()) {
+                $scope.SearchAndThumbView.query.page += 1;
+                $scope.SearchAndThumbView.doSearch();
+            }
+        },
+        clickPrevButton: function() {
+            if ($scope.SearchAndThumbView.prevButtonIsEnabled()) {
+                $scope.SearchAndThumbView.query.page -= 1;
+                $scope.SearchAndThumbView.doSearch();
+            }
         },
 
         setHasTags: function(tags) {
@@ -231,6 +243,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 $scope.SearchAndThumbView.setHasTags( existing_tags );
 
                 // and refresh the search
+                $scope.SearchAndThumbView.query.page = 0;
                 $scope.SearchAndThumbView.doSearch();
             }
         },

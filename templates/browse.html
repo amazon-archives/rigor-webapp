@@ -85,12 +85,12 @@
 
 
                         <ul class="pager">
-                            <li ng-class="{previous: true,  disabled: !SearchAndThumbView.thumbViewPrevButtonIsEnabled()}">
-                                <a href="" ng-click="TODO()">&larr; Prev</a>
+                            <li ng-class="{previous: true,  disabled: !SearchAndThumbView.prevButtonIsEnabled()}">
+                                <a href="" ng-click="SearchAndThumbView.clickPrevButton()">&larr; Prev</a>
                             </li>
                             <b> Page (( SearchAndThumbView.query.page+1 )) of (( SearchAndThumbView.result_last_page + 1 )) </b>
-                            <li ng-class="{next: true,  disabled: !SearchAndThumbView.thumbViewNextButtonIsEnabled()}">
-                                <a href="" ng-click="TODO()">Next &rarr;</a>
+                            <li ng-class="{next: true,  disabled: !SearchAndThumbView.nextButtonIsEnabled()}">
+                                <a href="" ng-click="SearchAndThumbView.clickNextButton()">Next &rarr;</a>
                             </li>
                         </ul>
 
