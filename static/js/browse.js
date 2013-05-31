@@ -84,27 +84,92 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
 
 
+    /*
+
 
     //================================================================================
     //================================================================================
-    // SEARCH FORM
-/*
-    $scope.view_state_obj = {            // which view mode we're in.
-        render_path: 'thumbs'        // 'thumbs', 'detail'
+    // REFACTOR
+
+    //--------------------------------------------------------------------------------
+    // VIEW CHOOSER
+
+    $scope.view_chooser = {
+        view: 'thumbs'   // 'thumbs' or 'detail'
+
+        switchView: function(new_view,params) {
+            // new_view should be a string like 'thumbs' or 'detail'
+            // params should be a dict
+
+            var current_view = $scope.view_chooser.view;
+            if (current_view === new_view) { return; }
+
+            // leave old view
+            if (current_view === 'thumbs') { $scope.thumb_grid__.exit(); }
+            if (current_view === 'detail') { $scope.detail__.exit(); }
+
+            // enter new view
+            if (new_view === 'thumbs') { $scope.thumb_grid__.enter(params); }
+            if (new_view === 'detail') { $scope.detail__.enter(params); }
+
+        },
     };
 
-    $scope.thumb_view_obj = {
-        search_form_obj: {
-            database_names: ['blindsight'],
-            available_tags: [],
+    //--------------------------------------------------------------------------------
+    // SEARCH FORM AND THUMB GRID
+
+    $scope.search_and_browse__ = {
+        // possible values for the dropdowns
+        db_name_choices: [],
+        tag_choices: [],
+
+        // state of the select2 tag chooser
+        has_tags_select2_settings: {
+            tags: [],
+            tokenSeparators: [',', ' ']
+        },
+        has_tags_select2_input: [],
+
+        // the query dict for doing searches
+        query: {},
+
+        // search results
+        result_state: 'empty',
+        result_images: [],                   // results of the search
+        result_full_count: 0,                // number of returned images (all pages)
+        result_last_page: 0                  // number of pages
+
+        enter: function(params) {
+            // params should be {} or {query: {...} }
+        };
+        exit: function() {
         };
     };
-    $scope.thumb_view_obj.search_form_obj = {};
 
-    $scope.detail_view_obj = {};
+    //--------------------------------------------------------------------------------
+    // DETAIL
 
-*/
+    $scope.detail__ = {
+        // what to fetch
+        image_id: undefined,
+        db_name: undefined,
 
+        // fetched data
+        image: {},
+        annotations: [],
+
+        // view state
+        showText: {}, // 'text:char':true, ...
+        showGeom: {},
+
+        enter: function(params) {
+            // params should be {db_name: 'rigor', id: 2423}
+        };
+        exit: function() {
+        };
+    };
+
+    */
 
 
 
