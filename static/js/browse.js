@@ -18,12 +18,6 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     //================================================================================
     // CONSTANTS AND UTILS
 
-    // ANY is a special value to represent that we should ignore this field
-    // when searching.  this is equivalent to ''.
-    // When we convert $scope.query to query params for the API, we
-    // omit any items which are ANY or ''.
-    var ANY = '(any)';
-
     var FILLED_ANNOTATIONS = ['text:line','text:word','text:char']; // in the order we should draw them
     var OPEN_ANNOTATIONS = ['text:lineorder'];
     var ANNOTATION_TEXT_FONT_SIZE = 16;
@@ -124,7 +118,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
     $scope.SearchAndThumbView = {
         // possible values for the dropdowns
-        db_name_choices: ['a','b','c'],
+        database_name_choices: ['a','b','c'],
         tag_choices: [],
 
         // state of the form elements
@@ -137,7 +131,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
         // the query dict for doing searches
         query: {
-            db_name: 'blindsight',      // TODO: this should be set to config.INITIAL_DB_NAME
+            database_name: 'blindsight',      // TODO: this should be set to config.INITIAL_DB_NAME
             has_tags: '', // comma separated
             exclude_tags: '', // comma separated
             max_count: 18,
@@ -153,43 +147,85 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         enter: function(params) {
             // params should be {} or {query: {...} }
             console.log('[SearchAndThumbView.enter]');
-            $scope.SearchAndThumbView.loadDbNameChoices();
+            $scope.SearchAndThumbView.loadDatabaseNameChoices();
         },
         exit: function() {
             console.log('[SearchAndThumbView.exit]');
         },
 
-        loadDbNameChoices: function(db_name) {
+        loadDatabaseNameChoices: function(database_name) {
             console.log('[SearchAndThumbView.loadDbNameChoices] getting database names...');
             $http.get('/api/v1/db')
                 .success(function(data,status,headers,config) {
-                    $scope.SearchAndThumbView.db_name_choices = data['d'];
+                    $scope.SearchAndThumbView.database_name_choices = data['d'];
                     console.log('...[SearchAndThumbView.loadDbNameChoices] success. got database names: ' + data['d']);
                 })
                 .error(function(data,status,headers,config) {
                     console.log('...[SearchAndThumbView.loadDbNameChoices] error');
                 });
         },
+
+        doSearch: function(callback) {
+            console.log('[SearchAndThumbView.doSearch] doing search...');
+
+
+            console.log('[SearchAndThumbView.doSearch] ----------------------------------------\\');
+            console.log('[SearchAndThumbView.doSearch] getting images...');
+
+            $scope.SearchAndThumbView.result_state = 'loading';
+
+            var query = $scope.SearchAndThumbView.query;
+
+            // set URL bar
+            $location.search(query);
+
+            // clean up query object for use as URL params
+            console.log('[SearchAndThumbView.doSearch] query = ');
+            console.log(query);
+
+            $http.get('/api/v1/search',{params: query})
+                .success(function(data,status,headers,config) {
+                    $scope.SearchAndThumbView.result_images = data['images'];
+                    $scope.SearchAndThumbView.result_full_count = data['full_count'];
+                    $scope.SearchAndThumbView.result_last_page = Math.floor($scope.SearchAndThumbView.result_full_count / query.max_count);
+                    console.log('...[SearchAndThumbView.doSearch] success. got ' + $scope.SearchAndThumbView.result_images.length + ' images');
+                    console.log('...[SearchAndThumbView.doSearch] full_count = ' + $scope.SearchAndThumbView.result_full_count);
+                    console.log('...[SearchAndThumbView.doSearch] last_page = ' + $scope.SearchAndThumbView.result_last_page);
+                    if (typeof callback !== 'undefined') {
+                        console.log('...[SearchAndThumbView.doSearch] running callback:');
+                        callback();
+                    }
+                    $scope.SearchAndThumbView.result_state = 'full';
+                })
+                .error(function(data,status,headers,config) {
+                    console.log('...[SearchAndThumbView.doSearch] error');
+                });
+
+            console.log('[] ----------------------------------------/');
+
+
+
+        },
     };
 
     // when the db name changes, fetch tags for that db
-    $scope.$watch('SearchAndThumbView.query.db_name', function(newValue,oldValue) {
-        console.log('[SearchAndThumbView watch query.db_name] getting tags for '+newValue+'...');
-        $http.get('/api/v1/db/'+$scope.SearchAndThumbView.query.db_name+'/tag')
+    $scope.$watch('SearchAndThumbView.query.database_name', function(newValue,oldValue) {
+        console.log('[SearchAndThumbView watch query.database_name] getting tags for '+newValue+'...');
+        $http.get('/api/v1/db/'+$scope.SearchAndThumbView.query.database_name+'/tag')
             .success(function(data,status,headers,config) {
                 $scope.SearchAndThumbView.tag_choices = data['d'];
                 // TODO: push into select2 also
-                console.log('...[SearchAndThumbView watch query.db_name] got ' + data['d'].length + ' tags');
+                console.log('...[SearchAndThumbView watch query.database_name] got ' + data['d'].length + ' tags');
             })
             .error(function(data,status,headers,config) {
-                console.log('...[SearchAndThumbView watch query.db_name] error getting tags');
+                console.log('...[SearchAndThumbView watch query.database_name] error getting tags');
             });
     });
 
     // keep the query up to date as the form changes
     $scope.$watch('SearchAndThumbView.has_tags_user_input', function(newValue,oldValue) {
         // convert space-separated tags to comma-separated for the API
-        $scope.SearchAndThumbView.query.has_tags = tokenizeString($scope.SearchAndThumbView.has_tags_user_input).join(', ');
+        $scope.SearchAndThumbView.query.has_tags = tokenizeString($scope.SearchAndThumbView.has_tags_user_input).join(',');
     });
 
 
@@ -199,7 +235,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     $scope.DetailView = {
         // what to fetch
         image_id: undefined,
-        db_name: undefined,
+        database_name: undefined,
 
         // fetched data
         image: {},
@@ -210,7 +246,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         showGeom: {},
 
         enter: function(params) {
-            // params should be {db_name: 'rigor', id: 2423}
+            // params should be {database_name: 'rigor', id: 2423}
             console.log('[DetailView.enter]');
         },
         exit: function() {

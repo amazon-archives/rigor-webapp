@@ -128,9 +128,15 @@ def searchImages():
         else:
             debugDetail('discarding unknown key: %s = %s' % (key, val))
     if 'has_tags' in queryDict:
-        queryDict['has_tags'] = queryDict['has_tags'].split(',')
+        if not queryDict['has_tags']:
+            del queryDict['has_tags']
+        else:
+            queryDict['has_tags'] = queryDict['has_tags'].split(',')
     if 'exclude_tags' in queryDict:
-        queryDict['exclude_tags'] = queryDict['exclude_tags'].split(',')
+        if not queryDict['exclude_tags']:
+            del queryDict['exclude_tags']
+        else:
+            queryDict['exclude_tags'] = queryDict['exclude_tags'].split(',')
     if 'max_count' in queryDict:
         queryDict['max_count'] = int(queryDict['max_count'])
     if 'page' in queryDict:

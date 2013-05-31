@@ -39,10 +39,10 @@
                 <div class="span3">
                     <div class="well well-small">
 
-                        <form ng-submit="TODO()" class="no-bottom-margin">
+                        <form ng-submit="SearchAndThumbView.doSearch()" class="no-bottom-margin">
                             <label>database</label>
-                            <select class='rigor-sidebar-form-element' ng-model="SearchAndThumbView.query.db_name">
-                                <option ng-repeat="dbname in SearchAndThumbView.db_name_choices">(( dbname ))</option>
+                            <select class='rigor-sidebar-form-element' ng-model="SearchAndThumbView.query.database_name">
+                                <option ng-repeat="dbname in SearchAndThumbView.database_name_choices">(( dbname ))</option>
                             </select>
 
                             <label>has_tags</label>
@@ -55,14 +55,14 @@
 
                             <!-- debug output -->
                             <div>
-                                     <b>db_name_choices:</b>
-                                <br> (( SearchAndThumbView.db_name_choices | json ))
+                                <br> <b>query:</b>
+                                <br> <pre>(( SearchAndThumbView.query | json ))</pre>
+                                <br>
+                                <br> <b>database_name_choices:</b>
+                                <br> (( SearchAndThumbView.database_name_choices | json ))
                                 <br>
                                 <br> <b>tag_choices:</b>
                                 <br> (( SearchAndThumbView.tag_choices | json ))
-                                <br>
-                                <br> <b>query:</b>
-                                <br> (( SearchAndThumbView.query | json ))
                             </div>
 
                         </form>
