@@ -201,10 +201,14 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                     console.log('...[SearchAndThumbView.doSearch] error');
                 });
 
-            console.log('[] ----------------------------------------/');
+            console.log('[SearchAndThumbView.doSearch] ----------------------------------------/');
+        },
 
-
-
+        thumbViewNextButtonIsEnabled: function() {
+            return $scope.SearchAndThumbView.result_state === 'full' && $scope.SearchAndThumbView.query.page < $scope.SearchAndThumbView.result_last_page;
+        },
+        thumbViewPrevButtonIsEnabled: function() {
+            return $scope.SearchAndThumbView.result_state === 'full' && $scope.SearchAndThumbView.query.page >= 1;
         },
     };
 
@@ -259,6 +263,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
     console.log('--------------------------------------------------------------\\');
     $scope.ViewChooser.switchView('thumbs',{});
+    $scope.SearchAndThumbView.doSearch();
     console.log('--------------------------------------------------------------/');
 
 

@@ -76,18 +76,56 @@
                 <div class="span9" ng-switch="SearchAndThumbView.result_state">
 
                     <div ng-switch-when="empty">
-                        <i> (empty) </i>
+
                     </div>
                     <div ng-switch-when="loading">
                         <b> loading... </b>
                     </div>
                     <div ng-switch-when="full">
-                        full
+
+
+                        <ul class="pager">
+                            <li ng-class="{previous: true,  disabled: !SearchAndThumbView.thumbViewPrevButtonIsEnabled()}">
+                                <a href="" ng-click="TODO()">&larr; Prev</a>
+                            </li>
+                            <b> Page (( SearchAndThumbView.query.page+1 )) of (( SearchAndThumbView.result_last_page + 1 )) </b>
+                            <li ng-class="{next: true,  disabled: !SearchAndThumbView.thumbViewNextButtonIsEnabled()}">
+                                <a href="" ng-click="TODO()">Next &rarr;</a>
+                            </li>
+                        </ul>
+
+                        <ul class="thumbnails">
+                            <li class="span3 thumbnail-height-fix" ng-repeat="image in SearchAndThumbView.result_images">
+                                <div class="thumbnail">
+                                    <!-- fixed-size div to enforce regularity in the thumbnail grid -->
+                                    <div style="width:210px; height:200px; text-align:center;">
+                                        <a href="" ng-click="switchToImage(image.ii)">
+                                            <img ng-src="(( image.thumb_url ))">
+                                        </a>
+                                    </div>
+                                    <p>
+                                        <strong>(( image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
+                                        / id (( image.id ))
+                                    </p>
+                                    <!-- fixed height tag area to enforce regularity in the thumbnail grid -->
+                                    <div style="height:80px">
+                                        <span ng-repeat="tag in image.tags">
+                                            <a href="" ng-click="clickTag(tag)" class="label label-info">(( tag ))</a>
+                                         </span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+
+
                     </div>
+                    <!-- end ng-switch result_state === full -->
 
                 </div>
+                <!-- end span9 ng-switch result_state -->
 
             </div>
+            <!-- end row -->
 
         </div>
         <!-- END SEARCH AND THUMB VIEW -->
