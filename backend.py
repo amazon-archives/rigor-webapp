@@ -260,12 +260,12 @@ def getImage(database_name, id=None, locator=None):
         raise BackendError
 
 
-def getImageAnnotations(database_name, locator):
+def getImageAnnotations(database_name, id):
     # first look up image id
     sql = """
-        SELECT * FROM image WHERE locator = %s;
+        SELECT * FROM image WHERE id = %s;
     """
-    values = ( locator, )
+    values = ( id, )
 
     conn = getDbConnection(database_name)
     rows = list(dbQueryDict(conn, sql, values))

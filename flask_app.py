@@ -155,21 +155,21 @@ def getDatabaseNames():
     return jsonify(d=backend.getDatabaseNames())
 
 # http://ea:5000/api/v1/db/rigor/image/23659
-@app.route('/api/v1/db/<database_name>/image/<locator>', methods=['GET'])
+@app.route('/api/v1/db/<database_name>/image/<id>', methods=['GET'])
 @use_basic_auth
-def getImage(database_name, locator):
+def getImage(database_name, id):
     simulateSlow()
-    result = backend.getImage(database_name=database_name, locator=locator)
-    debugMain('getImage.  locator = %s' % locator)
+    result = backend.getImage(database_name=database_name, id=id)
+    debugMain('getImage.  id = %s' % id)
     return jsonify(result)
 
 # http://ea:5000/api/v1/db/rigor/image/afa567f9f55b4283a1ead5682637ed4e/annotation
-@app.route('/api/v1/db/<database_name>/image/<locator>/annotation', methods=['GET'])
+@app.route('/api/v1/db/<database_name>/image/<id>/annotation', methods=['GET'])
 @use_basic_auth
-def getImageAnnotations(database_name, locator):
+def getImageAnnotations(database_name, id):
     simulateSlow()
-    result = backend.getImageAnnotations(database_name=database_name, locator=locator)
-    debugMain('getImageAnnotations.  locator = %s' % locator)
+    result = backend.getImageAnnotations(database_name=database_name, id=id)
+    debugMain('getImageAnnotations.  id = %s' % id)
     return jsonify(d=result)
 
 # http://ea:5000/api/v1/db/rigor/tag

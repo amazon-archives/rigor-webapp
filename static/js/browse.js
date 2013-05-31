@@ -139,14 +139,14 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         },
 
         // search results
-        result_state: 'empty',      // empty, loading, full
+        result_state: 'empty',      // empty, loading, loaded
         result_images: [],                   // results of the search
         result_full_count: 0,                // number of returned images (all pages)
         result_last_page: 0,                 // number of pages
 
         enter: function(params) {
             // params should be {} or {query: {...} }
-            console.log('[SearchAndThumbView.enter]');
+            console.log('[SearchAndThumbView.enter] params = ' + JSON.stringify(params));
             // if we don't have database names yet, fetch them
             if ($scope.SearchAndThumbView.database_name_choices.length === 0) {
                 $scope.SearchAndThumbView.fetchDatabaseNameChoices();
@@ -192,7 +192,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                     $scope.SearchAndThumbView.result_full_count = data['full_count'];
                     $scope.SearchAndThumbView.result_last_page = Math.floor($scope.SearchAndThumbView.result_full_count / query.max_count);
                     console.log('...[SearchAndThumbView.doSearch] success. got ' + $scope.SearchAndThumbView.result_images.length + ' images.  full_count = ' + $scope.SearchAndThumbView.result_full_count + ', last_page = ' + $scope.SearchAndThumbView.result_last_page);
-                    $scope.SearchAndThumbView.result_state = 'full';
+                    $scope.SearchAndThumbView.result_state = 'loaded';
                     if (typeof callback !== 'undefined') {
                         console.log('...[SearchAndThumbView.doSearch] running callback:');
                         callback();
@@ -205,11 +205,11 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
         nextButtonIsEnabled: function() {
             // Should the Next button be enabled in the thumb grid?
-            return $scope.SearchAndThumbView.result_state === 'full' && $scope.SearchAndThumbView.query.page < $scope.SearchAndThumbView.result_last_page;
+            return $scope.SearchAndThumbView.result_state === 'loaded' && $scope.SearchAndThumbView.query.page < $scope.SearchAndThumbView.result_last_page;
         },
         prevButtonIsEnabled: function() {
             // Should the Prev button be enabled in the thumb grid?
-            return $scope.SearchAndThumbView.result_state === 'full' && $scope.SearchAndThumbView.query.page >= 1;
+            return $scope.SearchAndThumbView.result_state === 'loaded' && $scope.SearchAndThumbView.query.page >= 1;
         },
         clickNextButton: function() {
             if ($scope.SearchAndThumbView.nextButtonIsEnabled()) {
@@ -253,7 +253,15 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             $scope.SearchAndThumbView.setHasTags( [] );
             $scope.SearchAndThumbView.query.page = 0;
             $scope.SearchAndThumbView.doSearch();
-        }
+        },
+
+        switchToImage: function(id) {
+            console.log('[SearchAndThumbView.switchToImage('+id+')]');
+            $scope.ViewChooser.switchView('detail',{
+                database_name: $scope.SearchAndThumbView.query.database_name,
+                image_id: id,
+            });
+        },
 
     };
 
@@ -291,22 +299,77 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         annotations: [],
 
         // view state
-        showText: {}, // 'text:char':true, ...
+        showText: {}, // 'text:char':true, ... TODO
         showGeom: {},
 
         enter: function(params) {
-            // params should be {database_name: 'rigor', id: 2423}
-            console.log('[DetailView.enter]');
+            // params should be {database_name: 'rigor', image_id: 2423}
+            console.log('[DetailView.enter] params = ' + JSON.stringify(params));
+            $scope.DetailView.image_id = params.image_id;
+            $scope.DetailView.database_name = params.database_name;
+            $scope.DetailView.fetchImageDataAndAnnotations();
         },
         exit: function() {
             console.log('[DetailView.exit]');
-        }
+        },
+
+        fetchImageDataAndAnnotations: function() {
+            // With image_id and database_name already set,
+            // find the image json data (either from the SearchAndThumbView
+            // or from the server) and save it in DetailView.image
+            // Then get the annotations
+
+            $scope.DetailView.image = undefined;
+            $scope.DetailView.annotations = [];
+
+            // first, check if SearchAndThumbView has it
+            if ($scope.SearchAndThumbView.result_state === 'loaded') {
+                angular.forEach($scope.SearchAndThumbView.result_images, function(image,ii) {
+                    if (image.id === $scope.DetailView.image_id) {
+                        console.log('[DetailView.fetchImageAndAnnotations] found image in SearchAndThumbView');
+                        $scope.DetailView.image = image;
+                        $scope.DetailView._fetchAnnotations(); 
+                        return;
+                    }
+                });
+            }
+            // if not, AJAX
+            if ($scope.DetailView.image === undefined) {
+                console.log('[DetailView.fetchImageAndAnnotations] fetching image details from server...');
+                $http.get('/api/v1/db/'+$scope.DetailView.database_name+'/image/'+$scope.DetailView.image_id)
+                    .success(function(data,status,headers,config) {
+                        console.log('...[DetailView.fetchImageAndAnnotations] success');
+                        $scope.DetailView.image = data
+                        $scope.DetailView._fetchAnnotations(); 
+                    })
+                    .error(function(data,status,headers,config) {
+                        console.log('...[DetailView.fetchImageAndAnnotations] error');
+                    });
+            }
+        },
+
+        _fetchAnnotations: function() {
+            // Grab the annotations from the server and store in DetailView.annotations
+            console.log('[DetailView.fetchAnnotations] fetching annotations from server...');
+            $http.get('/api/v1/db/'+$scope.DetailView.database_name+'/image/'+$scope.DetailView.image_id+'/annotation')
+                .success(function(data,status,headers,config) {
+                    $scope.DetailView.annotations = data['d']
+                    console.log('...[DetailView.fetchAnnotations] success.  got ' + data['d'].length + ' annotations.');
+                })
+                .error(function(data,status,headers,config) {
+                    console.log('...[DetailView.fetchAnnotations] error');
+                });
+        },
+
     };
 
     //--------------------------------------------------------------------------------
     // MAIN
 
     console.log('--------------------------------------------------------------\\');
+
+    // TODO: read from URL here
+
     $scope.ViewChooser.switchView('thumbs',{});
     $scope.SearchAndThumbView.doSearch();
     console.log('--------------------------------------------------------------/');
