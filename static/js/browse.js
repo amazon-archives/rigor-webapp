@@ -361,6 +361,23 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 });
         },
 
+        nextButtonIsEnabled: function() {
+            return false; // TODO
+        },
+        prevButtonIsEnabled: function() {
+            return false; // TODO
+        },
+        clickNextButton: function() {
+            if ($scope.DetailView.nextButtonIsEnabled()) {
+                // TODO
+            }
+        },
+        clickPrevButton: function() {
+            if ($scope.DetailView.prevButtonIsEnabled()) {
+                // TODO
+            }
+        },
+
     };
 
     //--------------------------------------------------------------------------------
@@ -371,7 +388,9 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     // TODO: read from URL here
 
     $scope.ViewChooser.switchView('thumbs',{});
-    $scope.SearchAndThumbView.doSearch();
+    $scope.SearchAndThumbView.doSearch(function () {
+        $scope.SearchAndThumbView.switchToImage(25828);
+    });
     console.log('--------------------------------------------------------------/');
 
 

@@ -24,7 +24,7 @@
     <div class="row">
         <div class="span12">
 
-            <h2><a href="" class="black-link"> Rigor </a></h2>
+            <h2><a href="" class="black-link" ng-click="ViewChooser.switchView('thumbs')"> Rigor </a></h2>
 
         </div>
     </div>
@@ -132,9 +132,52 @@
 
         <!-- DETAIL VIEW -->
         <div ng-switch-when="detail">
-            <h4> detail view </h4>
-            <pre>(( DetailView | json ))
-            </pre>
+
+
+            <div class="row">
+                <!-- sidebar -->
+                <div class="span3">
+
+                    <ul class="pager">
+                        <li class="previous">
+                            <a href="" ng-click="ViewChooser.switchView('thumbs')"><i class="icon-th-large"></i> Thumbs</a>
+                        </li>
+                    </ul>
+                    <!-- pagers -->
+                    <div ng-show="SearchAndThumbView.result_state == 'loaded'">
+                        <b> Image (( DetailView.image.ii+1 )) of (( SearchAndThumbView.result_full_count )) </b>
+                        <ul class="pager">
+                            <li ng-class="{previous: true,  disabled: !DetailView.prevButtonIsEnabled()}">
+                                <a href="" ng-click="DetailView.clickPrevButton()">&larr; Prev</a>
+                            </li>
+                            <li ng-class="{next: true,  disabled: !DetailView.nextButtonIsEnabled()}">
+                                <a href="" ng-click="DetailView.clickNextButton()">Next &rarr;</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- info box -->
+                    <div class="well well-small">
+                        <p>
+                             date: <strong>(( DetailView.image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
+                        <br> id: <strong>(( DetailView.image_id ))</strong>
+                        <br> <span ng-repeat="tag in DetailView.image.tags">
+                                <a href="" ng-click="clickTag(tag)" class="label label-info">(( tag ))</a>
+                             </span>
+                        </p>
+                    </div>
+
+                </div>
+                <!-- end sidebar -->
+
+                <!-- main image column -->
+                <div class="span9">
+                    <img class="img-polaroid overlap allow-large-image" ng-src="(( DetailView.image.url ))">
+                </div>
+
+            </div>
+
+
         </div>
 
     </div>
