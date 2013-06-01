@@ -363,6 +363,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             $http.get('/api/v1/db/'+$scope.DetailView.database_name+'/image/'+$scope.DetailView.image_id+'/annotation')
                 .success(function(data,status,headers,config) {
                     $scope.DetailView.annotations = data['d']
+                    $scope.DetailView.drawAnnotations();
                     console.log('...[DetailView.fetchAnnotations] success.  got ' + data['d'].length + ' annotations.');
                 })
                 .error(function(data,status,headers,config) {
@@ -371,6 +372,120 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         },
 
 
+
+        drawAnnotations: function() {
+            console.log('[DetailView.drawAnnotations]');
+            var canvas = document.getElementById('image_canvas');
+            var ctx = canvas.getContext('2d');
+            ctx.clearRect(0,0,$scope.DetailView.image.x_resolution, $scope.DetailView.image.y_resolution);
+
+            angular.forEach(FILLED_ANNOTATIONS, function(thisDomain,kk) {
+                // find and draw thisDomain annotations
+                if ($scope.DetailView.showGeom[thisDomain]) {
+                    angular.forEach($scope.DetailView.annotations, function(annotation,jj) {
+                        if (annotation.domain === thisDomain) {
+
+                            // set drawing style
+                            ctx.fillStyle = ANNOTATION_COLORS[thisDomain].fillStyle;
+                            ctx.strokeStyle = ANNOTATION_COLORS[thisDomain].strokeStyle;
+                            ctx.lineWidth = ANNOTATION_COLORS[thisDomain].lineWidth;
+
+                            ctx.beginPath();
+                            angular.forEach(annotation.boundary, function(point,kk) {
+                                if (kk === 0) {
+                                    ctx.moveTo(point[0],point[1]);
+                                } else {
+                                    ctx.lineTo(point[0],point[1]);
+                                }
+                            });
+                            ctx.closePath();
+                            ctx.fill();
+                            ctx.stroke();
+                           
+                            // thicker line on top
+                            ctx.beginPath();
+                            ctx.moveTo(annotation.boundary[0][0],annotation.boundary[0][1]);
+                            ctx.lineTo(annotation.boundary[1][0],annotation.boundary[1][1]);
+                            ctx.closePath();
+                            ctx.lineWidth = 4;
+                            ctx.stroke();
+
+                            // circle in top left corner
+                            ctx.beginPath();
+                            var rad = ANNOTATION_COLORS[thisDomain].circleRad;
+                            ctx.arc(annotation.boundary[0][0],annotation.boundary[0][1], rad, 0,2*Math.PI);
+                            ctx.closePath();
+                            ctx.lineWidth = 2;
+                            ctx.stroke();
+
+
+                        }
+                    });
+                }
+            });
+
+            // overlay text of the annotations
+            angular.forEach(FILLED_ANNOTATIONS, function(thisDomain,kk) {
+                // find and draw thisDomain annotations
+                if ($scope.DetailView.showText[thisDomain]) {
+                    angular.forEach($scope.DetailView.annotations, function(annotation,jj) {
+                        if (annotation.domain === thisDomain) {
+                            ctx.font = ANNOTATION_TEXT_FONT_SIZE + 'px Arial';
+
+                            // background box
+                            var textWidth = ctx.measureText(annotation.model).width;
+                            var border = 1;
+                            ctx.fillStyle = ANNOTATION_TEXT_BACKGROUND_STYLE;
+                            ctx.fillRect(
+                                annotation.boundary[0][0] - border,
+                                annotation.boundary[0][1] - border - ANNOTATION_TEXT_FONT_SIZE*(0.8+ANNOTATION_COLORS[thisDomain].textYOffset),
+                                textWidth + border*2,
+                                ANNOTATION_TEXT_FONT_SIZE*0.8 + border*2
+                            );
+
+                            // text itself
+                            ctx.fillStyle = ANNOTATION_COLORS[thisDomain].textStyle;
+                            ctx.fillText(annotation.model,
+                                        annotation.boundary[0][0],
+                                        annotation.boundary[0][1] - ANNOTATION_TEXT_FONT_SIZE*ANNOTATION_COLORS[thisDomain].textYOffset);
+                        }
+                    });
+                }
+            });
+
+            // text:lineorder lines
+            if ($scope.DetailView.showGeom['text:lineorder']) {
+                angular.forEach(OPEN_ANNOTATIONS, function(thisDomain,kk) {
+                    // find and draw thisDomain annotations
+                    angular.forEach($scope.DetailView.annotations, function(annotation,jj) {
+                        if (annotation.domain === thisDomain) {
+                            ctx.beginPath();
+                            ctx.moveTo(annotation.boundary[0][0],annotation.boundary[0][1]);
+                            ctx.lineTo(annotation.boundary[1][0],annotation.boundary[1][1]);
+
+                            ctx.strokeStyle = ANNOTATION_COLORS[thisDomain].thickStrokeStyle;
+                            ctx.lineWidth = ANNOTATION_COLORS[thisDomain].thickLineWidth;
+                            ctx.closePath();
+                            ctx.stroke();
+
+                            ctx.strokeStyle = ANNOTATION_COLORS[thisDomain].thinStrokeStyle;
+                            ctx.lineWidth = ANNOTATION_COLORS[thisDomain].thinLineWidth;
+                            ctx.stroke();
+
+                            ctx.beginPath();
+                            ctx.arc(annotation.boundary[0][0],annotation.boundary[0][1], 5, 0,2*Math.PI);
+                            ctx.closePath();
+
+                            ctx.strokeStyle = ANNOTATION_COLORS[thisDomain].thinStrokeStyle;
+                            ctx.fillStyle = ANNOTATION_COLORS[thisDomain].thickStrokeStyle;
+                            ctx.fill();
+                            ctx.stroke();
+                        }
+                    });
+                });
+            }
+
+        }, // end drawAnnotations()
 
 
 
@@ -394,9 +509,11 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
         toggleAnnotationText: function(domain) {
             $scope.DetailView.showText[domain] = ! $scope.DetailView.showText[domain];
+            $scope.DetailView.drawAnnotations();
         },
         toggleAnnotationGeom: function(domain) {
             $scope.DetailView.showGeom[domain] = ! $scope.DetailView.showGeom[domain];
+            $scope.DetailView.drawAnnotations();
         },
 
     };
@@ -409,9 +526,10 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     // TODO: read from URL here
 
     $scope.ViewChooser.switchView('thumbs',{});
-    $scope.SearchAndThumbView.doSearch(function () {
-        $scope.SearchAndThumbView.switchToImage(25828);
-    });
+    $scope.SearchAndThumbView.doSearch();
+//    $scope.SearchAndThumbView.doSearch(function () {
+//        $scope.SearchAndThumbView.switchToImage(25828);
+//    });
     console.log('--------------------------------------------------------------/');
 
 
