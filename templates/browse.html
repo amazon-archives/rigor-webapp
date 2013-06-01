@@ -161,11 +161,54 @@
                         <p>
                              date: <strong>(( DetailView.image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
                         <br> id: <strong>(( DetailView.image_id ))</strong>
+                        <br> annotations: <strong>(( DetailView.annotations.length ))</strong>
                         <br> <span ng-repeat="tag in DetailView.image.tags">
                                 <a href="" ng-click="clickTag(tag)" class="label label-info">(( tag ))</a>
                              </span>
                         </p>
+
+                        <div>
+                            show annotation text:
+                            <div class="btn-group">
+                                <a href="" ng-click="DetailView.toggleAnnotationText('text:char')"
+                                    ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': DetailView.showText['text:char']}">
+                                    char
+                                </a>
+                                <a href="" ng-click="DetailView.toggleAnnotationText('text:word')"
+                                    ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': DetailView.showText['text:word']}">
+                                    word
+                                </a>
+                                <a href="" ng-click="DetailView.toggleAnnotationText('text:line')"
+                                    ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': DetailView.showText['text:line']}">
+                                    line
+                                </a>
+                            </div>
+                        </div>
+
+                        <div>
+                            show annotation geom:
+                            <div class="btn-group">
+                                <a href="" ng-click="DetailView.toggleAnnotationGeom('text:char')"
+                                    ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': DetailView.showGeom['text:char']}">
+                                    char
+                                </a>
+                                <a href="" ng-click="DetailView.toggleAnnotationGeom('text:word')"
+                                    ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': DetailView.showGeom['text:word']}">
+                                    word
+                                </a>
+                                <a href="" ng-click="DetailView.toggleAnnotationGeom('text:line')"
+                                    ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': DetailView.showGeom['text:line']}">
+                                    line
+                                </a>
+                                <a href="" ng-click="DetailView.toggleAnnotationGeom('text:lineorder')"
+                                    ng-class="{btn: true, 'btn-mini': true, 'btn-inverse': DetailView.showGeom['text:lineorder']}">
+                                    lineorder
+                                </a>
+                            </div>
+                        </div>
+
                     </div>
+                    <!-- end info box -->
 
                 </div>
                 <!-- end sidebar -->
@@ -173,6 +216,12 @@
                 <!-- main image column -->
                 <div class="span9">
                     <img class="img-polaroid overlap allow-large-image" ng-src="(( DetailView.image.url ))">
+                    <canvas
+                        class="polaroid-style-padding overlap allow-large-image"
+                        id="image_canvas"
+                        width="(( DetailView.image.x_resolution ))"
+                        height="(( DetailView.image.y_resolution ))"
+                    ></canvas>
                 </div>
 
             </div>

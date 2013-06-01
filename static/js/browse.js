@@ -299,8 +299,17 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         annotations: [],
 
         // view state
-        showText: {}, // 'text:char':true, ... TODO
-        showGeom: {},
+        showText: {
+            'text:char': true,
+            'text:word': true,
+            'text:line': true,
+        },
+        showGeom: {
+            'text:char': true,
+            'text:word': true,
+            'text:line': true,
+            'text:lineorder': true,
+        },
 
         enter: function(params) {
             // params should be {database_name: 'rigor', image_id: 2423}
@@ -361,6 +370,11 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 });
         },
 
+
+
+
+
+
         nextButtonIsEnabled: function() {
             return false; // TODO
         },
@@ -376,6 +390,13 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             if ($scope.DetailView.prevButtonIsEnabled()) {
                 // TODO
             }
+        },
+
+        toggleAnnotationText: function(domain) {
+            $scope.DetailView.showText[domain] = ! $scope.DetailView.showText[domain];
+        },
+        toggleAnnotationGeom: function(domain) {
+            $scope.DetailView.showGeom[domain] = ! $scope.DetailView.showGeom[domain];
         },
 
     };
