@@ -513,19 +513,27 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
 
         nextButtonIsEnabled: function() {
-            return false; // TODO
+            if ($scope.SearchAndThumbView.result_state !== 'loaded') {
+                return false;
+            }
+            return $scope.DetailView.image.ii < $scope.SearchAndThumbView.result_full_count - 1;
         },
         prevButtonIsEnabled: function() {
-            return false; // TODO
+            if ($scope.SearchAndThumbView.result_state !== 'loaded') {
+                return false;
+            }
+            return $scope.DetailView.image.ii > 0;
         },
         clickNextButton: function() {
             if ($scope.DetailView.nextButtonIsEnabled()) {
                 // TODO
+                $scope.TODO();
             }
         },
         clickPrevButton: function() {
             if ($scope.DetailView.prevButtonIsEnabled()) {
                 // TODO
+                $scope.TODO();
             }
         },
 
