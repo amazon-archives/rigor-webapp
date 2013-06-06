@@ -39,7 +39,7 @@
                 <div class="span3">
                     <div class="well well-small">
 
-                        <form ng-submit="SearchAndThumbView.doSearch()" class="no-bottom-margin">
+                        <form ng-submit="SearchAndThumbView.clickSearchButton()" class="no-bottom-margin">
                             <label>database</label>
                             <select class='rigor-sidebar-form-element' ng-model="SearchAndThumbView.query.database_name">
                                 <option ng-repeat="dbname in SearchAndThumbView.database_name_choices">(( dbname ))</option>

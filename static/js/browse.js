@@ -264,6 +264,10 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             }
         },
 
+        clickSearchButton: function() {
+            $scope.SearchAndThumbView.query.page = 0;
+            $scope.SearchAndThumbView.doSearch();
+        },
         clickClearButton: function() {
             // Set has_tags to [], page to 0, and do the search again.
             $scope.SearchAndThumbView.setHasTags( [] );
