@@ -100,6 +100,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             // new_view should be a string like 'thumbs' or 'detail'
             // params should be a dict to be passed along to the new view.
             var current_view = $scope.ViewChooser.view;
+            console.log('[ViewChooser.switchView] --------------------------------------------------------------------\\');
             console.log('[ViewChooser.switchView] starting to change view from '+current_view+' to '+new_view);
             console.log('[ViewChooser.switchView]    params = ' + JSON.stringify(params));
             if (current_view === new_view) { return; } // TODO: this shoud re-init the current view with the params
@@ -111,6 +112,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             if (new_view === 'thumbs') { $scope.SearchAndThumbView.enter(params); }
             if (new_view === 'detail') { $scope.DetailView.enter(params); }
             console.log('[ViewChooser.switchView] done changing from '+current_view+' to '+new_view);
+            console.log('[ViewChooser.switchView] --------------------------------------------------------------------/');
         }
     };
 
@@ -152,6 +154,18 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 $scope.SearchAndThumbView.fetchDatabaseNameChoices();
             }
             // TODO: if query is given in params, load it and launch a search maybe
+
+            // keep URL updated
+            $location.path('/'+$scope.SearchAndThumbView.query.database_name+'/search');
+            // make a copy of the query object and reformat it for the REST API
+            var queryForUrl = angular.copy($scope.SearchAndThumbView.query);
+            delete queryForUrl.database_name;
+            queryForUrl.has_tags = queryForUrl.has_tags.join(',');
+            $location.search(queryForUrl);
+
+            if ($scope.SearchAndThumbView.result_state === 'empty') {
+                $scope.SearchAndThumbView.doSearch();
+            }
         },
         exit: function() {
             console.log('[SearchAndThumbView.exit]');
@@ -181,8 +195,11 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             var query = angular.copy($scope.SearchAndThumbView.query);
             query.has_tags = query.has_tags.join(',');
 
-            // set URL bar
-            $location.search(query);
+            // keep URL updated
+            var queryForUrl = angular.copy(query);
+            delete queryForUrl.database_name;
+            $location.search(queryForUrl);
+            $location.path('/'+$scope.SearchAndThumbView.query.database_name+'/search');
 
             console.log('[SearchAndThumbView.doSearch] query = ' + JSON.stringify(query));
 
@@ -317,6 +334,11 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             $scope.DetailView.image_id = params.image_id;
             $scope.DetailView.database_name = params.database_name;
             $scope.DetailView.fetchImageDataAndAnnotations();
+
+            // keep URL updated
+            $location.path('/'+$scope.DetailView.database_name+'/image/'+$scope.DetailView.image_id);
+            $location.search('');
+
         },
         exit: function() {
             console.log('[DetailView.exit]');
@@ -523,13 +545,51 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
     console.log('--------------------------------------------------------------\\');
 
-    // TODO: read from URL here
+    // depending on URL, switch to appropriate view
+    var path = $location.path();
+    console.log('[main] path = ' + path);
 
-    $scope.ViewChooser.switchView('thumbs',{});
-    $scope.SearchAndThumbView.doSearch();
-//    $scope.SearchAndThumbView.doSearch(function () {
-//        $scope.SearchAndThumbView.switchToImage(25828);
-//    });
+    if (path.indexOf('/image/') !== -1) {
+        console.log('[main] choosing DETAIL VIEW because of URL');
+
+        var parts = path.split('/');
+        var image_id = parts[parts.length-1];
+        var database_name = parts[1];
+
+        $scope.ViewChooser.switchView('detail',{
+            database_name: database_name,
+            image_id: image_id
+        });
+
+    } else {
+        console.log('[main] choosing SEARCH AND THUMB VIEW because of URL');
+
+        // get database name from URL
+        var parts = path.split('/');
+        var database_name = 'blindsight';
+        if (parts.length >= 2) {
+            database_name = parts[1];
+        }
+        $scope.SearchAndThumbView.query.database_name = database_name;
+
+        // get query from URL
+        angular.forEach($location.search(), function(value,key) {
+            if (key === 'page' || key === 'max_count') {
+                value = parseInt(value,10);
+            }
+            if (key === 'has_tags') {
+                // convert from comma-separated string to actual list object
+                value = value.split(',');
+                $scope.SearchAndThumbView.setHasTags(value);
+            }
+            $scope.SearchAndThumbView.query[key] = value;
+        });
+
+        console.log('[main] query = '+JSON.stringify($scope.SearchAndThumbView.query));
+
+        $scope.ViewChooser.switchView('thumbs',{});
+    }
+
     console.log('--------------------------------------------------------------/');
 
 
@@ -990,7 +1050,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             if (annotation.domain === 'text:line') {
                 result.push(annotation);
             }
-        });
+        /});
         return result;
     };
 
