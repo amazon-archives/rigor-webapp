@@ -103,7 +103,6 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             console.log('[ViewChooser.switchView] --------------------------------------------------------------------\\');
             console.log('[ViewChooser.switchView] starting to change view from '+current_view+' to '+new_view);
             console.log('[ViewChooser.switchView]    params = ' + JSON.stringify(params));
-            if (current_view === new_view) { return; } // TODO: this shoud re-init the current view with the params
             // leave old view
             if (current_view === 'thumbs') { $scope.SearchAndThumbView.exit(); }
             if (current_view === 'detail') { $scope.DetailView.exit(); }
@@ -524,16 +523,82 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             }
             return $scope.DetailView.image.ii > 0;
         },
+        _findNextOrPrevId: function(offset,callback) {
+            // offset should be 1 or -1.
+            // Finds the id of the image with ii equal to current image's ii + offset.
+            // If needed, changes the search results page and does a new search.
+            // Calls callback(id) when done.
+
+            var new_ii = $scope.DetailView.image.ii + offset;
+            console.log('[DetailView._findNextOrPrevId] looking for the id of image with ii = ' + new_ii);
+
+            // find min and max ii of existing search results
+            var min_ii = $scope.SearchAndThumbView.result_images[0].ii;
+            var max_ii = $scope.SearchAndThumbView.result_images[$scope.SearchAndThumbView.result_images.length-1].ii;
+
+            // went past the beginning of the search results
+            if (new_ii < min_ii) {
+                console.log('[DetailView._findNextOrPrevId] looking at the previous page and doing a new search...');
+                $scope.SearchAndThumbView.query.page -= 1;
+                $scope.SearchAndThumbView.doSearch(function() {
+                    // after search is done, return the id of the last result
+                    var new_id = $scope.SearchAndThumbView.result_images[$scope.SearchAndThumbView.result_images.length-1].id;
+                    console.log('...[DetailView._findNextOrPrevId] search is done.  new id = ' + new_id);
+                    callback(new_id);
+                });
+                return;
+            }
+
+            // went past the end of the search results
+            if (new_ii > max_ii) {
+                console.log('[DetailView._findNextOrPrevId] looking at the next page and doing a new search...');
+                $scope.SearchAndThumbView.query.page += 1;
+                $scope.SearchAndThumbView.doSearch(function() {
+                    // after search is done, return the id of the first result
+                    var new_id = $scope.SearchAndThumbView.result_images[0].id;
+                    console.log('...[DetailView._findNextOrPrevId] search is done.  new id = ' + new_id);
+                    callback(new_id);
+                });
+                return;
+            }
+
+            // the ii we want is in the existing search results.  find it there
+            var new_id = undefined;
+            angular.forEach($scope.SearchAndThumbView.result_images, function(img,jj) {
+                if (img.ii == new_ii) {
+                    console.log('[DetailView._findNextOrPrevId] new id found in existing search results: '+new_id);
+                    callback(img.id);
+                }
+            });
+
+            return new_id;
+        },
         clickNextButton: function() {
             if ($scope.DetailView.nextButtonIsEnabled()) {
-                // TODO
-                $scope.TODO();
+                console.log('[DetailView.clickNextButton] getting next id...');
+                $scope.DetailView._findNextOrPrevId(1,function(new_id) {
+                    if (typeof new_id === 'undefined') { return; }
+                    // update view
+                    console.log('...[DetailView.clickNextButton] switching to next id '+new_id);
+                    $scope.ViewChooser.switchView('detail',{
+                        database_name: $scope.DetailView.database_name,
+                        image_id: new_id
+                    });
+                });
             }
         },
         clickPrevButton: function() {
             if ($scope.DetailView.prevButtonIsEnabled()) {
-                // TODO
-                $scope.TODO();
+                console.log('[DetailView.clickPrevButton] getting prev id...');
+                $scope.DetailView._findNextOrPrevId(-1,function(new_id) {
+                    if (typeof new_id === 'undefined') { return; }
+                    // update view
+                    console.log('...[DetailView.clickPrevButton] switching to prev id '+new_id);
+                    $scope.ViewChooser.switchView('detail',{
+                        database_name: $scope.DetailView.database_name,
+                        image_id: new_id
+                    });
+                });
             }
         },
 
