@@ -159,8 +159,9 @@
                     <!-- info box -->
                     <div class="well well-small">
                         <p>
-                             date: <strong>(( DetailView.image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
-                        <br> id: <strong>(( DetailView.image_id ))</strong>
+                             id: <strong>(( DetailView.image_id ))</strong>
+                        <br> db: <strong>(( DetailView.database_name ))</strong>
+                        <br> date: <strong>(( DetailView.image.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
                         <br> annotations: <strong>(( DetailView.annotations.length ))</strong>
                         <br> <span ng-repeat="tag in DetailView.image.tags">
                                 <a href="" ng-click="clickTag(tag)" class="label label-info">(( tag ))</a>
