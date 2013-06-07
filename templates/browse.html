@@ -53,6 +53,24 @@
                                 <a href="" ng-click="SearchAndThumbView.clickClearButton()" class="btn">Clear</a>
                             </div>
 
+
+                            <br>
+                            <br>
+                            <br>
+                            <label>new tag chooser, not hooked up yet</label>
+                            <input
+                                type="hidden"
+                                class="rigor-sidebar-form-element2"
+                                ng-model="SearchAndThumbView.has_tags_select2_user_input"
+                                ng-multiple
+                                ui-select2="SearchAndThumbView.has_tags_select2_settings"
+                            />
+                            <div>
+                                <br> <b> settings: </b> (( SearchAndThumbView.has_tags_select2_settings | json ))
+                                <br> <b> user_input: </b> (( SearchAndThumbView.has_tags_select2_user_input | json ))
+                            </div>
+
+
                             <!-- debug output -->
                             <div>
                                 <br> <b>query:</b>

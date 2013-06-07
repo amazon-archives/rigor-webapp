@@ -81,6 +81,17 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     };
 
 
+    var modifyListInPlace = function(oldList,newList) {
+        // Replace the contents of oldList with the contents of newList
+        // but preserve the actual list object of oldList
+        while (oldList.length > 0) {oldList.pop();}
+        angular.forEach(newList, function(item,ii) {
+            newList.push(item);
+        });
+        console.log(oldList);
+        console.log(newList);
+    };
+
 
 
 
@@ -126,7 +137,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
         // state of the form elements
         has_tags_select2_settings: {
-            tags: [],
+            tags: [], // tag choices
             tokenSeparators: [',', ' ']
         },
         has_tags_select2_user_input: [],
@@ -245,8 +256,34 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         setHasTags: function(tags) {
             // Set has_tags to the given list of tags.
             // Affects both the search form field and the query object.
+
+            console.log('///////////////////');
+            console.log('tags = ' + JSON.stringify(tags));
+
             $scope.SearchAndThumbView.has_tags_user_input = tags.join(' ');
             $scope.SearchAndThumbView.query.has_tags = tags;
+
+            console.log('has_tags_user_input = ' + JSON.stringify($scope.SearchAndThumbView.has_tags_user_input));
+            console.log('query.has_tags = ' + JSON.stringify($scope.SearchAndThumbView.query.has_tags));
+
+            //modifyListInPlace(
+            //    $scope.SearchAndThumbView.has_tags_select2_user_input,
+            //    tags
+            //);
+
+            $scope.SearchAndThumbView.has_tags_select2_user_input = [];
+            angular.forEach(tags, function(tag,ii) {
+                // TODO: how to know if we should add objects or strings here?
+                // select2 sometimes wants one kind and sometimes the other.
+                $scope.SearchAndThumbView.has_tags_select2_user_input.push({
+                    id: tag,
+                    text: tag
+                });
+            });
+
+            console.log('select2_user_input = ' + JSON.stringify($scope.SearchAndThumbView.has_tags_select2_user_input));
+            console.log('///////////////////');
+
         },
 
         clickTag: function(tag) {
@@ -294,8 +331,12 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         console.log('[SearchAndThumbView watch query.database_name] getting tags for '+newValue+'...');
         $http.get('/api/v1/db/'+$scope.SearchAndThumbView.query.database_name+'/tag')
             .success(function(data,status,headers,config) {
+                // update tag choices
                 $scope.SearchAndThumbView.tag_choices = data['d'];
-                // TODO: push into select2 also
+                modifyListInPlace(
+                    $scope.SearchAndThumbView.has_tags_select2_settings.tags,
+                    data['d']
+                );
                 console.log('...[SearchAndThumbView watch query.database_name] got ' + data['d'].length + ' tags');
             })
             .error(function(data,status,headers,config) {
