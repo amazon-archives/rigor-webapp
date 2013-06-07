@@ -45,19 +45,7 @@
                                 <option ng-repeat="dbname in SearchAndThumbView.database_name_choices">(( dbname ))</option>
                             </select>
 
-                            <label>has_tags</label>
-                            <input type="text" class="rigor-sidebar-form-element2" ng-model="SearchAndThumbView.has_tags_user_input">
-
-                            <div class="btn-group">
-                                <button type="submit" class="btn btn-primary"> Search </button>
-                                <a href="" ng-click="SearchAndThumbView.clickClearButton()" class="btn">Clear</a>
-                            </div>
-
-
-                            <br>
-                            <br>
-                            <br>
-                            <label>new tag chooser, not hooked up yet</label>
+                            <label>has tags</label>
                             <input
                                 type="hidden"
                                 class="rigor-sidebar-form-element2"
@@ -65,13 +53,23 @@
                                 ng-multiple
                                 ui-select2="SearchAndThumbView.has_tags_select2_settings"
                             />
-                            <div>
-                                <br> <b> settings: </b> (( SearchAndThumbView.has_tags_select2_settings | json ))
-                                <br> <b> user_input: </b> (( SearchAndThumbView.has_tags_select2_user_input | json ))
+                            <!--
+                            <input type="text" class="rigor-sidebar-form-element2" ng-model="SearchAndThumbView.has_tags_user_input">
+                            -->
+
+                            <div>&nbsp;</div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary"> Search </button>
+                                <a href="" ng-click="SearchAndThumbView.clickClearButton()" class="btn">Clear</a>
                             </div>
 
 
                             <!-- debug output -->
+                            <!--
+                            <div>
+                                <br> <b> settings: </b> (( SearchAndThumbView.has_tags_select2_settings | json ))
+                                <br> <b> user_input: </b> (( SearchAndThumbView.has_tags_select2_user_input | json ))
+                            </div>
                             <div>
                                 <br> <b>query:</b>
                                 <br> <pre>(( SearchAndThumbView.query | json ))</pre>
@@ -82,6 +80,7 @@
                                 <br> <b>tag_choices:</b>
                                 <br> (( SearchAndThumbView.tag_choices | json ))
                             </div>
+                            -->
 
                         </form>
 

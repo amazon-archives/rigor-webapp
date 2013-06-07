@@ -159,7 +159,6 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             //}
         },
         has_tags_select2_user_input: [],
-        has_tags_user_input: '',
 
         // the query dict for doing searches
         query: {
@@ -279,10 +278,8 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             console.log('/////////////////// setHasTags, pageLoading = ' + pageLoading);
             console.log('tags = ' + JSON.stringify(tags));
 
-            $scope.SearchAndThumbView.has_tags_user_input = tags.join(' ');
             $scope.SearchAndThumbView.query.has_tags = tags;
 
-            console.log('has_tags_user_input = ' + JSON.stringify($scope.SearchAndThumbView.has_tags_user_input));
             console.log('query.has_tags = ' + JSON.stringify($scope.SearchAndThumbView.query.has_tags));
 
             var newTags = [];
@@ -361,7 +358,9 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                     data['d'],
                     $scope.SearchAndThumbView.has_tags_select2_settings.tags
                 );
-                $scope.SearchAndThumbView.setHasTags([], false);
+                if (newValue !== oldValue) {
+                    $scope.SearchAndThumbView.setHasTags([], false);
+                }
                 console.log('...[SearchAndThumbView watch query.database_name] got ' + data['d'].length + ' tags');
             })
             .error(function(data,status,headers,config) {
@@ -370,9 +369,13 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     });
 
     // keep the query up to date as the form changes
-    $scope.$watch('SearchAndThumbView.has_tags_user_input', function(newValue,oldValue) {
-        // convert space-separated tags to comma-separated for the API
-        $scope.SearchAndThumbView.query.has_tags = tokenizeString($scope.SearchAndThumbView.has_tags_user_input);
+    $scope.$watch('SearchAndThumbView.has_tags_select2_user_input', function(newValue,oldValue) {
+        // convert select2 tag objects to a simple list of tags
+        var tags = [];
+        angular.forEach($scope.SearchAndThumbView.has_tags_select2_user_input, function(tagObject,ii) {
+            tags.push(tagObject.text);
+        });
+        $scope.SearchAndThumbView.query.has_tags = tags;
     });
 
 
