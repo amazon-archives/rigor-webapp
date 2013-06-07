@@ -81,15 +81,22 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     };
 
 
-    var modifyListInPlace = function(oldList,newList) {
-        // Replace the contents of oldList with the contents of newList
-        // but preserve the actual list object of oldList
-        while (oldList.length > 0) {oldList.pop();}
-        angular.forEach(newList, function(item,ii) {
-            newList.push(item);
+    var copyOverList = function(sourceList,targetList) {
+        // Replace the contents of targetList with the contents of sourceList
+        // but preserve the actual list object of targetList
+
+        //console.log()
+        //console.log('COPY OVER LIST');
+        //console.log('   old list = ' + JSON.stringify(targetList));
+        //console.log('   new list = ' + JSON.stringify(sourceList));
+        while (targetList.length > 0) {targetList.pop();}
+        angular.forEach(sourceList, function(item,ii) {
+            targetList.push(item);
         });
-        console.log(oldList);
-        console.log(newList);
+        //console.log('   ---');
+        //console.log('   old list = ' + JSON.stringify(targetList));
+        //console.log('   new list = ' + JSON.stringify(sourceList));
+        //console.log()
     };
 
 
@@ -138,7 +145,18 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         // state of the form elements
         has_tags_select2_settings: {
             tags: [], // tag choices
-            tokenSeparators: [',', ' ']
+            tokenSeparators: [',', ' '],
+            //query: function(query) {
+            //    console.log('query <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
+            //    var results = [
+            //        { id: 'hello', text: 'hello'},
+            //        { id: 'there', text: 'there'},
+            //    ];
+            //    query.callback({results: results});
+            //},
+            //createSearchChoice: function(term) {
+            //    return { id: term, text: term};
+            //}
         },
         has_tags_select2_user_input: [],
         has_tags_user_input: '',
@@ -253,11 +271,12 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             }
         },
 
-        setHasTags: function(tags) {
+        setHasTags: function(tags,pageLoading) {
             // Set has_tags to the given list of tags.
             // Affects both the search form field and the query object.
 
-            console.log('///////////////////');
+            console.log('');
+            console.log('/////////////////// setHasTags, pageLoading = ' + pageLoading);
             console.log('tags = ' + JSON.stringify(tags));
 
             $scope.SearchAndThumbView.has_tags_user_input = tags.join(' ');
@@ -266,23 +285,28 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             console.log('has_tags_user_input = ' + JSON.stringify($scope.SearchAndThumbView.has_tags_user_input));
             console.log('query.has_tags = ' + JSON.stringify($scope.SearchAndThumbView.query.has_tags));
 
-            //modifyListInPlace(
-            //    $scope.SearchAndThumbView.has_tags_select2_user_input,
-            //    tags
-            //);
-
-            $scope.SearchAndThumbView.has_tags_select2_user_input = [];
-            angular.forEach(tags, function(tag,ii) {
-                // TODO: how to know if we should add objects or strings here?
-                // select2 sometimes wants one kind and sometimes the other.
-                $scope.SearchAndThumbView.has_tags_select2_user_input.push({
-                    id: tag,
-                    text: tag
+            var newTags = [];
+            if (tags.length === 1 && tags[0] === "") {
+                // pass
+            } else {
+                angular.forEach(tags, function(tag,ii) {
+                    // TODO: how to know if we should add objects or strings here?
+                    // select2 sometimes wants one kind and sometimes the other.
+                    if (pageLoading) {
+                        newTags.push(tag);
+                    } else {
+                        newTags.push({
+                            id: tag,
+                            text: tag
+                        });
+                    }
                 });
-            });
+            }
+            $scope.SearchAndThumbView.has_tags_select2_user_input = newTags;
 
             console.log('select2_user_input = ' + JSON.stringify($scope.SearchAndThumbView.has_tags_select2_user_input));
             console.log('///////////////////');
+            console.log('');
 
         },
 
@@ -295,7 +319,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 // add the tag to the has_tags form
                 var existing_tags = $scope.SearchAndThumbView.query.has_tags;
                 existing_tags.push(tag)
-                $scope.SearchAndThumbView.setHasTags( existing_tags );
+                $scope.SearchAndThumbView.setHasTags( existing_tags, false );
 
                 // and refresh the search
                 $scope.SearchAndThumbView.query.page = 0;
@@ -310,7 +334,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         },
         clickClearButton: function() {
             // Set has_tags to [], page to 0, and do the search again.
-            $scope.SearchAndThumbView.setHasTags( [] );
+            $scope.SearchAndThumbView.setHasTags( [], false );
             $scope.SearchAndThumbView.query.page = 0;
             $scope.SearchAndThumbView.doSearch();
         },
@@ -333,10 +357,11 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             .success(function(data,status,headers,config) {
                 // update tag choices
                 $scope.SearchAndThumbView.tag_choices = data['d'];
-                modifyListInPlace(
-                    $scope.SearchAndThumbView.has_tags_select2_settings.tags,
-                    data['d']
+                copyOverList(
+                    data['d'],
+                    $scope.SearchAndThumbView.has_tags_select2_settings.tags
                 );
+                $scope.SearchAndThumbView.setHasTags([], false);
                 console.log('...[SearchAndThumbView watch query.database_name] got ' + data['d'].length + ' tags');
             })
             .error(function(data,status,headers,config) {
@@ -702,7 +727,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             if (key === 'has_tags') {
                 // convert from comma-separated string to actual list object
                 value = value.split(',');
-                $scope.SearchAndThumbView.setHasTags(value);
+                $scope.SearchAndThumbView.setHasTags(value, true);
             }
             $scope.SearchAndThumbView.query[key] = value;
         });
