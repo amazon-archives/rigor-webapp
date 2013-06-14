@@ -11,7 +11,8 @@
     <script src="/static/js/vendor/jquery-1.9.1.js"></script>
     <script src="/static/js/vendor/select2-3.2.0.js"></script>
 
-    <script src="/static/js/vendor/angular-1.0.6.js" type="text/javascript" charset="utf-8"></script>
+    <!--script src="/static/js/vendor/angular-1.0.6.js" type="text/javascript" charset="utf-8"></script-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js" type="text/javascript" charset="utf-8"></script>
 
     <script src="/static/js/vendor/angular-ui-0.3.2.js"></script>
 
@@ -234,12 +235,70 @@
                 <!-- main image column -->
                 <div class="span9">
                     <img class="img-polaroid overlap allow-large-image" ng-src="(( DetailView.image.url ))">
-                    <canvas
+                    <!--canvas
                         class="polaroid-style-padding overlap allow-large-image"
                         id="image_canvas"
                         width="(( DetailView.image.x_resolution ))"
                         height="(( DetailView.image.y_resolution ))"
-                    ></canvas>
+                    ></canvas-->
+                    <svg
+                        class="polaroid-style-padding overlap allow-large-image dotted"
+                        ng-attr-width="(( DetailView.image.x_resolution ))"
+                        ng-attr-height="(( DetailView.image.y_resolution ))"
+                        >
+                            <!-- TODO: lineorder -->
+                            <polygon
+                                class="svg-polygon-line"
+                                ng-show="DetailView.showGeom['text:line']"
+                                ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:line')"
+                                ng-attr-points="(( DetailView.annotationToSvgPoints(annotation) ))"
+                            />
+                            <polygon
+                                class="svg-polygon-word"
+                                ng-show="DetailView.showGeom['text:word']"
+                                ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:word')"
+                                ng-attr-points="(( DetailView.annotationToSvgPoints(annotation) ))"
+                            />
+                            <polygon
+                                class="svg-polygon-char"
+                                ng-show="DetailView.showGeom['text:char']"
+                                ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:char')"
+                                ng-attr-points="(( DetailView.annotationToSvgPoints(annotation) ))"
+                            />
+
+
+                            <text
+                                class="svg-text-line"
+                                ng-show="DetailView.showText['text:line']"
+                                ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:line')"
+                                ng-attr-points="(( DetailView.annotationToSvgPoints(annotation) ))"
+                                ng-attr-x = "(( annotation.boundary[0][0] ))"
+                                ng-attr-y = "(( annotation.boundary[0][1] - 18*2 ))"
+                            >
+                                (( annotation.model ))
+                            </text>
+                            <text
+                                class="svg-text-word"
+                                ng-show="DetailView.showText['text:word']"
+                                ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:word')"
+                                ng-attr-points="(( DetailView.annotationToSvgPoints(annotation) ))"
+                                ng-attr-x = "(( annotation.boundary[0][0] ))"
+                                ng-attr-y = "(( annotation.boundary[0][1] - 18 ))"
+                            >
+                                (( annotation.model ))
+                            </text>
+                            <text
+                                class="svg-text-char"
+                                ng-show="DetailView.showText['text:char']"
+                                ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:char')"
+                                ng-attr-points="(( DetailView.annotationToSvgPoints(annotation) ))"
+                                ng-attr-x = "(( annotation.boundary[0][0] ))"
+                                ng-attr-y = "(( annotation.boundary[0][1] ))"
+                            >
+                                (( annotation.model ))
+                            </text>
+
+                    </svg>
                 </div>
 
             </div>

@@ -405,7 +405,6 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             'text:lineorder': true,
         },
 
-
         enter: function(params) {
             // params should be {database_name: 'rigor', image_id: 2423}
             console.log('[DetailView.enter] params = ' + JSON.stringify(params));
@@ -471,7 +470,27 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 });
         },
 
+
+        getAnnotationsByDomain: function(domain) {
+            var result = [];
+            angular.forEach($scope.DetailView.annotations, function(annotation,ii) {
+                if (annotation.domain === domain) {
+                    result.push(annotation);
+                }
+            });
+            return result;
+        },
+
+        annotationToSvgPoints: function(annotation) {
+            var result = '';
+            angular.forEach(annotation.boundary, function(point,ii) {
+                result = result + point[0] + ',' + point[1] + ' ';
+            });
+            return result;
+        },
+
         drawAnnotations: function() {
+            return; // hack
             console.log('[DetailView.drawAnnotations]');
             var canvas = document.getElementById('image_canvas');
             var ctx = canvas.getContext('2d');

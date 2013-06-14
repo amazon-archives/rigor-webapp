@@ -33,3 +33,40 @@ body {
 }
 
 
+.svg-polygon-char {
+    stroke-width: 2;
+    fill: hsla(200,100%,45%,0.2);
+    stroke: hsla(200,100%,70%,0.8);
+}
+.svg-polygon-word {
+    stroke-width: 2;
+    fill: hsla(130,70%,40%,0.25);
+    stroke: hsla(130,70%,30%,0.8);
+}
+.svg-polygon-line {
+    stroke-width: 2;
+    fill: hsla(25,100%,45%,0.25);
+    stroke: hsla(25,100%,80%,0.8);
+}
+.svg-polygon-lineorder {
+    stroke-width: 2;
+}
+
+
+.svg-text-char {
+    font-size: 20px;
+    font-family: "Arial";
+    fill: hsla(200,60%,40%,0.9);
+}
+.svg-text-word {
+    font-size: 20px;
+    font-family: "Arial";
+    fill: hsla(130,60%,40%,0.9);
+}
+.svg-text-line {
+    font-size: 20px;
+    font-family: "Arial";
+    fill: hsla(25,60%,40%,0.9);
+}
+
+
