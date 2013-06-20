@@ -52,28 +52,36 @@ body {
     stroke-width: 2;
 }
 
-
-.svg-text-char {
-    font-size: 20px;
-    font-family: "Arial";
-    fill: hsla(200,60%,40%,0.9);
-}
-.svg-text-word {
-    font-size: 20px;
-    font-family: "Arial";
-    fill: hsla(130,60%,40%,0.9);
-}
-.svg-text-line {
-    font-size: 20px;
-    font-family: "Arial";
-    fill: hsla(25,60%,40%,0.9);
-}
-.svg-text-border {
-    font-size: 20px;
-    font-family: "Arial";
-    stroke: #fff;
-    stroke-width: 4px;
-    stroke-opacity: 0.5;
+.svg-polygon-selected {
+    stroke-width: 4 !important;
+    stroke: hsla(345,100%,55%,0.8);
 }
 
+.model-text-char {
+    color: hsl(200,60%,40%);
+    background: hsla(0,0%,100%,0.7);
+    padding: 1px;
+    line-height: normal;
+}
+.model-text-word {
+    color: hsl(130,60%,40%);
+    background: hsla(0,0%,100%,0.7);
+    padding: 1px;
+    line-height: normal;
+}
+.model-text-line {
+    color: hsl(25,60%,40%);
+    background: hsla(0,0%,100%,0.7);
+    padding: 1px;
+    line-height: normal;
+}
+.model-text-selected {
+    color: hsl(345,100%,55%) !important;
+    background: hsla(0,0%,100%,1);
+}
+
+.model-text-sidebar {
+    white-space: pre-wrap;
+    font-size: 15px;
+}
 

@@ -405,6 +405,9 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             'text:lineorder': true,
         },
 
+        // selected annotation
+        selected_annotation: null,
+
         enter: function(params) {
             // params should be {database_name: 'rigor', image_id: 2423}
             console.log('[DetailView.enter] params = ' + JSON.stringify(params));
@@ -412,10 +415,12 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             $scope.DetailView.database_name = params.database_name;
             $scope.DetailView.fetchImageDataAndAnnotations();
 
+            // clear annotation selection
+            $scope.DetailView.selected_annotation = null;
+
             // keep URL updated
             $location.path('/'+$scope.DetailView.database_name+'/image/'+$scope.DetailView.image_id);
             $location.search('');
-
         },
         exit: function() {
             console.log('[DetailView.exit]');
@@ -696,6 +701,18 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                     });
                 });
             }
+        },
+
+        isSelectedAnnotation: function(annotation) {
+            if ($scope.DetailView.selected_annotation) {
+                return annotation.id === $scope.DetailView.selected_annotation.id;
+            } else {
+                return false;
+            }
+        },
+
+        clickAnnotation: function(annotation) {
+            $scope.DetailView.selected_annotation = annotation;
         },
 
         toggleAnnotationText: function(domain) {

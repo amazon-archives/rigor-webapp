@@ -229,6 +229,19 @@
                     </div>
                     <!-- end info box -->
 
+                    <!-- selection info box -->
+                    <div class="well well-small" ng-show="DetailView.selected_annotation">
+                        <p>
+                        <b> selected annotation </b>
+                        <br> domain: <strong>(( DetailView.selected_annotation.domain ))</strong>
+                        <br> date: <strong>(( DetailView.selected_annotation.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
+                        <br> id: <strong>(( DetailView.selected_annotation.id ))</strong>
+                        <br> confidence: <strong>(( DetailView.selected_annotation.confidence ))</strong>
+                        <br> model: <code class="model-text-sidebar">(( DetailView.selected_annotation.model ))</code>
+                        </p>
+                    </div>
+                    <!-- end selection info box -->
+
                 </div>
                 <!-- end sidebar -->
 
@@ -248,55 +261,27 @@
                         >
                             <!-- TODO: lineorder -->
                             <polygon
-                                class="svg-polygon-line"
+                                ng-attr-class="(( 'svg-polygon-line ' + (DetailView.isSelectedAnnotation(annotation) && 'svg-polygon-selected') ))"
                                 ng-show="DetailView.showGeom['text:line']"
                                 ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:line')"
                                 ng-attr-points="(( DetailView.annotationToSvgPoints(annotation) ))"
+                                ng-click="DetailView.clickAnnotation(annotation)"
                             />
                             <polygon
-                                class="svg-polygon-word"
+                                ng-attr-class="(( 'svg-polygon-word ' + (DetailView.isSelectedAnnotation(annotation) && 'svg-polygon-selected') ))"
                                 ng-show="DetailView.showGeom['text:word']"
                                 ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:word')"
                                 ng-attr-points="(( DetailView.annotationToSvgPoints(annotation) ))"
+                                ng-click="DetailView.clickAnnotation(annotation)"
                             />
                             <polygon
-                                class="svg-polygon-char"
+                                ng-attr-class="(( 'svg-polygon-char ' + (DetailView.isSelectedAnnotation(annotation) && 'svg-polygon-selected') ))"
                                 ng-show="DetailView.showGeom['text:char']"
                                 ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:char')"
                                 ng-attr-points="(( DetailView.annotationToSvgPoints(annotation) ))"
+                                ng-click="DetailView.clickAnnotation(annotation)"
                             />
 
-
-                            <text
-                                class="svg-text-line"
-                                ng-show="DetailView.showText['text:line']"
-                                ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:line')"
-                                ng-attr-points="(( DetailView.annotationToSvgPoints(annotation) ))"
-                                ng-attr-x = "(( annotation.boundary[0][0] ))"
-                                ng-attr-y = "(( annotation.boundary[0][1] - 18*2 ))"
-                            >
-                                (( annotation.model ))
-                            </text>
-                            <text
-                                class="svg-text-word"
-                                ng-show="DetailView.showText['text:word']"
-                                ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:word')"
-                                ng-attr-points="(( DetailView.annotationToSvgPoints(annotation) ))"
-                                ng-attr-x = "(( annotation.boundary[0][0] ))"
-                                ng-attr-y = "(( annotation.boundary[0][1] - 18 ))"
-                            >
-                                (( annotation.model ))
-                            </text>
-                            <text
-                                class="svg-text-char"
-                                ng-show="DetailView.showText['text:char']"
-                                ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:char')"
-                                ng-attr-points="(( DetailView.annotationToSvgPoints(annotation) ))"
-                                ng-attr-x = "(( annotation.boundary[0][0] ))"
-                                ng-attr-y = "(( annotation.boundary[0][1] ))"
-                            >
-                                (( annotation.model ))
-                            </text>
                             <!--
                             <image
                                 xlink:href="http://www.glorioustreats.com/wp-content/uploads/2010/04/Chocolate-cupcakes-1-e1343274163739.jpg"
@@ -309,6 +294,42 @@
                             -->
 
                     </svg>
+                    <div
+                        ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:line')"
+                        ng-class="{overlap: true, 'model-text-line': true, 'model-text-selected': DetailView.isSelectedAnnotation(annotation)}"
+                        ng-show="DetailView.showText['text:line']"
+                        ng-click="DetailView.clickAnnotation(annotation)"
+                        style="((
+                            'margin-left:' + annotation.boundary[0][0] + 'px; ' +
+                            'margin-top:'  + (annotation.boundary[0][1]-40) + 'px; '
+                        ))"
+                    >
+                        (( annotation.model ))
+                    </div>
+                    <div
+                        ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:word')"
+                        ng-class="{overlap: true, 'model-text-word': true, 'model-text-selected': DetailView.isSelectedAnnotation(annotation)}"
+                        ng-show="DetailView.showText['text:word']"
+                        ng-click="DetailView.clickAnnotation(annotation)"
+                        style="((
+                            'margin-left:' + annotation.boundary[0][0] + 'px; ' +
+                            'margin-top:'  + (annotation.boundary[0][1]-20) + 'px; '
+                        ))"
+                    >
+                        (( annotation.model ))
+                    </div>
+                    <div
+                        ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:char')"
+                        ng-class="{overlap: true, 'model-text-char': true, 'model-text-selected': DetailView.isSelectedAnnotation(annotation)}"
+                        ng-show="DetailView.showText['text:char']"
+                        ng-click="DetailView.clickAnnotation(annotation)"
+                        style="((
+                            'margin-left:' + annotation.boundary[0][0] + 'px; ' +
+                            'margin-top:'  + annotation.boundary[0][1] + 'px; '
+                        ))"
+                    >
+                        (( annotation.model ))
+                    </div>
                 </div>
 
             </div>
