@@ -172,6 +172,14 @@ def getImageAnnotations(database_name, id):
     debugMain('getImageAnnotations.  id = %s' % id)
     return jsonify(d=result)
 
+@app.route('/api/v1/db/<database_name>/image/<id>/annotation/<annotation_id>/tag', methods=['GET'])
+@use_basic_auth
+def getAnnotationTags(database_name, id, annotation_id):
+    simulateSlow()
+    result = backend.getAnnotationTags(database_name=database_name, id=annotation_id)
+    debugMain('getAnnotationTags.  id = %s' % id)
+    return jsonify(d=result)
+
 # http://ea:5000/api/v1/db/rigor/tag
 @app.route('/api/v1/db/<database_name>/tag', methods=['GET'])
 @use_basic_auth

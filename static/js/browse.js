@@ -713,6 +713,20 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
         clickAnnotation: function(annotation) {
             $scope.DetailView.selected_annotation = annotation;
+            // fetch annotation tags if needed
+            if (! $scope.DetailView.selected_annotation.hasOwnProperty('tags')) {
+                console.log('[DetailView.clickAnnotation] fetching annotation tags');
+                $http.get('/api/v1/db/'+$scope.DetailView.database_name+'/image/'+$scope.DetailView.image_id+'/annotation/'+annotation.id+'/tag')
+                    .success(function(data,status,headers,config) {
+                        console.log('...[DetailView.clickAnnotation] success');
+                        if (data['d'].length > 0) {
+                            $scope.DetailView.selected_annotation.tags = data['d'];
+                        }
+                    })
+                    .error(function(data,status,headers,config) {
+                        console.log('...[DetailView.clickAnnotation] error');
+                    });
+            }
         },
 
         toggleAnnotationText: function(domain) {

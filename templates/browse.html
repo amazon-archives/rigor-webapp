@@ -238,6 +238,10 @@
                         <br> id: <strong>(( DetailView.selected_annotation.id ))</strong>
                         <br> confidence: <strong>(( DetailView.selected_annotation.confidence ))</strong>
                         <br> model: <code class="model-text-sidebar">(( DetailView.selected_annotation.model ))</code>
+                        <br> <span ng-repeat="tag in DetailView.selected_annotation.tags">
+                                <span href="" class="label label-info">(( tag ))</span>
+                             </span>
+                        </p>
                         </p>
                     </div>
                     <!-- end selection info box -->

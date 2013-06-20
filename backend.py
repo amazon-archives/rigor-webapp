@@ -304,6 +304,17 @@ def getImageAnnotations(database_name, id):
 
     return rows
 
+
+def getAnnotationTags(database_name, id):
+    conn = getDbConnection(database_name)
+    debugDetail('getting tags for annotation %s' % id)
+    sql = """SELECT * FROM annotation_tag WHERE annotation_id = %s;"""
+    values = (id,)
+    tags = []
+    for row in dbQueryDict(conn, sql, values):
+        tags.append(row['name'])
+    return tags
+
 #--------------------------------------------------------------------------------
 # MAIN
 
