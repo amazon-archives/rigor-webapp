@@ -68,5 +68,12 @@ body {
     font-family: "Arial";
     fill: hsla(25,60%,40%,0.9);
 }
+.svg-text-border {
+    font-size: 20px;
+    font-family: "Arial";
+    stroke: #fff;
+    stroke-width: 4px;
+    stroke-opacity: 0.5;
+}
 
 
