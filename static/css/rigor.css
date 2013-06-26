@@ -59,21 +59,24 @@ body {
 
 .model-text-char {
     color: hsl(200,60%,40%);
-    background: hsla(0,0%,100%,0.7);
-    padding: 1px;
+    background: hsla(0,0%,100%,0.8);
+    padding: 1px 2px;
     line-height: normal;
+    font-size: 16px;
 }
 .model-text-word {
     color: hsl(130,60%,40%);
-    background: hsla(0,0%,100%,0.7);
-    padding: 1px;
+    background: hsla(0,0%,100%,0.8);
+    padding: 1px 2px;
     line-height: normal;
+    font-size: 16px;
 }
 .model-text-line {
     color: hsl(25,60%,40%);
-    background: hsla(0,0%,100%,0.7);
-    padding: 1px;
+    background: hsla(0,0%,100%,0.8);
+    padding: 1px 2px;
     line-height: normal;
+    font-size: 16px;
 }
 .model-text-selected {
     color: hsl(345,100%,55%) !important;
