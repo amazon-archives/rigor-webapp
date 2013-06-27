@@ -391,6 +391,18 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         // fetched data
         image: {},
         annotations: [],
+        /*
+        an annotation looks like {
+            boundary: [ [x,y], [x,y], [x,y], [x,y] ]
+            confidence: 0
+            domain: "text:word"
+            id: 59284
+            image_id: 29484
+            model: "Hello"
+            stamp: 1369204150
+            _edit_state: "unchanged"  // is added here in the browser, not from the backend.  unchanged, edited, deleted, new
+        }
+        */
 
         // view state
         showText: {
@@ -405,8 +417,13 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             'text:lineorder': true,
         },
 
-        // selected annotation
+        // selected annotation: will be one of the objects from annotations list
         selected_annotation: null,
+        annotation_has_just_been_changed: false,
+
+        // should the save button be enabled?
+        can_save: false,
+        save_state: 'nothing', // nothing, can_save, saving, error
 
         enter: function(params) {
             // params should be {database_name: 'rigor', image_id: 2423}
@@ -415,8 +432,10 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             $scope.DetailView.database_name = params.database_name;
             $scope.DetailView.fetchImageDataAndAnnotations();
 
-            // clear annotation selection
+            // clear annotation selection and save button state
             $scope.DetailView.selected_annotation = null;
+            $scope.DetailView.can_save = false;
+            $scope.DetailView.save_state = 'nothing';
 
             // keep URL updated
             $location.path('/'+$scope.DetailView.database_name+'/image/'+$scope.DetailView.image_id);
@@ -467,8 +486,12 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             $http.get('/api/v1/db/'+$scope.DetailView.database_name+'/image/'+$scope.DetailView.image_id+'/annotation')
                 .success(function(data,status,headers,config) {
                     $scope.DetailView.annotations = data['d']
-                    $scope.DetailView.drawAnnotations();
                     console.log('...[DetailView.fetchAnnotations] success.  got ' + data['d'].length + ' annotations.');
+                    // set _edit_state for all the annotations because the server doesn't set it for us
+                    angular.forEach($scope.DetailView.annotations, function(annotation,ii) {
+                        annotation._edit_state = 'unchanged';
+                    });
+                    $scope.DetailView.drawAnnotations();
                 })
                 .error(function(data,status,headers,config) {
                     console.log('...[DetailView.fetchAnnotations] error');
@@ -713,6 +736,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
         clickAnnotation: function(annotation) {
             $scope.DetailView.selected_annotation = annotation;
+            $scope.DetailView.annotation_has_just_been_changed = true;
             // fetch annotation tags if needed
             if (! $scope.DetailView.selected_annotation.hasOwnProperty('tags')) {
                 console.log('[DetailView.clickAnnotation] fetching annotation tags');
@@ -738,7 +762,67 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             $scope.DetailView.drawAnnotations();
         },
 
+        clickSaveAllChanges: function() {
+            console.log('[DetailView.saveAllChanges]');
+            // set button state to pending
+            $scope.DetailView.save_state = 'saving';
+
+            // make a list of all annotations that have changed
+            var annotations_to_save = [];
+            angular.forEach($scope.DetailView.annotations, function(annotation,ii) {
+                if (annotation._edit_state !== 'unchanged') {
+                    annotations_to_save.push(annotation);
+                }
+            });
+            console.log('[DetailView.saveAllChanges] found ' + annotations_to_save.length + ' annotations to save');
+
+            // send up to server using ajax
+            // foo
+
+            var js = JSON.stringify({'annotations': annotations_to_save});
+            $http.post('/api/v1/db/'+$scope.SearchAndThumbView.query.database_name+'/save_annotations', js)
+                .success(function(data,status,headers,config) {
+                    console.log('...[DetailView.saveAllChanges] success');
+                    $scope.DetailView.save_state = 'nothing';
+                })
+                .error(function(data,status,headers,config) {
+                    console.log('...[DetailView.saveAllChanges] error');
+                    $scope.DetailView.save_state = 'error';
+                });
+
+            // success:
+            //   hide save button
+            //   mark all annotations as unchanged
+            // error:
+            //   report error
+        },
+
     };
+
+    // keep track of changes to annotation fields
+    $scope.$watch('DetailView.selected_annotation.model', function(newValue,oldValue) {
+        if ($scope.DetailView.annotation_has_just_been_changed) {
+            $scope.DetailView.annotation_has_just_been_changed = false;
+            return;
+        }
+        if (oldValue === null) {return;}
+        if (newValue === null) {return;}
+        $scope.DetailView.selected_annotation._edit_state = 'edited';
+        $scope.DetailView.can_save = true;
+        $scope.DetailView.save_state = 'can_save';
+    });
+
+    $scope.$watch('DetailView.selected_annotation.confidence', function(newValue,oldValue) {
+        if ($scope.DetailView.annotation_has_just_been_changed) {
+            $scope.DetailView.annotation_has_just_been_changed = false;
+            return;
+        }
+        if (oldValue === null) {return;}
+        if (newValue === null) {return;}
+        $scope.DetailView.selected_annotation._edit_state = 'edited';
+        $scope.DetailView.can_save = true;
+        $scope.DetailView.save_state = 'can_save';
+    });
 
     //--------------------------------------------------------------------------------
     // MAIN

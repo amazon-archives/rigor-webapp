@@ -232,19 +232,39 @@
                     <!-- selection info box -->
                     <div class="well well-small" ng-show="DetailView.selected_annotation">
                         <p>
-                        <b> selected annotation </b>
+                        <textarea type="text" class="rigor-sidebar-form-element2" ng-model="DetailView.selected_annotation.model"></textarea>
+                        <br> confidence:
+                        <input type="text" class="rigor-sidebar-form-element3" ng-model="DetailView.selected_annotation.confidence">
                         <br> domain: <strong>(( DetailView.selected_annotation.domain ))</strong>
                         <br> date: <strong>(( DetailView.selected_annotation.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
                         <br> id: <strong>(( DetailView.selected_annotation.id ))</strong>
-                        <br> confidence: <strong>(( DetailView.selected_annotation.confidence ))</strong>
-                        <br> model: <code class="model-text-sidebar">(( DetailView.selected_annotation.model ))</code>
                         <br> <span ng-repeat="tag in DetailView.selected_annotation.tags">
                                 <span href="" class="label label-info">(( tag ))</span>
                              </span>
                         </p>
-                        </p>
                     </div>
                     <!-- end selection info box -->
+
+                    <!-- save button -->
+                    <div class="well well-small" ng-switch on="DetailView.save_state">
+                        <div ng-switch-when="nothing">
+                            <span class="nothing-to-save">no changes to save</span>
+                        </div>
+                        <div ng-switch-when="can_save">
+                            This image's annotations have been edited.
+                            <br><a href="" ng-click="DetailView.clickSaveAllChanges()" class="btn btn-danger">Save all changes</a>
+                        </div>
+                        <div ng-switch-when="saving">
+                            This image's annotations have been edited.
+                            <br><a href="" ng-click="" class="btn btn-danger disabled">Saving...</a>
+                        </div>
+                        <div ng-switch-when="error">
+                            This image's annotations have been edited.
+                            <br><a href="" ng-click="DetailView.clickSaveAllChanges()" class="btn btn-danger">Save all changes</a>
+                            <br><strong>There was an error.  Please try again.</strong>
+                        </div>
+                    </div>
+                    <!-- end save button -->
 
                 </div>
                 <!-- end sidebar -->

@@ -68,13 +68,14 @@ def dbQueryDict(conn, sql, values=()):
                 yield d
     return iterator()
 
-def dbExecute(conn, sql):
+def dbExecute(conn, sql, values=()):
     """Run the sql and return the number of rows affected.
     This is useful for delete or insert commands
+    You should call conn.commit() after this.
     """
     cursor = conn.cursor()
 #     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute(sql)
+    cursor.execute(sql, values)
     return cursor.rowcount
 
 def dbTimestampToUTCTime(databaseTime):
@@ -158,7 +159,7 @@ def searchImages(queryDict):
             }
             max_count: 50,  // max 50
             page: 3         // starts at 0
-        }
+        
     """
     # TODO: allow searching for NULL
 
@@ -314,6 +315,34 @@ def getAnnotationTags(database_name, id):
     for row in dbQueryDict(conn, sql, values):
         tags.append(row['name'])
     return tags
+
+def saveAnnotations(database_name, annotations):
+    # given a list of annotations as json objects / dicts,
+    # apply the changes listed in their '_edit_state' fields.
+    # note that the '_edit_state' field must be added on on the javascript side.
+    # possible values:
+    #   edited -- apply the new values of 'model' and 'confidence'
+    #   new -- add the annotation 
+    #   deleted -- remove the annotation
+    conn = getDbConnection(database_name)
+    debugDetail('saving %s annotations to %s' % (len(annotations), database_name))
+    sql_lines = []
+    sql_values = []
+    for annotation in annotations:
+        if annotation['_edit_state'] == 'edited':
+            sql_lines.append(""" UPDATE annotation SET model = %s WHERE id = %s; """)
+            sql_values.append(annotation['model'])
+            sql_values.append(annotation['id'])
+            sql_lines.append(""" UPDATE annotation SET confidence = %s WHERE id = %s; """)
+            sql_values.append(annotation['confidence'])
+            sql_values.append(annotation['id'])
+        # TODO: check for _edit_state = 'deleted' and 'new'
+    sql_lines = '\n'.join(sql_lines)
+    debugSQL(sql_lines)
+    debugSQL(sql_values)
+    dbExecute(conn, sql_lines, values=sql_values)
+    conn.commit()
+
 
 #--------------------------------------------------------------------------------
 # MAIN

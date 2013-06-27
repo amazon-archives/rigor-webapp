@@ -14,8 +14,14 @@
 
 .rigor-sidebar-form-element {width:200px;}
 .rigor-sidebar-form-element2 {width:186px;}
+.rigor-sidebar-form-element3 {width:50px;}
 
 .allow-large-image {max-width: none;}
+
+.nothing-to-save {
+    color: #888;
+    font-style: italic;
+}
 
 body {
     //background: url('/static/img/cream_pixels.png');

@@ -187,6 +187,16 @@ def getTags(database_name):
     simulateSlow()
     return jsonify(d=backend.getTags(database_name))
 
+@app.route('/api/v1/db/<database_name>/save_annotations', methods=['POST'])
+@use_basic_auth
+def saveAnnotations(database_name):
+    # expects this json as post data:
+    # {'annotations': [ ... ]}
+    # where each annotation has a '_edit_state' field which is either 'edited', 'new', or 'deleted'.
+    simulateSlow()
+    annotations = request.json['annotations']
+    backend.saveAnnotations(database_name,annotations)
+    return jsonify({'success': True})
 
 #--------------------------------------------------------------------------------
 # MAIN
