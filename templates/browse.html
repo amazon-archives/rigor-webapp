@@ -102,7 +102,7 @@
                     <div ng-switch-when="loaded">
 
 
-                        <ul class="pager">
+                        <ul class="pager no-top-margin">
                             <li ng-class="{previous: true,  disabled: !SearchAndThumbView.prevButtonIsEnabled()}">
                                 <a href="" ng-click="SearchAndThumbView.clickPrevButton()">&larr; Prev</a>
                             </li>
@@ -156,7 +156,7 @@
                 <!-- sidebar -->
                 <div class="span3">
 
-                    <ul class="pager">
+                    <ul class="pager no-top-margin">
                         <li class="previous">
                             <a href="" ng-click="ViewChooser.switchView('thumbs')"><i class="icon-th-large"></i> Thumbs</a>
                         </li>
@@ -175,6 +175,7 @@
                     </div>
 
                     <!-- info box -->
+                    <div><span class="lead">Image</span></div>
                     <div class="well well-small">
                         <p>
                              id: <strong><a href="(( DetailView.image.url ))">(( DetailView.image_id ))</a></strong>
@@ -230,6 +231,7 @@
                     <!-- end info box -->
 
                     <!-- selection info box -->
+                    <div ng-show="DetailView.selected_annotation"><span class="lead">Annotation</span></div>
                     <div class="well well-small" ng-show="DetailView.selected_annotation">
                         <textarea type="text" class="rigor-sidebar-form-element2" ng-model="DetailView.selected_annotation.model"></textarea>
                         <div>
@@ -245,7 +247,7 @@
                             </span>
                         </div>
                         <div
-                            class="add-top-margin2 right-align"
+                            class="add-top-margin2 text-right"
                             ng-show="DetailView.selected_annotation._edit_state != 'deleted'"
                             >
                             <a href="" ng-click="DetailView.clickDelete()" class="btn btn-danger btn-mini">Delete</a>
