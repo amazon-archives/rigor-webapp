@@ -751,6 +751,9 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                         console.log('...[DetailView.clickAnnotation] error');
                     });
             }
+            setTimeout(function() {
+                document.getElementById('model-form').focus();
+            }, 10);
         },
 
         toggleAnnotationText: function(domain) {

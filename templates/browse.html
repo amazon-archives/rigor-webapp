@@ -233,7 +233,7 @@
                     <!-- selection info box -->
                     <div ng-show="DetailView.selected_annotation"><span class="lead">Annotation</span></div>
                     <div class="well well-small" ng-show="DetailView.selected_annotation">
-                        <textarea type="text" class="rigor-sidebar-form-element2" ng-model="DetailView.selected_annotation.model"></textarea>
+                        <textarea id="model-form" type="text" class="rigor-sidebar-form-element2" ng-model="DetailView.selected_annotation.model"></textarea>
                         <div>
                             confidence:
                             <input type="text" class="rigor-sidebar-form-element4" ng-model="DetailView.selected_annotation.confidence">
