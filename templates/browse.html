@@ -244,7 +244,10 @@
                                 <span href="" class="label label-info">(( tag ))</span>
                             </span>
                         </div>
-                        <div class="add-top-margin2">
+                        <div
+                            class="add-top-margin2 right-align"
+                            ng-show="DetailView.selected_annotation._edit_state != 'deleted'"
+                            >
                             <a href="" ng-click="DetailView.clickDelete()" class="btn btn-danger btn-mini">Delete</a>
                         </div>
                     </div>
@@ -257,15 +260,15 @@
                         </div>
                         <div ng-switch-when="can_save">
                             This image's annotations have been edited.
-                            <br><a href="" ng-click="DetailView.clickSaveAllChanges()" class="btn btn-danger">Save all changes</a>
+                            <br><a href="" ng-click="DetailView.clickSaveAllChanges()" class="btn btn-success">Save all changes</a>
                         </div>
                         <div ng-switch-when="saving">
                             This image's annotations have been edited.
-                            <br><a href="" ng-click="" class="btn btn-danger disabled">Saving...</a>
+                            <br><a href="" ng-click="" class="btn btn-success disabled">Saving...</a>
                         </div>
                         <div ng-switch-when="error">
                             This image's annotations have been edited.
-                            <br><a href="" ng-click="DetailView.clickSaveAllChanges()" class="btn btn-danger">Save all changes</a>
+                            <br><a href="" ng-click="DetailView.clickSaveAllChanges()" class="btn btn-success">Save all changes</a>
                             <br><strong>There was an error.  Please try again.</strong>
                         </div>
                     </div>
@@ -291,21 +294,21 @@
                             <!-- TODO: lineorder -->
                             <polygon
                                 ng-attr-class="(( 'svg-polygon-line ' + (DetailView.isSelectedAnnotation(annotation) && 'svg-polygon-selected') ))"
-                                ng-show="DetailView.showGeom['text:line']"
+                                ng-show="DetailView.showGeom['text:line'] && annotation._edit_state !== 'deleted'"
                                 ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:line')"
                                 ng-attr-points="(( DetailView.annotationToSvgPoints(annotation) ))"
                                 ng-click="DetailView.clickAnnotation(annotation)"
                             />
                             <polygon
                                 ng-attr-class="(( 'svg-polygon-word ' + (DetailView.isSelectedAnnotation(annotation) && 'svg-polygon-selected') ))"
-                                ng-show="DetailView.showGeom['text:word']"
+                                ng-show="DetailView.showGeom['text:word'] && annotation._edit_state !== 'deleted'"
                                 ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:word')"
                                 ng-attr-points="(( DetailView.annotationToSvgPoints(annotation) ))"
                                 ng-click="DetailView.clickAnnotation(annotation)"
                             />
                             <polygon
                                 ng-attr-class="(( 'svg-polygon-char ' + (DetailView.isSelectedAnnotation(annotation) && 'svg-polygon-selected') ))"
-                                ng-show="DetailView.showGeom['text:char']"
+                                ng-show="DetailView.showGeom['text:char'] && annotation._edit_state !== 'deleted'"
                                 ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:char')"
                                 ng-attr-points="(( DetailView.annotationToSvgPoints(annotation) ))"
                                 ng-click="DetailView.clickAnnotation(annotation)"
@@ -326,7 +329,7 @@
                     <div
                         ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:line')"
                         ng-class="{overlap: true, 'model-text-line': true, 'model-text-selected': DetailView.isSelectedAnnotation(annotation)}"
-                        ng-show="DetailView.showText['text:line']"
+                        ng-show="DetailView.showText['text:line'] && annotation._edit_state !== 'deleted'"
                         ng-click="DetailView.clickAnnotation(annotation)"
                         style="((
                             'margin-left:' + annotation.boundary[0][0] + 'px; ' +
@@ -338,7 +341,7 @@
                     <div
                         ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:word')"
                         ng-class="{overlap: true, 'model-text-word': true, 'model-text-selected': DetailView.isSelectedAnnotation(annotation)}"
-                        ng-show="DetailView.showText['text:word']"
+                        ng-show="DetailView.showText['text:word'] && annotation._edit_state !== 'deleted'"
                         ng-click="DetailView.clickAnnotation(annotation)"
                         style="((
                             'margin-left:' + annotation.boundary[0][0] + 'px; ' +
@@ -350,7 +353,7 @@
                     <div
                         ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:char')"
                         ng-class="{overlap: true, 'model-text-char': true, 'model-text-selected': DetailView.isSelectedAnnotation(annotation)}"
-                        ng-show="DetailView.showText['text:char']"
+                        ng-show="DetailView.showText['text:char'] && annotation._edit_state !== 'deleted'"
                         ng-click="DetailView.clickAnnotation(annotation)"
                         style="((
                             'margin-left:' + annotation.boundary[0][0] + 'px; ' +

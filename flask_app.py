@@ -198,12 +198,6 @@ def saveAnnotations(database_name):
     backend.saveAnnotations(database_name,annotations)
     return jsonify({'success': True})
 
-@app.route('/api/v1/db/<database_name>/image/<id>/annotation/<annotation_id>', methods=['DELETE'])
-@use_basic_auth
-def deleteAnnotation(database_name, id, annotation_id):
-    backend.deleteAnnotation(database_name, annotation_id)
-    return jsonify({'success': True})
-
 
 #--------------------------------------------------------------------------------
 # MAIN

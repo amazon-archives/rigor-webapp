@@ -329,6 +329,7 @@ def saveAnnotations(database_name, annotations):
     sql_lines = []
     sql_values = []
     for annotation in annotations:
+        debugDetail('    annotation %s: %s'%(annotation['id'], annotation['_edit_state']))
         if annotation['_edit_state'] == 'edited':
             sql_lines.append(""" UPDATE annotation SET model = %s WHERE id = %s; """)
             sql_values.append(annotation['model'])
@@ -336,25 +337,20 @@ def saveAnnotations(database_name, annotations):
             sql_lines.append(""" UPDATE annotation SET confidence = %s WHERE id = %s; """)
             sql_values.append(annotation['confidence'])
             sql_values.append(annotation['id'])
+        elif annotation['_edit_state'] == 'deleted':
+            sql_lines.append(""" DELETE FROM annotation_tag WHERE annotation_id = %s; """)
+            sql_values.append(annotation['id'])
+            sql_lines.append(""" DELETE FROM annotation WHERE id = %s; """)
+            sql_values.append(annotation['id'])
+        elif annotation['_edit_state'] == 'new':
+            debugDetail('NOT IMPLEMENTED YET: add new annotation')
         # TODO: check for _edit_state = 'deleted' and 'new'
-    sql_lines = '\n'.join(sql_lines)
-    debugSQL(sql_lines)
-    debugSQL(sql_values)
-    dbExecute(conn, sql_lines, values=sql_values)
-    conn.commit()
-
-def deleteAnnotation(database_name, annotation_id):
-    """Delete the annotation with the given annotation_id.
-    """
-    conn = getDbConnection(database_name)
-    debugDetail('in db %s, deleting annotation %s' % (database_name, annotation_id))
-    sql = """ DELETE FROM annotation WHERE id = %s; """
-    values = (annotation_id,)
-    debugSQL(sql)
-    debugSQL(values)
-    dbExecute(conn, sql, values=values)
-    conn.commit()
-
+    if sql_lines:
+        sql_lines = '\n'.join(sql_lines)
+        debugSQL(sql_lines)
+        debugSQL(sql_values)
+        dbExecute(conn, sql_lines, values=sql_values)
+        conn.commit()
 
 #--------------------------------------------------------------------------------
 # MAIN

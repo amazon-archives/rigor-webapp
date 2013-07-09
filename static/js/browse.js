@@ -764,14 +764,17 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
         clickDelete: function() {
             console.log('[DetailView.clickDelete]');
-            var id_to_delete = $scope.DetailView.selected_annotation.id;
-            $http.delete('/api/v1/db/'+$scope.DetailView.database_name+'/image/'+$scope.DetailView.image_id+'/annotation/'+id_to_delete)
-                .success(function(data,status,headers,config) {
-                    console.log('...[DetailView.clickDelete] success');
-                })
-                .error(function(data,status,headers,config) {
-                    console.log('...[DetailView.clickDelete] error');
-                });
+
+            // mark for deletion
+            // this also hides it from the SVG view
+            $scope.DetailView.selected_annotation._edit_state = 'deleted';
+
+            // deselect the thing we deleted
+            $scope.DetailView.selected_annotation = null;
+
+            // enable save button
+            $scope.DetailView.can_save = true;
+            $scope.DetailView.save_state = 'can_save';
         },
 
         clickSaveAllChanges: function() {
@@ -788,25 +791,31 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             });
             console.log('[DetailView.saveAllChanges] found ' + annotations_to_save.length + ' annotations to save');
 
-            // send up to server using ajax
-            // foo
-
+            // send changes up to server
             var js = JSON.stringify({'annotations': annotations_to_save});
             $http.post('/api/v1/db/'+$scope.DetailView.database_name+'/save_annotations', js)
                 .success(function(data,status,headers,config) {
                     console.log('...[DetailView.saveAllChanges] success');
+                    // reset save button
                     $scope.DetailView.save_state = 'nothing';
+                    // remove deleted annotations
+                    // we have to loop backward from the end of the array so we can delete as we go
+                    for (var ii = $scope.DetailView.annotations.length - 1; ii >= 0; ii--) {
+                        var annotation = $scope.DetailView.annotations[ii];
+                        if (annotation._edit_state == 'deleted') {
+                            $scope.DetailView.annotations.splice(ii,1); // remove element ii
+                        }
+                    }
+                    // mark all remaining annotations as unchanged
+                    angular.forEach($scope.DetailView.annotations, function(annotation,ii) {
+                        console.log('   ' + annotation.id + ' ' + annotation._edit_state);
+                        annotation._edit_state = 'unchanged';
+                    });
                 })
                 .error(function(data,status,headers,config) {
                     console.log('...[DetailView.saveAllChanges] error');
                     $scope.DetailView.save_state = 'error';
                 });
-
-            // success:
-            //   hide save button
-            //   mark all annotations as unchanged
-            // error:
-            //   report error
         },
 
     };
