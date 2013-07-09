@@ -7,6 +7,8 @@
 
 .no-bottom-margin {margin-bottom: 0px;}
 .no-top-margin {margin-top: 0px;}
+.add-top-margin1 {margin-top: 13px;}
+.add-top-margin2 {margin-top: 17px;}
 
 //.thumbnail-height-fix {height:380px;}
 
@@ -15,6 +17,7 @@
 .rigor-sidebar-form-element {width:200px;}
 .rigor-sidebar-form-element2 {width:186px;}
 .rigor-sidebar-form-element3 {width:50px;}
+.rigor-sidebar-form-element4 {width:30px;}
 
 .allow-large-image {max-width: none;}
 

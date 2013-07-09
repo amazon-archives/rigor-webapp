@@ -231,17 +231,22 @@
 
                     <!-- selection info box -->
                     <div class="well well-small" ng-show="DetailView.selected_annotation">
-                        <p>
                         <textarea type="text" class="rigor-sidebar-form-element2" ng-model="DetailView.selected_annotation.model"></textarea>
-                        <br> confidence:
-                        <input type="text" class="rigor-sidebar-form-element3" ng-model="DetailView.selected_annotation.confidence">
-                        <br> domain: <strong>(( DetailView.selected_annotation.domain ))</strong>
-                        <br> date: <strong>(( DetailView.selected_annotation.stamp*1000 | date:'yyyy-MM-dd' ))</strong>
-                        <br> id: <strong>(( DetailView.selected_annotation.id ))</strong>
-                        <br> <span ng-repeat="tag in DetailView.selected_annotation.tags">
+                        <div>
+                            confidence:
+                            <input type="text" class="rigor-sidebar-form-element4" ng-model="DetailView.selected_annotation.confidence">
+                        </div>
+                        <div> domain: <strong>(( DetailView.selected_annotation.domain ))</strong> </div>
+                        <div> date: <strong>(( DetailView.selected_annotation.stamp*1000 | date:'yyyy-MM-dd' ))</strong> </div>
+                        <div> id: <strong>(( DetailView.selected_annotation.id ))</strong> </div>
+                        <div class="add-top-margin1">
+                            <span ng-repeat="tag in DetailView.selected_annotation.tags">
                                 <span href="" class="label label-info">(( tag ))</span>
-                             </span>
-                        </p>
+                            </span>
+                        </div>
+                        <div class="add-top-margin2">
+                            <a href="" ng-click="DetailView.clickDelete()" class="btn btn-danger btn-mini">Delete</a>
+                        </div>
                     </div>
                     <!-- end selection info box -->
 
@@ -279,7 +284,7 @@
                         height="(( DetailView.image.y_resolution ))"
                     ></canvas-->
                     <svg
-                        class="polaroid-style-padding overlap allow-large-image dotted"
+                        class="polaroid-style-padding overlap allow-large-image"
                         ng-attr-width="(( DetailView.image.x_resolution ))"
                         ng-attr-height="(( DetailView.image.y_resolution ))"
                         >

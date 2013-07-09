@@ -343,6 +343,18 @@ def saveAnnotations(database_name, annotations):
     dbExecute(conn, sql_lines, values=sql_values)
     conn.commit()
 
+def deleteAnnotation(database_name, annotation_id):
+    """Delete the annotation with the given annotation_id.
+    """
+    conn = getDbConnection(database_name)
+    debugDetail('in db %s, deleting annotation %s' % (database_name, annotation_id))
+    sql = """ DELETE FROM annotation WHERE id = %s; """
+    values = (annotation_id,)
+    debugSQL(sql)
+    debugSQL(values)
+    dbExecute(conn, sql, values=values)
+    conn.commit()
+
 
 #--------------------------------------------------------------------------------
 # MAIN

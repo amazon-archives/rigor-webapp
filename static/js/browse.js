@@ -762,8 +762,20 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             $scope.DetailView.drawAnnotations();
         },
 
+        clickDelete: function() {
+            console.log('[DetailView.clickDelete]');
+            var id_to_delete = $scope.DetailView.selected_annotation.id;
+            $http.delete('/api/v1/db/'+$scope.DetailView.database_name+'/image/'+$scope.DetailView.image_id+'/annotation/'+id_to_delete)
+                .success(function(data,status,headers,config) {
+                    console.log('...[DetailView.clickDelete] success');
+                })
+                .error(function(data,status,headers,config) {
+                    console.log('...[DetailView.clickDelete] error');
+                });
+        },
+
         clickSaveAllChanges: function() {
-            console.log('[DetailView.saveAllChanges]');
+            console.log('[DetailView.clickSaveAllChanges]');
             // set button state to pending
             $scope.DetailView.save_state = 'saving';
 
@@ -780,7 +792,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             // foo
 
             var js = JSON.stringify({'annotations': annotations_to_save});
-            $http.post('/api/v1/db/'+$scope.SearchAndThumbView.query.database_name+'/save_annotations', js)
+            $http.post('/api/v1/db/'+$scope.DetailView.database_name+'/save_annotations', js)
                 .success(function(data,status,headers,config) {
                     console.log('...[DetailView.saveAllChanges] success');
                     $scope.DetailView.save_state = 'nothing';
