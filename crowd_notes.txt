@@ -1,0 +1,79 @@
+#
+
+
+GET /          // homepage
+GET /stats     // return JSON stats:
+
+stats = {
+    photos_to_do: 24
+    photos_total: 204,
+    words_to_do: 24,
+    words_total: 452,
+}
+
+//===============================================================================
+
+word = {
+    photo_id = 283472947,
+    annotation_id = 20387203,  // for the word annotation
+    model = "SALE",
+    chars = [
+        {
+            start = 0.3492, // fraction of the way from left to right
+            end = 0.3857,
+            model = "S"  // not sure if this should be included or not
+        },
+        { ... },
+        { ... },
+        { ... },
+    ],
+}
+
+
+
+GET /words          // load interface and do AJAX to get a sushi to slice
+
+GET /word/next               // return JSON for the next word that needs sushi slicing
+GET /word/:annotation_id
+PUT /word/:annotation_id     // store JSON
+
+//===============================================================================
+
+photo = [
+    {
+        annotation_id: 20847520,
+        model: "SALE",
+        geometry: [23, 25, 86, 45, 75, 86, 97, 24]
+    },
+    { ... },
+    { ... },
+    { ... },
+]
+
+
+GET /photos      // load interface and do AJAX to get a photo to slice
+
+GET /photo/next
+GET /photo/:photo_id
+PUT /photo/:photo_id
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#

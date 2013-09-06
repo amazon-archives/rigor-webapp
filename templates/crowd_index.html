@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="browseApp" ng-controller="BrowseController">
+<head>
+    <title> Rigor: Crowd version </title>
+    <meta name="HandheldFriendly" content="true" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/css/vendor/bootstrap.css" />
+    <link rel="stylesheet" href="/static/css/vendor/select2-3.2.0.css" />
+    <link rel="stylesheet" href="/static/css/rigor.css" />
+
+    <script src="/static/js/vendor/jquery-1.9.1.js"></script>
+    <script src="/static/js/vendor/select2-3.2.0.js"></script>
+
+    <!--script src="/static/js/vendor/angular-1.0.6.js" type="text/javascript" charset="utf-8"></script-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js" type="text/javascript" charset="utf-8"></script>
+
+    <script src="/static/js/vendor/angular-ui-0.3.2.js"></script>
+
+    <xxxscript src="/static/js/browse.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="span12">
+
+            <h2><a href="" class="black-link" ng-click="ViewChooser.switchView('thumbs')"> Rigor: Crowd version </a></h2>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span6">
+            <div class="well well-small">
+                    <a href="" ng-click="SearchAndThumbView.clickClearButton()" class="btn btn-large btn-primary">Photos</a>
+                    <h4> 103 / 205 photos complete </h4>
+
+            </div>
+        </div>
+        <div class="span6">
+            <div class="well well-small">
+
+                <a href="" ng-click="SearchAndThumbView.clickClearButton()" class="btn btn-large btn-primary">Words</a>
+                    <h4> 29 / 495 words complete </h4>
+
+            </div>
+        </div>
+    </div>
+
+</div>
