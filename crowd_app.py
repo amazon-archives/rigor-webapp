@@ -14,6 +14,7 @@ from flask import jsonify
 from flask import request
 from flask import Response
 from flask import abort
+from flask import redirect
 
 from utils import *
 import backend
@@ -81,15 +82,52 @@ def stats():
 
 @app.route('/photos')
 # @use_basic_auth
-def index():
+def photos():
     simulateSlow()
     return render_template('crowd_index.html')
 
 @app.route('/words')
 # @use_basic_auth
-def index():
+def words():
     simulateSlow()
-    return render_template('crowd_index.html')
+    return render_template('crowd_words.html')
+
+@app.route('/word/next')
+def redirectToNextWord():
+    simulateSlow()
+    return redirect('/word/0')
+
+@app.route('/word/<annotation_id>')
+def getWord(annotation_id):
+    simulateSlow()
+    word = dict(
+        annotation_id = annotation_id,
+        word_id = 12345,
+        model = "SALE",
+        chars = [
+            {
+                "start": 0.1,
+                "end": 0.2,
+                "model": "S",
+            },
+            {
+                "start": 0.3,
+                "end": 0.4,
+                "model": "A",
+            },
+            {
+                "start": 0.5,
+                "end": 0.6,
+                "model": "L",
+            },
+            {
+                "start": 0.7,
+                "end": 0.8,
+                "model": "E",
+            },
+        ]
+    )
+    return jsonify(word)
 
 #--------------------------------------------------------------------------------
 # MAIN

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="crowdApp" ng-controller="CrowdController">
+<html lang="en" ng-app="crowdWordsApp" ng-controller="CrowdWordsController">
 <head>
     <title> Rigor: Crowd version </title>
     <meta name="HandheldFriendly" content="true" />
@@ -16,7 +16,7 @@
 
     <script src="/static/js/vendor/angular-ui-0.3.2.js"></script>
 
-    <script src="/static/js/crowd.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/js/crowd_words.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
 
@@ -25,26 +25,31 @@
     <div class="row">
         <div class="span12">
 
-            <h2><a href="" class="black-link" ng-click="ViewChooser.switchView('thumbs')"> Rigor: Crowd version </a></h2>
+            <h2><a href="" class="black-link" ng-click="ViewChooser.switchView('thumbs')"> Rigor: Crowd version: words </a></h2>
 
         </div>
     </div>
 
     <div class="row">
         <div class="span6">
-            <div class="well well-small">
-                    <a href="" ng-click="SearchAndThumbView.clickClearButton()" class="btn btn-large btn-primary">Photos</a>
-                    <h4> 103 / 205 photos complete </h4>
 
+            <div>
+                state: <b> (( WordsView.state )) </b>
             </div>
-        </div>
-        <div class="span6">
-            <div class="well well-small">
 
-                <a href="/words" ng-click="SearchAndThumbView.clickClearButton()" class="btn btn-large btn-primary">Words</a>
-                    <h4> 29 / 495 words complete </h4>
 
+            <div>
+            model: <b> (( WordsView.word.model )) </b>
             </div>
+
+            <ul>
+                <li ng-repeat="char in WordsView.word.chars">
+                    <b>(( char.model ))</b>
+                </li>
+            </ul>
+
+            <pre> (( WordsView.word )) </pre>
+
         </div>
     </div>
 
