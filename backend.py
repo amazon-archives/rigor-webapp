@@ -353,12 +353,63 @@ def saveAnnotations(database_name, annotations):
         conn.commit()
 
 #--------------------------------------------------------------------------------
+# CROWD
+
+def getCrowdStats(database_name):
+    """Return a dict with info about the number of tasks done and still needing to be done.
+    {
+        words_todo: 29,
+        words_total: 104,
+    }
+    """
+    conn = getDbConnection(database_name)
+    debugDetail('getting stats for %s' % database_name)
+
+    result = {}
+
+    sql = """ SELECT count(1) FROM annotation WHERE confidence = 1; """
+    result['words_todo'] = int(list(dbQueryDict(conn, sql))[0]['count'])
+    sql = """ SELECT count(1) FROM annotation; """
+    result['words_total'] = int(list(dbQueryDict(conn, sql))[0]['count'])
+    return result
+
+def getNextCrowdWord(database_name):
+    """Return the id of a random word which has confidence 1
+    """
+    conn = getDbConnection(database_name)
+    debugDetail('getting next word')
+    sql = """ SELECT id FROM annotation
+    WHERE confidence = 1
+    ORDER BY RANDOM()
+    LIMIT 1
+    """
+    return list(dbQueryDict(conn, sql))[0]['id']
+
+def getCrowdWord(database_name, annotation_id):
+    conn = getDbConnection(database_name)
+    debugDetail('getting word %s' % annotation_id)
+
+    sql = """ SELECT * FROM annotation WHERE id = %s; """
+    row = list(dbQueryDict(conn, sql, [annotation_id]))[0]
+
+    return dict(
+        annotation_id = annotation_id,
+        model = row['model'],
+        image_id = row['image_id']
+    )
+
+
+#--------------------------------------------------------------------------------
 # MAIN
 
 # connect upon importing this module
 # this is messy and should be cleaned up later
 
 if __name__ == '__main__':
+
+
+    print getCrowdWord('icdar2003', 1)
+
 #     print getImage(id=23731)
 #     print getImage(database_name='rigor',locator='01bb6939-ac7f-4dbf-84c9-8136eaa3f6ea');
 
@@ -368,7 +419,7 @@ if __name__ == '__main__':
 #     print yellow(pprint.pformat(getImage(database_name='rigor', locator='0571f3fe-cb88-4818-b213-36f08b48f132')))
 #     print cyan(pprint.pformat(getImageAnnotations(database_name='rigor', locator='0571f3fe-cb88-4818-b213-36f08b48f132')))
 
-    print getTags('blindsight')
+#     print getTags('blindsight')
 
 #     debugMain('testing searchImages')
 #     full_count, images = searchImages({

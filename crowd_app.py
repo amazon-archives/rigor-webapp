@@ -70,25 +70,22 @@ def index():
     return render_template('crowd_index.html')
 
 @app.route('/stats')
-# @use_basic_auth
 def stats():
+    """
+    {
+        words_todo: 29,
+        words_total: 104,
+    }
+    """
     simulateSlow()
-    stats = dict(
-        photos_to_do = 24,
-        photos_total = 204,
-        words_to_do = 24,
-        words_total = 452
-    )
-    return jsonify(stats)
+    return jsonify(backend.getCrowdStats(config.CROWD_DB))
 
 @app.route('/photos')
-# @use_basic_auth
 def photos():
     simulateSlow()
     return render_template('crowd_index.html')
 
 @app.route('/words')
-# @use_basic_auth
 def words():
     simulateSlow()
     return render_template('crowd_words.html')
@@ -96,39 +93,35 @@ def words():
 @app.route('/word/next')
 def redirectToNextWord():
     simulateSlow()
-    annotation_id = random.randint(100,200)
+    annotation_id = backend.getNextCrowdWord(config.CROWD_DB)
     return redirect('/word/%s'%annotation_id)
 
 @app.route('/word/<annotation_id>')
 def getWord(annotation_id):
-    simulateSlow()
-    word = dict(
-        annotation_id = annotation_id,
-        word_id = 12345,
-        model = "SALE",
+    """
+    {
+        annotation_id
+        image_id
+        model
         chars = [
             {
-                "start": 0.1,
-                "end": 0.2,
-                "model": "S",
+                start
+                end
+                model
             },
-            {
-                "start": 0.3,
-                "end": 0.4,
-                "model": "A",
-            },
-            {
-                "start": 0.5,
-                "end": 0.6,
-                "model": "L",
-            },
-            {
-                "start": 0.7,
-                "end": 0.8,
-                "model": "E",
-            },
+            { ... }
         ]
-    )
+    }
+    """
+    simulateSlow()
+    word = backend.getCrowdWord(config.CROWD_DB, annotation_id)
+    word['chars'] = []
+    for char in word['model']:
+        word['chars'].append({
+            "start": 0.1,
+            "end": 0.2,
+            "model": char
+        })
     return jsonify(word)
 
 #--------------------------------------------------------------------------------

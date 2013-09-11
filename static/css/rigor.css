@@ -100,5 +100,7 @@ body {
 .crowd-giant-input {
     font-size: 35px !important;
     height: 38px !important;
+    letter-spacing: 3px !important;
+    /*font-family: monospace !important;*/
 }
 
