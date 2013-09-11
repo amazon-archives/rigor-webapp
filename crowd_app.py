@@ -60,8 +60,8 @@ app.config['SECRET_KEY'] = 'fpqf94y1och48OUGWO38yfoo8yroihf28y982heD'
 # ROUTING
 
 def simulateSlow():
-    if config.FAKE_SLOW_DELAY > 0:
-        time.sleep(config.FAKE_SLOW_DELAY)
+    if config.CROWD_FAKE_SLOW_DELAY > 0:
+        time.sleep(config.CROWD_FAKE_SLOW_DELAY)
 
 @app.route('/')
 # @use_basic_auth

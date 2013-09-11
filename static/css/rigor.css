@@ -97,3 +97,8 @@ body {
     font-size: 15px;
 }
 
+.crowd-giant-input {
+    font-size: 35px !important;
+    height: 38px !important;
+}
+
