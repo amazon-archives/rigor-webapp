@@ -4,6 +4,7 @@ from __future__ import division
 import os
 import sys
 import time
+import random
 
 import functools
 
@@ -95,7 +96,8 @@ def words():
 @app.route('/word/next')
 def redirectToNextWord():
     simulateSlow()
-    return redirect('/word/0')
+    annotation_id = random.randint(100,200)
+    return redirect('/word/%s'%annotation_id)
 
 @app.route('/word/<annotation_id>')
 def getWord(annotation_id):

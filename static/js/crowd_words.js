@@ -34,9 +34,24 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
         state: 'loading', // one of: loading, ready, saving
 
         load: function(annotation_id) {
-            console.log('[WordsView.load] loading annotation_id ' + annotation_id + ' ...');
+            // set annotation_id to 0 or undefined to get the next word that needs to be done
 
-            $http.get('/word/next')
+            // get a specific word or just the next available one
+            var wordUrl;
+            if (annotation_id === 0 || annotation_id === undefined) {
+                console.log('[WordsView.load] loading next available annotation_id ...');
+                wordUrl = '/word/next';
+            } else {
+                console.log('[WordsView.load] loading annotation_id ' + annotation_id + ' ...');
+                wordUrl = '/word/' + annotation_id;
+            }
+
+            // clear state
+            $scope.WordsView.state = 'loading';
+            $scope.WordsView.word = {};
+
+            // get new data
+            $http.get(wordUrl)
                 .success(function(data,status,headers,config) {
                     console.log('...[WordsView.load] success');
                     $scope.WordsView.word = data;
@@ -45,8 +60,17 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
                 .error(function(data,status,headers,config) {
                     console.log('...[WordsView.load] error');
                 });
+         },
 
-        },
+         clickSkipButton: function() {
+             console.log('[WordsView.clickSkipButton]');
+             $scope.WordsView.load();
+         },
+
+         clickSaveButton: function() {
+             console.log('[WordsView.clickSaveButton]');
+             $scope.WordsView.load();
+         },
     }
 
     //--------------------------------------------------------------------------------
@@ -58,7 +82,7 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
     var path = $location.path();
     console.log('[main] path = ' + path);
 
-    $scope.WordsView.load(0);
+    $scope.WordsView.load();
 
     console.log('[main] --------------------------------------------------------------/');
 

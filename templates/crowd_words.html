@@ -30,8 +30,11 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="span6">
+    <div class="row" ng-switch on="WordsView.state">
+        <div class="span6" ng-switch-when="loading">
+            <i>Loading...</i>
+        </div>
+        <div class="span6" ng-switch-when="ready">
 
             <div>
                 state: <b> (( WordsView.state )) </b>
@@ -49,6 +52,9 @@
             </ul>
 
             <pre> (( WordsView.word )) </pre>
+
+            <div class="btn btn-primary" ng-click="WordsView.clickSkipButton()"> Skip </div> 
+            <div class="btn btn-primary" ng-click="WordsView.clickSaveButton()"> Save </div> 
 
         </div>
     </div>
