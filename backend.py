@@ -397,7 +397,7 @@ def getCrowdWord(database_name, annotation_id):
 
     return dict(
         annotation_id = annotation_id,
-        model = row['model'],
+        model = row['model'].decode('utf8'), # convert from python string to unicode
         image_id = row['image_id']
     )
 
