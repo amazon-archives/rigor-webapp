@@ -427,8 +427,8 @@ def getCrowdWordImage(database_name, annotation_id):
                 ext
             )
 
-    xRes = 600
-    yRes = 300
+    xRes = 400
+    yRes = 128
     # list of x,y tuples
     coords = [
         boundary[0], (0,0),
@@ -441,8 +441,10 @@ def getCrowdWordImage(database_name, annotation_id):
     outPath = tempfile.mkstemp(suffix="." + ext)[1]
     # http://www.imagemagick.org/Usage/distorts/#perspective
     cmd = ["convert", path, '-matte', '-virtual-pixel', 'black',
+            # '-crop', '4000x4000+0+0', '+repage',
            '-distort', 'BilinearReverse',
            coordString,
+           '-crop', '%sx%s+0+0' % (xRes,yRes),
            outPath]
 
     debugCmd('>' + '  _  '.join(cmd))
