@@ -69,6 +69,7 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
                     console.log('...[WordsView.loadWord] success');
                     $scope.WordsView.word = data;
                     $scope.WordsView.state = 'ready';
+                    $location.path(''+$scope.WordsView.word.annotation_id);
                 })
                 .error(function(data,status,headers,config) {
                     console.log('...[WordsView.loadWord] error');
@@ -95,7 +96,14 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
     var path = $location.path();
     console.log('[main] path = ' + path);
 
-    $scope.WordsView.loadWord();
+    if (path === '/words') {
+        $scope.WordsView.loadWord();
+    } else {
+        // should look like '/1932'
+        var id = parseInt(path.substring(1),10);
+        console.log(id)
+        $scope.WordsView.loadWord(id);
+    }
     $scope.WordsView.loadStats();
 
     console.log('[main] --------------------------------------------------------------/');

@@ -90,6 +90,11 @@ def words():
     simulateSlow()
     return render_template('crowd_words.html')
 
+@app.route('/words/<annotation_id>')
+def wordsWithId(annotation_id):
+    simulateSlow()
+    return render_template('crowd_words.html')
+
 @app.route('/word/next')
 def redirectToNextWord():
     simulateSlow()

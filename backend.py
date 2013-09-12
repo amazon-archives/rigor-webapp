@@ -406,6 +406,7 @@ def getCrowdWordImage(database_name, annotation_id):
     Finds the image that goes with the given annotation
     Crops out and undistorts the word from the image
     Returns a path to an image in a temporary location
+    On failure, returns None
     """
     conn = getDbConnection(database_name)
     debugDetail('getting word %s' % annotation_id)
@@ -427,9 +428,27 @@ def getCrowdWordImage(database_name, annotation_id):
                 ext
             )
 
-    xRes = 400
-    yRes = 128
-    # list of x,y tuples
+    if not os.path.exists(path):
+        debugError('image does not exist')
+        return None
+
+    # compute aspect ratio of annotation box
+    # and resolution of undistorted image
+    def dist(p1,p2):
+        return ( (p1[0]-p2[0])**2 + (p1[1]-p2[1])**2 ) ** 0.5
+    xDist = dist(boundary[0],boundary[1])
+    yDist = dist(boundary[1],boundary[2])
+    aspect = xDist / yDist
+    aspect = min(max(aspect, 1/3), 5)
+    xRes = config.CROWD_WORD_WIDTH
+    yRes = xRes / aspect
+
+    # if word is too tall, scale down
+    if yRes > config.CROWD_MAX_WORD_HEIGHT:
+        xRes = xRes * config.CROWD_MAX_WORD_HEIGHT / yRes
+        yRes = config.CROWD_MAX_WORD_HEIGHT
+
+    # make list of x,y tuples for ImageMagick's distort function
     coords = [
         boundary[0], (0,0),
         boundary[1], (xRes,0),
@@ -438,15 +457,15 @@ def getCrowdWordImage(database_name, annotation_id):
     ]
     coordString = ' '.join(['%s,%s'%(x,y) for x,y in coords])
 
+    # undistort and resize word from the image
     outPath = tempfile.mkstemp(suffix="." + ext)[1]
     # http://www.imagemagick.org/Usage/distorts/#perspective
     cmd = ["convert", path, '-matte', '-virtual-pixel', 'black',
-            # '-crop', '4000x4000+0+0', '+repage',
+           '-extent', '%sx%s' % (max(imageRow['x_resolution'],xRes),max(imageRow['y_resolution'],yRes)),
            '-distort', 'BilinearReverse',
            coordString,
            '-crop', '%sx%s+0+0' % (xRes,yRes),
            outPath]
-
     debugCmd('>' + '  _  '.join(cmd))
     subprocess.call(cmd)
 
