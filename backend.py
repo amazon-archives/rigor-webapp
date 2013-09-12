@@ -367,23 +367,23 @@ def getCrowdStats(database_name):
 
     result = {}
 
-    sql = """ SELECT count(1) FROM annotation WHERE confidence = 1; """
-    result['words_todo'] = int(list(dbQueryDict(conn, sql))[0]['count'])
+    sql = """ SELECT count(1) FROM annotation WHERE confidence = %s; """
+    result['words_todo'] = int(list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_TODO]))[0]['count'])
     sql = """ SELECT count(1) FROM annotation; """
     result['words_total'] = int(list(dbQueryDict(conn, sql))[0]['count'])
     return result
 
 def getNextCrowdWord(database_name):
-    """Return the id of a random word which has confidence 1
+    """Return the id of a random word which has confidence CROWD_WORD_CONF_TODO
     """
     conn = getDbConnection(database_name)
     debugDetail('getting next word')
     sql = """ SELECT id FROM annotation
-    WHERE confidence = 1
+    WHERE confidence = %s
     ORDER BY RANDOM()
     LIMIT 1
     """
-    return list(dbQueryDict(conn, sql))[0]['id']
+    return list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_TODO]))[0]['id']
 
 def getCrowdWord(database_name, annotation_id):
     conn = getDbConnection(database_name)

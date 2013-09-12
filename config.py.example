@@ -1,12 +1,18 @@
 
-DB_USER = 'data'
-DB_PASSWORD = 'XXXXX'
+DB_USER = 'XXXXXXXXXXXXX'
+DB_PASSWORD = 'XXXXXXXXXXXXXXXX'
 
 # database names to ignore
-DB_BLACKLIST = ['dave','postgres','template0','template1']
+DB_BLACKLIST = ['dave', 'postgres', 'template0', 'template1']
 
 # which database to default to on first pageload
 INITIAL_DB_NAME = 'blindsight'
 
 FAKE_SLOW_DELAY = 0
+
+# crowd stuff
+CROWD_FAKE_SLOW_DELAY = 0.4
+CROWD_DB = 'icdar2003'
+CROWD_WORD_CONF_TODO = 1
+
 
