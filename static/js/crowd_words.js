@@ -19,6 +19,7 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
 
     $scope.WordsView = {
         // json from server
+        stats: {},
         word: {},
             // annotation_id
             // photo_id
@@ -33,16 +34,28 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
             // ],
         state: 'loading', // one of: loading, ready, saving
 
-        load: function(annotation_id) {
+        loadStats: function() {
+            console.log('[WordsView.loadStats] ...');
+            $http.get('/stats')
+                .success(function(data,status,headers,config) {
+                    console.log('...[WordsView.loadStats] success');
+                    $scope.WordsView.stats = data;
+                })
+                .error(function(data,status,headers,config) {
+                    console.log('...[WordsView.loadStats] error');
+                });
+        },
+
+        loadWord: function(annotation_id) {
             // set annotation_id to 0 or undefined to get the next word that needs to be done
 
             // get a specific word or just the next available one
             var wordUrl;
             if (annotation_id === 0 || annotation_id === undefined) {
-                console.log('[WordsView.load] loading next available annotation_id ...');
+                console.log('[WordsView.loadWord] loading next available annotation_id ...');
                 wordUrl = '/word/next';
             } else {
-                console.log('[WordsView.load] loading annotation_id ' + annotation_id + ' ...');
+                console.log('[WordsView.loadWord] loading annotation_id ' + annotation_id + ' ...');
                 wordUrl = '/word/' + annotation_id;
             }
 
@@ -53,23 +66,23 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
             // get new data
             $http.get(wordUrl)
                 .success(function(data,status,headers,config) {
-                    console.log('...[WordsView.load] success');
+                    console.log('...[WordsView.loadWord] success');
                     $scope.WordsView.word = data;
                     $scope.WordsView.state = 'ready';
                 })
                 .error(function(data,status,headers,config) {
-                    console.log('...[WordsView.load] error');
+                    console.log('...[WordsView.loadWord] error');
                 });
          },
 
          clickSkipButton: function() {
              console.log('[WordsView.clickSkipButton]');
-             $scope.WordsView.load();
+             $scope.WordsView.loadWord();
          },
 
          clickSaveButton: function() {
              console.log('[WordsView.clickSaveButton]');
-             $scope.WordsView.load();
+             $scope.WordsView.loadWord();
          },
     }
 
@@ -82,7 +95,8 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
     var path = $location.path();
     console.log('[main] path = ' + path);
 
-    $scope.WordsView.load();
+    $scope.WordsView.loadWord();
+    $scope.WordsView.loadStats();
 
     console.log('[main] --------------------------------------------------------------/');
 

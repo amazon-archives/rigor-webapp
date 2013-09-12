@@ -24,6 +24,7 @@
         <div class="span12">
 
             <h2><a href="" class="black-link" ng-click="ViewChooser.switchView('thumbs')"> Rigor: Crowd version: words </a></h2>
+            <div> <span class="muted"> Remaining words to check: </span> <b> (( WordsView.stats.words_todo )) </b> <span class="muted"> out of </span> <b> (( WordsView.stats.words_total )) </b> </div>
 
         </div>
     </div>
@@ -56,8 +57,9 @@
     <hr/>
 
     <div>
-        state: <b> (( WordsView.state )) </b>
-        <pre> (( WordsView.word )) </pre>
+        <pre> state = (( WordsView.state )) </pre>
+        <pre> word = (( WordsView.word )) </pre>
+        <pre> stats = (( WordsView.stats )) </pre>
     </div>
 
 </div>
