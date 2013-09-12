@@ -35,6 +35,7 @@ GET /words          // load interface and do AJAX to get a sushi to slice
 
 GET /word/next               // return JSON for the next word that needs sushi slicing
 GET /word/:annotation_id
+GET /word/:annotation_id.png // cropped undistorted image
 PUT /word/:annotation_id     // store JSON
 
 //===============================================================================

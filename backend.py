@@ -4,6 +4,9 @@ from __future__ import division
 import json
 import pprint
 import calendar
+import os
+import tempfile
+import subprocess
 
 import psycopg2
 
@@ -398,6 +401,56 @@ def getCrowdWord(database_name, annotation_id):
         image_id = row['image_id']
     )
 
+def getCrowdWordImage(database_name, annotation_id):
+    """
+    Finds the image that goes with the given annotation
+    Crops out and undistorts the word from the image
+    Returns a path to an image in a temporary location
+    """
+    conn = getDbConnection(database_name)
+    debugDetail('getting word %s' % annotation_id)
+
+    sql = """ SELECT * FROM annotation WHERE id = %s; """
+    wordRow = list(dbQueryDict(conn, sql, [annotation_id]))[0]
+
+    boundary = eval(wordRow['boundary'])
+    image_id = wordRow['image_id']
+
+    sql = """ SELECT * FROM image WHERE id = %s; """
+    imageRow = list(dbQueryDict(conn, sql, [image_id]))[0]
+    locator = imageRow['locator'].replace('-','').replace('/','').replace('..','')
+    ext = imageRow['format']
+    path = '/data/rigor/images/%s/%s/%s.%s' % (
+                locator[:2],
+                locator[2:4],
+                locator,
+                ext
+            )
+
+    xRes = 600
+    yRes = 300
+    # list of x,y tuples
+    coords = [
+        boundary[0], (0,0),
+        boundary[1], (xRes,0),
+        boundary[2], (xRes,yRes),
+        boundary[3], (0,yRes),
+    ]
+    coordString = ' '.join(['%s,%s'%(x,y) for x,y in coords])
+
+    outPath = tempfile.mkstemp(suffix="." + ext)[1]
+    # http://www.imagemagick.org/Usage/distorts/#perspective
+    cmd = ["convert", path, '-matte', '-virtual-pixel', 'black',
+           '-distort', 'BilinearReverse',
+           coordString,
+           outPath]
+
+    debugCmd('>' + '  _  '.join(cmd))
+    subprocess.call(cmd)
+
+    return outPath
+
+
 
 #--------------------------------------------------------------------------------
 # MAIN
@@ -408,7 +461,7 @@ def getCrowdWord(database_name, annotation_id):
 if __name__ == '__main__':
 
 
-    print getCrowdWord('icdar2003', 1)
+    print getCrowdWordImage('icdar2003', 1)
 
 #     print getImage(id=23731)
 #     print getImage(database_name='rigor',locator='01bb6939-ac7f-4dbf-84c9-8136eaa3f6ea');

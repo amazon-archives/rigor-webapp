@@ -44,6 +44,7 @@ def addTagFirstLineOnly(tag, s):
 def debugMain(s):   print yellow(  addTag('[main] ', s))
 def debugDetail(s): print cyan(    addTag('[main] --- ', s))
 def debugSQL(s):    print magenta( addTag('[sql] --- ', s))
+def debugCmd(s):    print green(   addTag('[cmd] --- ', s))
 def debugError(s):  print red(     addTag('[error] ', s))
 
 def readfile(fn):
