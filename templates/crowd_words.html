@@ -48,12 +48,25 @@
             </form>
         </div>
         <div class="span6" ng-switch-when="ready">
-            <img ng-src="(( WordsView.word.image_url ))">
-            <ul>
-                <li ng-repeat="char in WordsView.word.chars">
-                    <b>(( char.model ))</b>
-                </li>
-            </ul>
+            <!-- flags/handles with letters -->
+            <div class="crowd-sushi-start-handle-flag" ng-repeat="char in WordsView.word.chars"
+                style="
+                    margin-left: (( '' + (char.start * config.CROWD_WORD_WIDTH) + 'px' ));
+                ">
+                (( char.model ))
+            </div>
+            <!-- vertical lines -->
+            <div class="crowd-sushi-start-handle-line" ng-repeat="char in WordsView.word.chars"
+                style="
+                    margin-left: (( '' + (char.start * config.CROWD_WORD_WIDTH) + 'px' ));
+                ">
+            </div>
+            <div class="crowd-sushi-end-handle-line" ng-repeat="char in WordsView.word.chars"
+                style="
+                    margin-left: (( '' + (char.end * config.CROWD_WORD_WIDTH) + 'px' ));
+                ">
+            </div>
+            <img class="crowd-sushi-image" ng-src="(( WordsView.word.image_url ))">
         </div>
     </div>
 

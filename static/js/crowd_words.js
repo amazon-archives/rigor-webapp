@@ -17,6 +17,11 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
 
     //================================================================================
 
+    $scope.config = {
+        // TODO: get this from the backend
+        CROWD_WORD_WIDTH: 500,
+    };
+
     $scope.WordsView = {
         // json from server
         stats: {},

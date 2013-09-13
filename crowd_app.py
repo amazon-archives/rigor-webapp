@@ -125,10 +125,10 @@ def getWord(annotation_id):
     word['image_url'] = '/word/%s.jpg' % word['annotation_id']
 
     word['chars'] = []
-    for char in word['model']:
+    for ii,char in enumerate(word['model']):
         word['chars'].append({
-            "start": 0.1,
-            "end": 0.2,
+            "start": (ii+0.05) / len(word['model']),
+            "end": (ii+0.95) / len(word['model']),
             "model": char
         })
     return jsonify(word)

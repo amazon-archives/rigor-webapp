@@ -104,3 +104,33 @@ body {
     /*font-family: monospace !important;*/
 }
 
+.crowd-sushi-start-handle-flag {
+    position: absolute;
+    padding: 4px 8px;
+    background: hsla(226, 81%, 57%, 1);
+    color: white;
+    font-weight: bold;
+    font-size: 17px;
+    width: 10px;
+    height: 20px;
+}
+
+.crowd-sushi-start-handle-line {
+    position: absolute;
+    background: hsla(226, 81%, 57%, 1);
+    width: 3px;
+    height: 150px;
+}
+
+.crowd-sushi-end-handle-line {
+    position: absolute;
+    background: hsla(0, 81%, 57%, 1);
+    margin-top: 28px;
+    width: 3px;
+    height: 150px;
+}
+
+.crowd-sushi-image {
+    margin-top: 28px;
+}
+
