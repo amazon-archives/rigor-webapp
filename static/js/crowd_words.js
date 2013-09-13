@@ -13,13 +13,15 @@ crowdWordsApp.config(function($interpolateProvider,$locationProvider) {
 });
 
 
-crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeParams, $location) {
+crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeParams, $timeout, $location) {
 
     //================================================================================
 
     $scope.WordsView = {
         // json from server
         stats: {},
+            // words_todo: 29,
+            // words_total: 104,
         word: {},
             // annotation_id
             // photo_id
@@ -83,7 +85,10 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
 
          clickSaveButton: function() {
              console.log('[WordsView.clickSaveButton]');
+             // TODO: save
              $scope.WordsView.loadWord();
+             $scope.WordsView.stats.words_todo = $scope.WordsView.stats.words_todo - 1;
+             $timeout($scope.WordsView.loadStats, 1000);
          },
     }
 
