@@ -1,6 +1,6 @@
 
-DB_USER = 'XXXXXXXXXXXXX'
-DB_PASSWORD = 'XXXXXXXXXXXXXXXX'
+DB_USER = 'XXXXXXXXXXXX'
+DB_PASSWORD = 'XXXXXXXXXXXXX'
 
 # database names to ignore
 DB_BLACKLIST = ['dave', 'postgres', 'template0', 'template1']
@@ -11,8 +11,10 @@ INITIAL_DB_NAME = 'blindsight'
 FAKE_SLOW_DELAY = 0
 
 # crowd stuff
-CROWD_FAKE_SLOW_DELAY = 0.4
+CROWD_FAKE_SLOW_DELAY = 0
 CROWD_DB = 'icdar2003'
+CROWD_MAX_WORD_HEIGHT = 300
+CROWD_WORD_WIDTH = 500
 CROWD_WORD_CONF_TODO = 1
-
+CROWD_WORD_IMG_PATH = '/tmp/rigor-word-%s'
 
