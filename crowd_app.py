@@ -109,6 +109,9 @@ def getWord(annotation_id):
         image_id
         model
         image_url
+        ext
+        x_res
+        y_res
         chars = [
             {
                 start
@@ -122,8 +125,10 @@ def getWord(annotation_id):
     simulateSlow()
     word = backend.getCrowdWord(config.CROWD_DB, annotation_id)
 
-    word['image_url'] = '/word/%s.jpg' % word['annotation_id']
+    word['image_url'] = '/word/%s.%s' % (word['annotation_id'], word['ext'])
+    del word['image_path']
 
+    # TODO: move this to the backend maybe
     word['chars'] = []
     for ii,char in enumerate(word['model']):
         word['chars'].append({
@@ -133,10 +138,10 @@ def getWord(annotation_id):
         })
     return jsonify(word)
 
-@app.route('/word/<annotation_id>.jpg')
-def getWordImage(annotation_id):
+@app.route('/word/<annotation_id>.<ext>')
+def getWordImage(annotation_id, ext):
     simulateSlow()
-    path = backend.getCrowdWordImage(config.CROWD_DB, annotation_id)
+    path = backend.getCrowdWordImagePath(config.CROWD_DB, annotation_id, ext)
     if os.path.exists(path):
         return send_file(path)
     else:

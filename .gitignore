@@ -16,3 +16,5 @@ pylint*.html
 
 misc-*
 
+temp/*
+

@@ -389,24 +389,20 @@ def getNextCrowdWord(database_name):
     return list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_TODO]))[0]['id']
 
 def getCrowdWord(database_name, annotation_id):
-    conn = getDbConnection(database_name)
-    debugDetail('getting word %s' % annotation_id)
-
-    sql = """ SELECT * FROM annotation WHERE id = %s; """
-    row = list(dbQueryDict(conn, sql, [annotation_id]))[0]
-
-    return dict(
-        annotation_id = annotation_id,
-        model = row['model'].decode('utf8'), # convert from python string to unicode
-        image_id = row['image_id']
-    )
-
-def getCrowdWordImage(database_name, annotation_id):
     """
     Finds the image that goes with the given annotation
     Crops out and undistorts the word from the image
-    Returns a path to an image in a temporary location
-    On failure, returns None
+    Saves the processed image to a temp location
+    Returns JSON:
+    {
+        annotation_id
+        model
+        image_id
+        image_path # in local filesystem, not a URL
+        x_res
+        y_res
+        ext
+    }
     """
     conn = getDbConnection(database_name)
     debugDetail('getting word %s' % annotation_id)
@@ -419,13 +415,14 @@ def getCrowdWordImage(database_name, annotation_id):
 
     sql = """ SELECT * FROM image WHERE id = %s; """
     imageRow = list(dbQueryDict(conn, sql, [image_id]))[0]
-    locator = imageRow['locator'].replace('-','').replace('/','').replace('..','')
-    ext = imageRow['format']
+    locator = imageRow['locator'].replace('-','').replace('/','').replace('..','').replace('\0','')
+    sourceExt = imageRow['format']
+    destExt = 'jpg'
     path = '/data/rigor/images/%s/%s/%s.%s' % (
                 locator[:2],
                 locator[2:4],
                 locator,
-                ext
+                sourceExt
             )
 
     if not os.path.exists(path):
@@ -448,6 +445,9 @@ def getCrowdWordImage(database_name, annotation_id):
         xRes = xRes * config.CROWD_MAX_WORD_HEIGHT / yRes
         yRes = config.CROWD_MAX_WORD_HEIGHT
 
+    xRes = int(xRes)
+    yRes = int(yRes)
+
     # make list of x,y tuples for ImageMagick's distort function
     coords = [
         boundary[0], (0,0),
@@ -458,7 +458,8 @@ def getCrowdWordImage(database_name, annotation_id):
     coordString = ' '.join(['%s,%s'%(x,y) for x,y in coords])
 
     # undistort and resize word from the image
-    outPath = tempfile.mkstemp(suffix="." + ext)[1]
+    outPath = 'temp/word-crop-%s-%s.%s' % (database_name, annotation_id, destExt)
+#     outPath = tempfile.mkstemp(suffix="." + destExt)[1]
     # http://www.imagemagick.org/Usage/distorts/#perspective
     cmd = ["convert", path, '-matte', '-virtual-pixel', 'black',
            '-extent', '%sx%s' % (max(imageRow['x_resolution'],xRes),max(imageRow['y_resolution'],yRes)),
@@ -469,9 +470,22 @@ def getCrowdWordImage(database_name, annotation_id):
     debugCmd('>' + '  _  '.join(cmd))
     subprocess.call(cmd)
 
-    return outPath
+    result = dict(
+        annotation_id = annotation_id,
+        model = wordRow['model'].decode('utf8'), # convert from python string to unicode
+        image_id = wordRow['image_id'],
+        image_path = outPath,
+        x_res = xRes,
+        y_res = yRes,
+        ext = destExt,
+    )
+    return result
 
-
+def getCrowdWordImagePath(database_name, annotation_id, ext):
+    annotation_id = annotation_id.replace('/','').replace('.','').replace('\0','')
+    database_name = database_name.replace('/','').replace('.','').replace('\0','')
+    ext = ext.replace('/','').replace('.','').replace('\0','')
+    return 'temp/word-crop-%s-%s.%s' % (database_name, annotation_id, ext)
 
 #--------------------------------------------------------------------------------
 # MAIN

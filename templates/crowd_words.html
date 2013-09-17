@@ -51,19 +51,19 @@
             <!-- flags/handles with letters -->
             <div class="crowd-sushi-start-handle-flag" ng-repeat="char in WordsView.word.chars"
                 style="
-                    margin-left: (( '' + (char.start * config.CROWD_WORD_WIDTH) + 'px' ));
+                    margin-left: (( '' + (char.start * WordsView.word.x_res) + 'px' ));
                 ">
                 (( char.model ))
             </div>
             <!-- vertical lines -->
             <div class="crowd-sushi-start-handle-line" ng-repeat="char in WordsView.word.chars"
                 style="
-                    margin-left: (( '' + (char.start * config.CROWD_WORD_WIDTH) + 'px' ));
+                    margin-left: (( '' + (char.start * WordsView.word.x_res) + 'px' ));
                 ">
             </div>
             <div class="crowd-sushi-end-handle-line" ng-repeat="char in WordsView.word.chars"
                 style="
-                    margin-left: (( '' + (char.end * config.CROWD_WORD_WIDTH) + 'px' ));
+                    margin-left: (( '' + (char.end * WordsView.word.x_res) + 'px' ));
                 ">
             </div>
             <img class="crowd-sushi-image" ng-src="(( WordsView.word.image_url ))">

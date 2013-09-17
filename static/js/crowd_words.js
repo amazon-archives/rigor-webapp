@@ -29,7 +29,11 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
             // words_total: 104,
         word: {},
             // annotation_id
-            // photo_id
+            // image_id
+            // ext
+            // x_res
+            // y_res
+            // image_url
             // model: "SALE",
             // chars: [
             //     {
