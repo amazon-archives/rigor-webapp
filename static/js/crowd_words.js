@@ -101,6 +101,21 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
          },
     }
 
+    // when user changes the model in the edit box...
+    $scope.$watch('WordsView.word.model', function(newValue,oldValue) {
+        console.log('[model watch] model changed: ' + oldValue + ' --> ' + newValue);
+        if (oldValue === undefined || newValue === undefined) { return; }
+        // recompute sushi slices
+        $scope.WordsView.word.chars = [];
+        for (var ii = 0; ii < newValue.length; ii++ ) {
+            $scope.WordsView.word.chars.push({
+                start: (ii + 0.05) / newValue.length,
+                end: (ii + 0.95) / newValue.length,
+                model: newValue[ii],
+            });
+        }
+    });
+
     //--------------------------------------------------------------------------------
     // MAIN
 
