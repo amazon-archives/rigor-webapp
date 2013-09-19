@@ -361,7 +361,9 @@ def saveAnnotations(database_name, annotations):
 def getCrowdStats(database_name):
     """Return a dict with info about the number of tasks done and still needing to be done.
     {
-        words_todo: 29,
+        words_raw: 29,
+        words_verified: 29,
+        words_sliced: 29,
         words_total: 104,
     }
     """
@@ -371,13 +373,14 @@ def getCrowdStats(database_name):
     result = {}
 
     sql = """ SELECT count(1) FROM annotation WHERE confidence = %s; """
-    result['words_todo'] = int(list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_TODO]))[0]['count'])
-    sql = """ SELECT count(1) FROM annotation; """
-    result['words_total'] = int(list(dbQueryDict(conn, sql))[0]['count'])
+    result['words_raw'] = int(list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_RAW]))[0]['count'])
+    result['words_verified'] = int(list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_VERIFIED]))[0]['count'])
+    result['words_sliced'] = int(list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_SLICED]))[0]['count'])
+    result['words_total'] = result['words_raw'] + result['words_verified'] + result['words_sliced']
     return result
 
 def getNextCrowdWord(database_name):
-    """Return the id of a random word which has confidence CROWD_WORD_CONF_TODO
+    """Return the id of a random word which has confidence CROWD_WORD_CONF_VERIFIED
     """
     conn = getDbConnection(database_name)
     debugDetail('getting next word')
@@ -386,7 +389,7 @@ def getNextCrowdWord(database_name):
     ORDER BY RANDOM()
     LIMIT 1
     """
-    return list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_TODO]))[0]['id']
+    return list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_VERIFIED]))[0]['id']
 
 def getCrowdWord(database_name, annotation_id):
     """

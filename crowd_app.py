@@ -73,7 +73,9 @@ def index():
 def stats():
     """
     {
-        words_todo: 29,
+        words_raw: 29,
+        words_verified: 29,
+        words_sliced: 29,
         words_total: 104,
     }
     """

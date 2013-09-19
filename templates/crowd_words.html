@@ -24,7 +24,12 @@
         <div class="span9">
 
             <h2><a href="/" class="black-link"> Rigor crowd editor: word slicer </a></h2>
-            <div> <span class="muted"> Remaining words to slice: </span> <b> (( WordsView.stats.words_todo )) </b> <span class="muted"> out of </span> <b> (( WordsView.stats.words_total )) </b> </div>
+            <div>
+                <span class="muted"> Words: </span>
+                <b> (( WordsView.stats.words_raw ))      </b> <span class="muted"> unreviewed &rarr; </span>
+                <b> (( WordsView.stats.words_verified )) </b> <span class="muted"> verified &rarr; </span>
+                <b> (( WordsView.stats.words_sliced ))   </b> <span class="muted"> sliced </span>
+            </div>
 
         </div>
         <div class="span3">

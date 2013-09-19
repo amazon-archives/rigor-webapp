@@ -25,7 +25,9 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
     $scope.WordsView = {
         // json from server
         stats: {},
-            // words_todo: 29,
+            // words_raw: 29,
+            // words_verified: 29,
+            // words_sliced: 29,
             // words_total: 104,
         word: {},
             // annotation_id
@@ -96,7 +98,8 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
              console.log('[WordsView.clickSaveButton]');
              // TODO: save
              $scope.WordsView.loadWord();
-             $scope.WordsView.stats.words_todo = $scope.WordsView.stats.words_todo - 1;
+             $scope.WordsView.stats.words_verified = $scope.WordsView.stats.words_verified - 1;
+             $scope.WordsView.stats.words_sliced = $scope.WordsView.stats.words_sliced + 1;
              $timeout($scope.WordsView.loadStats, 1000);
          },
     }
