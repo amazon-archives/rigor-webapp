@@ -45,6 +45,10 @@
         <div class="span6" ng-switch-when="loading">
             <i>Loading...</i>
         </div>
+        <div class="span6" ng-switch-when="empty">
+            <i ng-if="WordsView.stats.words_raw === 0">No words to slice.  All done!</i>
+            <i ng-if="WordsView.stats.words_raw !== 0">No words to slice right now.  Go review more words.</i>
+        </div>
         <div class="span6" ng-switch-when="ready">
             <div><span class="muted"> word (( WordsView.word.annotation_id )): </span></div>
             <div>&nbsp;</div>

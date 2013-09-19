@@ -45,7 +45,7 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
             //     },
             //     { ... },
             // ],
-        state: 'loading', // one of: loading, ready, saving
+        state: 'loading', // one of: loading, ready, saving (not implemented yet), empty (e.g. nothing to show)
 
         loadStats: function() {
             console.log('[WordsView.loadStats] ...');
@@ -85,6 +85,7 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
                     $location.path(''+$scope.WordsView.word.annotation_id);
                 })
                 .error(function(data,status,headers,config) {
+                    $scope.WordsView.state = 'empty';
                     console.log('...[WordsView.loadWord] error');
                 });
          },

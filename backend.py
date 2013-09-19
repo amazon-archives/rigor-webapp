@@ -381,6 +381,7 @@ def getCrowdStats(database_name):
 
 def getNextCrowdWord(database_name):
     """Return the id of a random word which has confidence CROWD_WORD_CONF_VERIFIED
+    If there are none, return None
     """
     conn = getDbConnection(database_name)
     debugDetail('getting next word')
@@ -389,6 +390,9 @@ def getNextCrowdWord(database_name):
     ORDER BY RANDOM()
     LIMIT 1
     """
+    results = list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_VERIFIED]))
+    if not results:
+        return None
     return list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_VERIFIED]))[0]['id']
 
 def getCrowdWord(database_name, annotation_id):

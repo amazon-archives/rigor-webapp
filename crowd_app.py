@@ -101,7 +101,10 @@ def wordsWithId(annotation_id):
 def redirectToNextWord():
     simulateSlow()
     annotation_id = backend.getNextCrowdWord(config.CROWD_DB)
-    return redirect('/word/%s'%annotation_id)
+    if annotation_id is None:
+        abort(404)
+    else:
+        return redirect('/word/%s'%annotation_id)
 
 @app.route('/word/<annotation_id>')
 def getWord(annotation_id):
