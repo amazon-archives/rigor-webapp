@@ -19,7 +19,7 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
 
     $scope.config = {
         // TODO: get this from the backend
-        CROWD_WORD_WIDTH: 500,
+        MIN_CHAR_WIDTH: 0.02,
     };
 
     $scope.WordsView = {
@@ -50,6 +50,8 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
             // charBeingDragged: {}
             // startX
             // startY
+            // dX
+            // dY
 
         loadStats: function() {
             console.log('[WordsView.loadStats] ...');
@@ -114,8 +116,33 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
              console.log(event);
              $scope.WordsView.dragState = {};
              $scope.WordsView.dragState.charBeingDragged = char;
+             char.originalStart = char.start;
+             char.originalEnd = char.end;
              $scope.WordsView.dragState.startX = $event.x;
              $scope.WordsView.dragState.startY = $event.y;
+             $scope.WordsView.dragState.dX = 0;
+             $scope.WordsView.dragState.dY = 0;
+             $event.preventDefault();
+         },
+         sushiHandleMouseMove: function($event) {
+             // if dragState is empty, ignore mouseMove
+             if (Object.keys($scope.WordsView.dragState).length === 0) {
+                 return;
+             }
+             console.log('[WordsView.sushiHandleMouseMove]');
+             console.log(event);
+             var dragState = $scope.WordsView.dragState;
+             var char = dragState.charBeingDragged;
+             dragState.dX = $event.x - dragState.startX;
+             dragState.dY = $event.y - dragState.startY;
+
+             // figure out new position
+             char.start = char.originalStart + dragState.dX / $scope.WordsView.word.x_res;
+             // keep in bounds
+             char.start = Math.max(0, Math.min(1, char.start));
+             // push end marker
+             char.end = Math.max(char.originalEnd, char.start + $scope.config.MIN_CHAR_WIDTH);
+
              $event.preventDefault();
          },
          sushiHandleMouseUp: function($event) {
@@ -126,9 +153,11 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
              }
              console.log('[WordsView.sushiHandleMouseUp]');
              console.log(event);
+             delete $scope.WordsView.dragState.charBeingDragged.originalStart;
+             delete $scope.WordsView.dragState.charBeingDragged.originalEnd;
              $scope.WordsView.dragState = {};
              $event.preventDefault();
-         }
+         },
     }
 
     // when user changes the model in the edit box...
