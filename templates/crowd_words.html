@@ -69,17 +69,29 @@
                 ">
                 (( char.model ))
             </div>
+            <div class="crowd-sushi-end-handle-flag"
+                ng-repeat="char in WordsView.word.chars"
+                ng-mousedown="WordsView.sushiHandleMouseDown(char,$event)"
+                style="
+                    margin-left: (( '' + (char.end * WordsView.word.x_res - 23) + 'px' ));
+                    margin-top: (( '' + (28 + WordsView.word.y_res) + 'px' ));
+                ">
+                (( char.model ))
+            </div>
             <!-- vertical lines -->
             <div class="crowd-sushi-start-handle-line"
                 ng-repeat="char in WordsView.word.chars"
                 style="
                     margin-left: (( '' + (char.start * WordsView.word.x_res) + 'px' ));
+                    height: (( '' + (WordsView.word.y_res * 0.9) + 'px' ));
                 ">
             </div>
             <div class="crowd-sushi-end-handle-line"
                 ng-repeat="char in WordsView.word.chars"
                 style="
                     margin-left: (( '' + (char.end * WordsView.word.x_res) + 'px' ));
+                    margin-top: (( '' + (28 + WordsView.word.y_res * 0.1) + 'px' ));
+                    height: (( '' + (WordsView.word.y_res * 0.9) + 'px' ));
                 ">
             </div>
             <img class="crowd-sushi-image" ng-src="(( WordsView.word.image_url ))">
