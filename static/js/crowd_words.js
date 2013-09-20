@@ -46,6 +46,10 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
             //     { ... },
             // ],
         state: 'loading', // one of: loading, ready, saving (not implemented yet), empty (e.g. nothing to show)
+        dragState: {}, // is {} when mouse button is up
+            // charBeingDragged: {}
+            // startX
+            // startY
 
         loadStats: function() {
             console.log('[WordsView.loadStats] ...');
@@ -75,6 +79,7 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
             // clear state
             $scope.WordsView.state = 'loading';
             $scope.WordsView.word = {};
+            $scope.WordsView.dragState = {};
 
             // get new data
             $http.get(wordUrl)
@@ -103,6 +108,27 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
              $scope.WordsView.stats.words_sliced = $scope.WordsView.stats.words_sliced + 1;
              $timeout($scope.WordsView.loadStats, 1000);
          },
+
+         sushiHandleMouseDown: function(char,$event) {
+             console.log('[WordsView.sushiHandleMouseDown] char = ' + char.model);
+             console.log(event);
+             $scope.WordsView.dragState = {};
+             $scope.WordsView.dragState.charBeingDragged = char;
+             $scope.WordsView.dragState.startX = $event.x;
+             $scope.WordsView.dragState.startY = $event.y;
+             $event.preventDefault();
+         },
+         sushiHandleMouseUp: function($event) {
+             // mouseUp comes from the body tag, not the individual handle tags
+             // if dragState is empty, ignore mouseUp
+             if (Object.keys($scope.WordsView.dragState).length === 0) {
+                 return;
+             }
+             console.log('[WordsView.sushiHandleMouseUp]');
+             console.log(event);
+             $scope.WordsView.dragState = {};
+             $event.preventDefault();
+         }
     }
 
     // when user changes the model in the edit box...

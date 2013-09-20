@@ -16,7 +16,9 @@
 
     <script src="/static/js/crowd_words.js" type="text/javascript" charset="utf-8"></script>
 </head>
-<body>
+<body
+    ng-mouseup="WordsView.sushiHandleMouseUp($event)"
+>
 
 <div class="container-fluid">
 
@@ -58,19 +60,23 @@
         </div>
         <div class="span6" ng-switch-when="ready">
             <!-- flags/handles with letters -->
-            <div class="crowd-sushi-start-handle-flag" ng-repeat="char in WordsView.word.chars"
+            <div class="crowd-sushi-start-handle-flag"
+                ng-repeat="char in WordsView.word.chars"
+                ng-mousedown="WordsView.sushiHandleMouseDown(char,$event)"
                 style="
                     margin-left: (( '' + (char.start * WordsView.word.x_res) + 'px' ));
                 ">
                 (( char.model ))
             </div>
             <!-- vertical lines -->
-            <div class="crowd-sushi-start-handle-line" ng-repeat="char in WordsView.word.chars"
+            <div class="crowd-sushi-start-handle-line"
+                ng-repeat="char in WordsView.word.chars"
                 style="
                     margin-left: (( '' + (char.start * WordsView.word.x_res) + 'px' ));
                 ">
             </div>
-            <div class="crowd-sushi-end-handle-line" ng-repeat="char in WordsView.word.chars"
+            <div class="crowd-sushi-end-handle-line"
+                ng-repeat="char in WordsView.word.chars"
                 style="
                     margin-left: (( '' + (char.end * WordsView.word.x_res) + 'px' ));
                 ">
@@ -87,6 +93,7 @@
         <pre> state = (( WordsView.state )) </pre>
         <pre> word = (( WordsView.word )) </pre>
         <pre> stats = (( WordsView.stats )) </pre>
+        <pre> dragState = (( WordsView.dragState )) </pre>
     </div>
 
 </div>
