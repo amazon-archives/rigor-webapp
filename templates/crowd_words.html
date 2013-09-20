@@ -63,7 +63,7 @@
             <!-- flags/handles with letters -->
             <div class="crowd-sushi-start-handle-flag"
                 ng-repeat="char in WordsView.word.chars"
-                ng-mousedown="WordsView.sushiHandleMouseDown(char,$event)"
+                ng-mousedown="WordsView.sushiHandleMouseDown(char,'start',$event)"
                 style="
                     margin-left: (( '' + (char.start * WordsView.word.x_res) + 'px' ));
                 ">
@@ -71,7 +71,7 @@
             </div>
             <div class="crowd-sushi-end-handle-flag"
                 ng-repeat="char in WordsView.word.chars"
-                ng-mousedown="WordsView.sushiHandleMouseDown(char,$event)"
+                ng-mousedown="WordsView.sushiHandleMouseDown(char,'end',$event)"
                 style="
                     margin-left: (( '' + (char.end * WordsView.word.x_res - 23) + 'px' ));
                     margin-top: (( '' + (28 + WordsView.word.y_res) + 'px' ));

@@ -48,6 +48,7 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
         state: 'loading', // one of: loading, ready, saving (not implemented yet), empty (e.g. nothing to show)
         dragState: {}, // is {} when mouse button is up
             // charBeingDragged: {}
+            // kind    // either 'start' or 'end'
             // startX
             // startY
             // dX
@@ -111,17 +112,21 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
              $timeout($scope.WordsView.loadStats, 1000);
          },
 
-         sushiHandleMouseDown: function(char,$event) {
-             console.log('[WordsView.sushiHandleMouseDown] char = ' + char.model);
+         sushiHandleMouseDown: function(char,kind,$event) {
+             // kind is either 'start' or 'end'
+
+             console.log('[WordsView.sushiHandleMouseDown] kind = ' + kind + ', char = ' + char.model);
              console.log(event);
              $scope.WordsView.dragState = {};
-             $scope.WordsView.dragState.charBeingDragged = char;
+             var dragState = $scope.WordsView.dragState;
+             dragState.charBeingDragged = char;
              char.originalStart = char.start;
              char.originalEnd = char.end;
-             $scope.WordsView.dragState.startX = $event.x;
-             $scope.WordsView.dragState.startY = $event.y;
-             $scope.WordsView.dragState.dX = 0;
-             $scope.WordsView.dragState.dY = 0;
+             dragState.startX = $event.x;
+             dragState.startY = $event.y;
+             dragState.dX = 0;
+             dragState.dY = 0;
+             dragState.kind = kind;
              $event.preventDefault();
          },
          sushiHandleMouseMove: function($event) {
@@ -136,12 +141,21 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
              dragState.dX = $event.x - dragState.startX;
              dragState.dY = $event.y - dragState.startY;
 
-             // figure out new position
-             char.start = char.originalStart + dragState.dX / $scope.WordsView.word.x_res;
-             // keep in bounds
-             char.start = Math.max(0, Math.min(1, char.start));
-             // push end marker
-             char.end = Math.max(char.originalEnd, char.start + $scope.config.MIN_CHAR_WIDTH);
+             if (dragState.kind === 'start') {
+                 // figure out new position
+                 char.start = char.originalStart + dragState.dX / $scope.WordsView.word.x_res;
+                 // keep in bounds
+                 char.start = Math.max(0, Math.min(1 - $scope.config.MIN_CHAR_WIDTH, char.start));
+                 // push end marker
+                 char.end = Math.max(char.originalEnd, char.start + $scope.config.MIN_CHAR_WIDTH);
+             } else {
+                 // figure out new position
+                 char.end = char.originalEnd + dragState.dX / $scope.WordsView.word.x_res;
+                 // keep in bounds
+                 char.end = Math.max($scope.config.MIN_CHAR_WIDTH, Math.min(1, char.end));
+                 // push start marker
+                 char.start = Math.min(char.originalStart, char.end - $scope.config.MIN_CHAR_WIDTH);
+             }
 
              $event.preventDefault();
          },
