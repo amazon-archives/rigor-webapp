@@ -5,6 +5,7 @@ import os
 import sys
 import time
 import random
+import json
 
 import functools
 
@@ -152,6 +153,12 @@ def getWordImage(annotation_id, ext):
     else:
         abort(404)
 
+@app.route('/word/save', methods=['POST'])
+def saveWord():
+    simulateSlow()
+    wordData = json.loads(request.data)
+    backend.saveCrowdWord(config.CROWD_DB, wordData)
+    return 'ok'
 
 #--------------------------------------------------------------------------------
 # MAIN

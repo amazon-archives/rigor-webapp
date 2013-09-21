@@ -101,15 +101,30 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
          clickSkipButton: function() {
              console.log('[WordsView.clickSkipButton]');
              $scope.WordsView.loadWord();
+             $timeout($scope.WordsView.loadStats, 1000);
          },
 
          clickSaveButton: function() {
              console.log('[WordsView.clickSaveButton]');
-             // TODO: save
-             $scope.WordsView.loadWord();
-             $scope.WordsView.stats.words_verified = $scope.WordsView.stats.words_verified - 1;
-             $scope.WordsView.stats.words_sliced = $scope.WordsView.stats.words_sliced + 1;
-             $timeout($scope.WordsView.loadStats, 1000);
+
+             // save
+             $scope.WordsView.state = 'saving';
+             $http.post('/word/save', $scope.WordsView.word)
+                 .success(function(data,status,headers,config) {
+                     console.log('...[WordsView.clickSaveButton] success');
+
+                     //// load next word
+                     //$scope.WordsView.loadWord();
+                     //
+                     //// update stats
+                     //$scope.WordsView.stats.words_verified = $scope.WordsView.stats.words_verified - 1;
+                     //$scope.WordsView.stats.words_sliced = $scope.WordsView.stats.words_sliced + 1;
+                     //$timeout($scope.WordsView.loadStats, 1000);
+
+                 })
+                 .error(function(data,status,headers,config) {
+                     console.log('...[WordsView.clickSaveButton] error');
+                 });
          },
 
          sushiHandleMouseDown: function(char,kind,$event) {

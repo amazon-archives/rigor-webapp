@@ -76,10 +76,22 @@ def dbExecute(conn, sql, values=()):
     This is useful for delete or insert commands
     You should call conn.commit() after this.
     """
+    debugSQL(sql)
+    debugSQL('... %s' % str(values))
     cursor = conn.cursor()
 #     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(sql, values)
     return cursor.rowcount
+
+def dbInsertAndGetId(conn, sql, values=()):
+    """Run the sql (which is assumed to be an "INSERT ... RETURNING id;") and return the id of the new row.
+    You should call conn.commit() after this.
+    """
+    debugSQL(sql)
+    debugSQL('... %s' % str(values))
+    cursor = conn.cursor()
+    cursor.execute(sql, values)
+    return cursor.fetchone()[0]
 
 def dbTimestampToUTCTime(databaseTime):
     """Convert a time from the database to a unix seconds-since-epoch time
@@ -372,7 +384,7 @@ def getCrowdStats(database_name):
 
     result = {}
 
-    sql = """ SELECT count(1) FROM annotation WHERE confidence = %s; """
+    sql = """ SELECT count(1) FROM annotation WHERE domain = 'text:word' AND confidence = %s; """
     result['words_raw'] = int(list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_RAW]))[0]['count'])
     result['words_verified'] = int(list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_VERIFIED]))[0]['count'])
     result['words_sliced'] = int(list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_SLICED]))[0]['count'])
@@ -385,10 +397,12 @@ def getNextCrowdWord(database_name):
     """
     conn = getDbConnection(database_name)
     debugDetail('getting next word')
-    sql = """ SELECT id FROM annotation
-    WHERE confidence = %s
-    ORDER BY RANDOM()
-    LIMIT 1
+    sql = """
+        SELECT id FROM annotation
+        WHERE domain = 'text:word'
+        AND confidence = %s
+        ORDER BY RANDOM()
+        LIMIT 1
     """
     results = list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_VERIFIED]))
     if not results:
@@ -414,7 +428,7 @@ def getCrowdWord(database_name, annotation_id):
     conn = getDbConnection(database_name)
     debugDetail('getting word %s' % annotation_id)
 
-    sql = """ SELECT * FROM annotation WHERE id = %s; """
+    sql = """ SELECT * FROM annotation WHERE domain = 'text:word' AND id = %s; """
     wordRow = list(dbQueryDict(conn, sql, [annotation_id]))[0]
 
     boundary = eval(wordRow['boundary'])
@@ -493,6 +507,67 @@ def getCrowdWordImagePath(database_name, annotation_id, ext):
     database_name = database_name.replace('/','').replace('.','').replace('\0','')
     ext = ext.replace('/','').replace('.','').replace('\0','')
     return 'temp/word-crop-%s-%s.%s' % (database_name, annotation_id, ext)
+
+def saveCrowdWord(database_name, word_data):
+    debugDetail('saving word')
+    debugCmd(pprint.pformat(word_data))
+
+    conn = getDbConnection(database_name)
+
+    # delete existing char annotations and tags for this word
+    sql = """
+        DELETE FROM annotation
+        WHERE domain='text:char'
+        -- TODO: how to know if it's in a certain word
+    """
+
+    # get word boundary
+    sql = """ SELECT * FROM annotation WHERE domain = 'text:word' AND id = %s; """
+    wordRow = list(dbQueryDict(conn, sql, [word_data['annotation_id']]))[0]
+    wordBoundary = eval(wordRow['boundary'])
+
+    def pointInterp(a, b, pct):
+        ax, ay = a
+        bx, by = b
+        return (ax*(1-pct) + bx*pct,
+                ay*(1-pct) + by*pct)
+
+    def makePolygonString(boundary):
+        result = []
+        for x,y in boundary:
+            assert type(x) in (int,float)
+            assert type(y) in (int,float)
+            result.append((int(x+0.5),int(y+0.5)))
+        return str(tuple(tuple(point) for point in result))
+
+    # add new annotations
+    for char in word_data['chars']:
+        debugDetail('CHAR: %s' % char['model'].encode('utf8'))
+        # first, add char annotation
+        charBoundary = []
+        charBoundary.append(pointInterp(wordBoundary[0], wordBoundary[1], char['start']))
+        charBoundary.append(pointInterp(wordBoundary[0], wordBoundary[1], char['end']))
+        charBoundary.append(pointInterp(wordBoundary[2], wordBoundary[3], char['end']))
+        charBoundary.append(pointInterp(wordBoundary[2], wordBoundary[3], char['start']))
+        sql = """
+            INSERT INTO annotation(image_id, stamp, boundary, domain, model, confidence)
+            VALUES (%s, NOW(), %s, %s, %s, %s)
+            RETURNING id;
+        """
+        values = (word_data['image_id'],  makePolygonString(charBoundary), 'text:char', char['model'], config.CROWD_CHAR_CONF_SLICED)
+        newCharId = dbInsertAndGetId(conn, sql, values)
+        debugDetail('new id = %s' % newCharId)
+
+        # then, add a tag to that annotation so we know what word it belongs to
+        sql = """
+            INSERT INTO annotation_tag(annotation_id,name)
+            VALUES (%s, %s);
+        """
+        values = (newCharId, (config.CROWD_PARENT_ANNOTATION_TAG_PREFIX+'%s') % word_data['annotation_id'])
+        dbExecute(conn, sql, values)
+
+    debugDetail('rolling back...')
+    conn.rollback()
 
 #--------------------------------------------------------------------------------
 # MAIN
