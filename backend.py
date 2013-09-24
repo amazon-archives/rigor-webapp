@@ -409,6 +409,35 @@ def getNextCrowdWord(database_name):
         return None
     return list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_VERIFIED]))[0]['id']
 
+def _getCharsInWord(database_name, image_id, word_boundary):
+    """Return a list of row dicts for each char annotation that has a center inside the given boundary (from a word annotation)
+    The row dicts will have processing already done on them (unicode conversion, boundary string parsing)
+    """
+    conn = getDbConnection(database_name)
+    debugDetail('getting chars in image %s inside %s' % (image_id, repr(word_boundary)))
+    sql = """ SELECT * FROM annotation WHERE domain = 'text:char' AND image_id = %s; """
+    values = [image_id]
+    charRows = list(dbQueryDict(conn, sql, values))
+    goodChars = []
+    for charRow in charRows:
+        debugDetail('-----------')
+        # process
+        charRow['boundary'] = json.loads(charRow['boundary'].replace('(','[').replace(')',']'))
+        charRow['model'] = charRow['model'].decode('utf8') # convert python string to unicode
+        center_x = sum([x for (x,y) in charRow['boundary']]) / 4
+        center_y = sum([y for (x,y) in charRow['boundary']]) / 4
+        X,Y = 0,1
+        debugDetail(pprint.pformat(charRow))
+        # TODO: this assumes axis-aligned word bounding boxes
+        # replace this with better math to check if center is inside the boundary polygon
+        if not (word_boundary[0][X] < center_x < word_boundary[1][X]): continue
+        if not (word_boundary[3][X] < center_x < word_boundary[2][X]): continue
+        if not (word_boundary[1][Y] < center_y < word_boundary[2][Y]): continue
+        if not (word_boundary[0][Y] < center_y < word_boundary[3][Y]): continue
+        debugDetail('good!')
+        goodChars.append(charRow)
+    return goodChars
+
 def getCrowdWord(database_name, annotation_id):
     """
     Finds the image that goes with the given annotation
@@ -443,6 +472,7 @@ def getCrowdWord(database_name, annotation_id):
 
     # process word details
     boundary = eval(wordRow['boundary'])
+    print boundary
     image_id = wordRow['image_id']
     model = wordRow['model'].decode('utf8') # convert python string to unicode
 
@@ -544,25 +574,29 @@ def saveCrowdWord(database_name, word_data):
 
     conn = getDbConnection(database_name)
 
-    # delete existing char annotations and tags for this word
-    sql = """
-        DELETE FROM annotation
-        WHERE domain='text:char'
-        -- TODO: how to know if it's in a certain word
-    """
-
     # get word boundary
     sql = """ SELECT * FROM annotation WHERE domain = 'text:word' AND id = %s; """
     wordRow = list(dbQueryDict(conn, sql, [word_data['annotation_id']]))[0]
     wordBoundary = eval(wordRow['boundary'])
 
-    def pointInterp(a, b, pct):
+    # delete existing char annotations for this word
+    existingChars = _getCharsInWord(database_name, word_data['image_id'], wordBoundary)
+    for char in existingChars:
+        sql = """
+            DELETE FROM annotation
+            WHERE domain='text:char'
+            AND id = %s;
+        """
+        values = [char['id']]
+        dbExecute(conn, sql, values)
+
+    def _pointInterp(a, b, pct):
         ax, ay = a
         bx, by = b
         return (ax*(1-pct) + bx*pct,
                 ay*(1-pct) + by*pct)
 
-    def makePolygonString(boundary):
+    def _makePolygonString(boundary):
         result = []
         for x,y in boundary:
             assert type(x) in (int,float)
@@ -575,26 +609,18 @@ def saveCrowdWord(database_name, word_data):
         debugDetail('CHAR: %s' % char['model'].encode('utf8'))
         # first, add char annotation
         charBoundary = []
-        charBoundary.append(pointInterp(wordBoundary[0], wordBoundary[1], char['start']))
-        charBoundary.append(pointInterp(wordBoundary[0], wordBoundary[1], char['end']))
-        charBoundary.append(pointInterp(wordBoundary[2], wordBoundary[3], char['end']))
-        charBoundary.append(pointInterp(wordBoundary[2], wordBoundary[3], char['start']))
+        charBoundary.append(_pointInterp(wordBoundary[0], wordBoundary[1], char['start']))
+        charBoundary.append(_pointInterp(wordBoundary[0], wordBoundary[1], char['end']))
+        charBoundary.append(_pointInterp(wordBoundary[3], wordBoundary[2], char['end']))
+        charBoundary.append(_pointInterp(wordBoundary[3], wordBoundary[2], char['start']))
         sql = """
             INSERT INTO annotation(image_id, stamp, boundary, domain, model, confidence)
             VALUES (%s, NOW(), %s, %s, %s, %s)
             RETURNING id;
         """
-        values = (word_data['image_id'],  makePolygonString(charBoundary), 'text:char', char['model'], config.CROWD_CHAR_CONF_SLICED)
+        values = (word_data['image_id'], _makePolygonString(charBoundary), 'text:char', char['model'], config.CROWD_CHAR_CONF_SLICED)
         newCharId = dbInsertAndGetId(conn, sql, values)
         debugDetail('new id = %s' % newCharId)
-
-        # then, add a tag to that annotation so we know what word it belongs to
-        sql = """
-            INSERT INTO annotation_tag(annotation_id,name)
-            VALUES (%s, %s);
-        """
-        values = (newCharId, (config.CROWD_PARENT_ANNOTATION_TAG_PREFIX+'%s') % word_data['annotation_id'])
-        dbExecute(conn, sql, values)
 
     debugDetail('rolling back...')
     conn.rollback()
@@ -608,7 +634,9 @@ def saveCrowdWord(database_name, word_data):
 if __name__ == '__main__':
 
 
-    print getCrowdWordImage('icdar2003', 1)
+    #     print getCrowdWordImage('icdar2003', 1)
+
+    print _getCharsInWord('icdar2003sushi', 826, ((108, 270), (292, 270), (292, 341), (108, 341)))
 
 #     print getImage(id=23731)
 #     print getImage(database_name='rigor',locator='01bb6939-ac7f-4dbf-84c9-8136eaa3f6ea');

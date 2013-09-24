@@ -113,13 +113,13 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
                  .success(function(data,status,headers,config) {
                      console.log('...[WordsView.clickSaveButton] success');
 
-                     //// load next word
-                     //$scope.WordsView.loadWord();
-                     //
-                     //// update stats
-                     //$scope.WordsView.stats.words_verified = $scope.WordsView.stats.words_verified - 1;
-                     //$scope.WordsView.stats.words_sliced = $scope.WordsView.stats.words_sliced + 1;
-                     //$timeout($scope.WordsView.loadStats, 1000);
+                     // load next word
+                     $scope.WordsView.loadWord();
+                     
+                     // update stats
+                     $scope.WordsView.stats.words_verified = $scope.WordsView.stats.words_verified - 1;
+                     $scope.WordsView.stats.words_sliced = $scope.WordsView.stats.words_sliced + 1;
+                     $timeout($scope.WordsView.loadStats, 1000);
 
                  })
                  .error(function(data,status,headers,config) {
