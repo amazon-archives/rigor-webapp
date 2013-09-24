@@ -1,6 +1,6 @@
 
-DB_USER = 'XXXXXXXXXXXX'
-DB_PASSWORD = 'XXXXXXXXXXXXX'
+DB_USER = 'xxxxxxxx'
+DB_PASSWORD = 'xxxxxxxx'
 
 # database names to ignore
 DB_BLACKLIST = ['dave', 'postgres', 'template0', 'template1']
@@ -12,9 +12,14 @@ FAKE_SLOW_DELAY = 0
 
 # crowd stuff
 CROWD_FAKE_SLOW_DELAY = 0
-CROWD_DB = 'icdar2003'
+CROWD_DB = 'icdar2003sushi'
 CROWD_MAX_WORD_HEIGHT = 300
 CROWD_WORD_WIDTH = 500
-CROWD_WORD_CONF_TODO = 1
+CROWD_WORD_CONF_RAW = 1
+CROWD_WORD_CONF_VERIFIED = 2
+CROWD_WORD_CONF_SLICED = 3
+CROWD_CHAR_CONF_SLICED = 3
 CROWD_WORD_IMG_PATH = '/tmp/rigor-word-%s'
+CROWD_PARENT_ANNOTATION_TAG_PREFIX = 'parentAnnotation='
+CROWD_LOCAL_CROP_IMG_PATH = 'temp/word-crop-%s-%s.%s' # database_name, annotation_id, destExt
 

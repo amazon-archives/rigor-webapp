@@ -374,7 +374,7 @@ def getCrowdStats(database_name):
     """Return a dict with info about the number of tasks done and still needing to be done.
     {
         words_raw: 29,
-        words_verified: 29,
+        words_verified: 29, // verified but not yet sliced
         words_sliced: 29,
         words_total: 104,
     }
@@ -413,27 +413,40 @@ def getCrowdWord(database_name, annotation_id):
     """
     Finds the image that goes with the given annotation
     Crops out and undistorts the word from the image
-    Saves the processed image to a temp location
+    Saves the processed image to a temp location.
+    Use getCrowdWordImagePath() to get just the path to the image later given the annotation_id.
     Returns JSON:
     {
         annotation_id
         model
         image_id
-        image_path # in local filesystem, not a URL
+        image_path  # in local filesystem, not a URL
         x_res
         y_res
-        ext
+        ext         # file extension
+        chars = [
+            {
+                start
+                end
+                model
+            },
+            { ... }
+        ]
     }
     """
     conn = getDbConnection(database_name)
     debugDetail('getting word %s' % annotation_id)
 
+    # get word details
     sql = """ SELECT * FROM annotation WHERE domain = 'text:word' AND id = %s; """
     wordRow = list(dbQueryDict(conn, sql, [annotation_id]))[0]
 
+    # process word details
     boundary = eval(wordRow['boundary'])
     image_id = wordRow['image_id']
+    model = wordRow['model'].decode('utf8') # convert python string to unicode
 
+    # get image details
     sql = """ SELECT * FROM image WHERE id = %s; """
     imageRow = list(dbQueryDict(conn, sql, [image_id]))[0]
     locator = imageRow['locator'].replace('-','').replace('/','').replace('..','').replace('\0','')
@@ -447,7 +460,7 @@ def getCrowdWord(database_name, annotation_id):
             )
 
     if not os.path.exists(path):
-        debugError('image does not exist')
+        debugError('image file does not exist for image %s' % image_id)
         return None
 
     # compute aspect ratio of annotation box
@@ -465,7 +478,6 @@ def getCrowdWord(database_name, annotation_id):
     if yRes > config.CROWD_MAX_WORD_HEIGHT:
         xRes = xRes * config.CROWD_MAX_WORD_HEIGHT / yRes
         yRes = config.CROWD_MAX_WORD_HEIGHT
-
     xRes = int(xRes)
     yRes = int(yRes)
 
@@ -479,8 +491,8 @@ def getCrowdWord(database_name, annotation_id):
     coordString = ' '.join(['%s,%s'%(x,y) for x,y in coords])
 
     # undistort and resize word from the image
-    outPath = 'temp/word-crop-%s-%s.%s' % (database_name, annotation_id, destExt)
-#     outPath = tempfile.mkstemp(suffix="." + destExt)[1]
+    # TODO: put this in the config
+    outPath = config.CROWD_LOCAL_CROP_IMG_PATH % (database_name, annotation_id, destExt)
     # http://www.imagemagick.org/Usage/distorts/#perspective
     cmd = ["convert", path, '-matte', '-virtual-pixel', 'black',
            '-extent', '%sx%s' % (max(imageRow['x_resolution'],xRes),max(imageRow['y_resolution'],yRes)),
@@ -491,22 +503,40 @@ def getCrowdWord(database_name, annotation_id):
     debugCmd('>' + '  _  '.join(cmd))
     subprocess.call(cmd)
 
+    # add chars
+    chars = []
+    # TODO: try loading char annotations from the db
+    #   find chars with center points inside the word annotation
+    #   sort from left to right by center point
+    #   calculate start and end fractions
+    #   add missing chars, remove extra chars to match word model (??)
+    for ii,char in enumerate(model):
+        chars.append({
+            "start": (ii+0.05) / len(model),
+            "end": (ii+0.95) / len(model),
+            "model": char
+        })
+
+    # build JSON
     result = dict(
         annotation_id = annotation_id,
-        model = wordRow['model'].decode('utf8'), # convert from python string to unicode
-        image_id = wordRow['image_id'],
+        model = model,
+        image_id = image_id,
         image_path = outPath,
         x_res = xRes,
         y_res = yRes,
         ext = destExt,
+        chars = chars,
     )
     return result
 
 def getCrowdWordImagePath(database_name, annotation_id, ext):
+    """Return the path in the local filesystem to the cropped image for the given word annotation.
+    """
     annotation_id = annotation_id.replace('/','').replace('.','').replace('\0','')
     database_name = database_name.replace('/','').replace('.','').replace('\0','')
     ext = ext.replace('/','').replace('.','').replace('\0','')
-    return 'temp/word-crop-%s-%s.%s' % (database_name, annotation_id, ext)
+    return config.CROWD_LOCAL_CROP_IMG_PATH % (database_name, annotation_id, ext)
 
 def saveCrowdWord(database_name, word_data):
     debugDetail('saving word')

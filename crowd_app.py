@@ -112,12 +112,12 @@ def getWord(annotation_id):
     """
     {
         annotation_id
-        image_id
         model
-        image_url
-        ext
+        image_id
+        image_url  # added here, not from backend
         x_res
         y_res
+        ext
         chars = [
             {
                 start
@@ -134,14 +134,6 @@ def getWord(annotation_id):
     word['image_url'] = '/word/%s.%s' % (word['annotation_id'], word['ext'])
     del word['image_path']
 
-    # TODO: move this to the backend maybe
-    word['chars'] = []
-    for ii,char in enumerate(word['model']):
-        word['chars'].append({
-            "start": (ii+0.05) / len(word['model']),
-            "end": (ii+0.95) / len(word['model']),
-            "model": char
-        })
     return jsonify(word)
 
 @app.route('/word/<annotation_id>.<ext>')
