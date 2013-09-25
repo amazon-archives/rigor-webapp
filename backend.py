@@ -420,22 +420,20 @@ def _getCharsInWord(database_name, image_id, word_boundary):
     charRows = list(dbQueryDict(conn, sql, values))
     goodChars = []
     for charRow in charRows:
-        debugDetail('-----------')
         # process
         charRow['boundary'] = json.loads(charRow['boundary'].replace('(','[').replace(')',']'))
         charRow['model'] = charRow['model'].decode('utf8') # convert python string to unicode
         center_x = sum([x for (x,y) in charRow['boundary']]) / 4
         center_y = sum([y for (x,y) in charRow['boundary']]) / 4
         X,Y = 0,1
-        debugDetail(pprint.pformat(charRow))
         # TODO: this assumes axis-aligned word bounding boxes
         # replace this with better math to check if center is inside the boundary polygon
         if not (word_boundary[0][X] < center_x < word_boundary[1][X]): continue
         if not (word_boundary[3][X] < center_x < word_boundary[2][X]): continue
         if not (word_boundary[1][Y] < center_y < word_boundary[2][Y]): continue
         if not (word_boundary[0][Y] < center_y < word_boundary[3][Y]): continue
-        debugDetail('good!')
         goodChars.append(charRow)
+    debugDetail('  %s chars found in boundary region' % len(goodChars))
     return goodChars
 
 def getCrowdWord(database_name, annotation_id):
@@ -535,15 +533,13 @@ def getCrowdWord(database_name, annotation_id):
 
     # add chars
     chars = []
-    # TODO: try loading char annotations from the db
+    # try loading char annotations from the db
     #   find chars with center points inside the word annotation
-    #   sort from left to right by center point
-    #   calculate start and end fractions
-    #   add missing chars, remove extra chars to match word model (??)
     existingChars = _getCharsInWord(database_name, image_id, boundary)
     X,Y = 0,1
     if existingChars:
         for char in existingChars:
+            # calculate start and end fractions
             # TODO: this assumes axis-aligned word bounding boxes
             # replace this with better math to check if center is inside the boundary polygon
             start = (char['boundary'][0][X] - boundary[0][X]) / (boundary[1][X] - boundary[0][X])
@@ -555,6 +551,11 @@ def getCrowdWord(database_name, annotation_id):
                 "end": end,
                 "model": char['model'],
             })
+        # sort from left to right by center point
+        chars.sort(key = lambda ch: ch['start'])
+        # TODO: add missing chars, remove extra chars to match word model (??)
+        if len(chars) != len(model):
+            debugError('Warning: model is %s chars long but %s char annotations were found' % (len(model), len(chars)))
     else:
         # no existing chars.  generate new ones
         for ii,char in enumerate(model):
@@ -639,7 +640,7 @@ def saveCrowdWord(database_name, word_data):
         newCharId = dbInsertAndGetId(conn, sql, values)
         debugDetail('new id = %s' % newCharId)
 
-    debugDetail('rolling back...')
+    debugDetail('committing')
     conn.commit()
 
 #--------------------------------------------------------------------------------
