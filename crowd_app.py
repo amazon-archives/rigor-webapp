@@ -81,7 +81,7 @@ def stats():
     """
     {
         words_raw: 29,
-        words_verified: 29,
+        words_approved: 29,
         words_sliced: 29,
         words_total: 104,
     }

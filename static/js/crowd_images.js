@@ -26,7 +26,7 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
         // json from server
         stats: {},
             // words_raw: 29,
-            // words_verified: 29,
+            // words_approved: 29,
             // words_sliced: 29,
             // words_total: 104,
         image: {},
@@ -96,7 +96,7 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
                      
                      // update stats
                      $scope.ImagesView.stats.words_raw = $scope.ImagesView.stats.words_raw - 1;
-                     $scope.ImagesView.stats.words_verified = $scope.ImagesView.stats.words_verified + 1;
+                     $scope.ImagesView.stats.words_approved = $scope.ImagesView.stats.words_approved + 1;
                      $timeout($scope.ImagesView.loadStats, 1000);
 
                  })

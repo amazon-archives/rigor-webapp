@@ -26,7 +26,7 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
         // json from server
         stats: {},
             // words_raw: 29,
-            // words_verified: 29,
+            // words_approved: 29,
             // words_sliced: 29,
             // words_total: 104,
         word: {},
@@ -117,7 +117,7 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
                      $scope.WordsView.loadWord();
                      
                      // update stats
-                     $scope.WordsView.stats.words_verified = $scope.WordsView.stats.words_verified - 1;
+                     $scope.WordsView.stats.words_approved = $scope.WordsView.stats.words_approved - 1;
                      $scope.WordsView.stats.words_sliced = $scope.WordsView.stats.words_sliced + 1;
                      $timeout($scope.WordsView.loadStats, 1000);
 

@@ -374,7 +374,7 @@ def getCrowdStats(database_name):
     """Return a dict with info about the number of tasks done and still needing to be done.
     {
         words_raw: 29,
-        words_verified: 29, // verified but not yet sliced
+        words_approved: 29, // approved but not yet sliced
         words_sliced: 29,
         words_total: 104,
     }
@@ -386,9 +386,9 @@ def getCrowdStats(database_name):
 
     sql = """ SELECT count(1) FROM annotation WHERE domain = 'text:word' AND confidence = %s; """
     result['words_raw'] = int(list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_RAW]))[0]['count'])
-    result['words_verified'] = int(list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_VERIFIED]))[0]['count'])
+    result['words_approved'] = int(list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_APPROVED]))[0]['count'])
     result['words_sliced'] = int(list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_SLICED]))[0]['count'])
-    result['words_total'] = result['words_raw'] + result['words_verified'] + result['words_sliced']
+    result['words_total'] = result['words_raw'] + result['words_approved'] + result['words_sliced']
     return result
 
 def getNextCrowdImage(database_name):
@@ -401,7 +401,7 @@ def getNextCrowdImage(database_name):
     return 603
 
 def getNextCrowdWord(database_name):
-    """Return the id of a random word which has confidence CROWD_WORD_CONF_VERIFIED
+    """Return the id of a random word which has confidence CROWD_WORD_CONF_APPROVED
     If there are none, return None
     """
     conn = getDbConnection(database_name)
@@ -413,10 +413,10 @@ def getNextCrowdWord(database_name):
         ORDER BY RANDOM()
         LIMIT 1
     """
-    results = list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_VERIFIED]))
+    results = list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_APPROVED]))
     if not results:
         return None
-    return list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_VERIFIED]))[0]['id']
+    return list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_APPROVED]))[0]['id']
 
 def _getCharsInWord(database_name, image_id, word_boundary):
     """Return a list of row dicts for each char annotation that has a center inside the given boundary (from a word annotation)

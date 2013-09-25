@@ -30,7 +30,7 @@
             <div>
                 <span class="muted"> Progress: </span>
                 <b> (( ImagesView.stats.words_raw ))      </b> <span class="muted"> unreviewed words &rarr; </span>
-                <b> (( ImagesView.stats.words_verified )) </b> <span class="muted"> approved &rarr; </span>
+                <b> (( ImagesView.stats.words_approved )) </b> <span class="muted"> approved &rarr; </span>
                 <b> (( ImagesView.stats.words_sliced ))   </b> <span class="muted"> sliced </span>
             </div>
 
@@ -52,8 +52,8 @@
             <i>Saving...</i>
         </div>
         <div class="span6" ng-switch-when="empty">
-            <i ng-if="ImagesView.stats.words_verified === 0">All done!  All words are approved and sliced.</i>
-            <i ng-if="ImagesView.stats.words_verified !== 0">All words are approved.  Now, go slice them.</i>
+            <i ng-if="ImagesView.stats.words_approved === 0">All done!  All words are approved and sliced.</i>
+            <i ng-if="ImagesView.stats.words_approved !== 0">All words are approved.  Now, go slice them.</i>
         </div>
         <div class="span12" ng-switch-when="ready">
             <div><span class="muted"> Image (( ImagesView.image.image_id )): </span></div>
