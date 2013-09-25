@@ -597,7 +597,12 @@ def saveCrowdWord(database_name, word_data):
     wordRow = list(dbQueryDict(conn, sql, [word_data['annotation_id']]))[0]
     wordBoundary = eval(wordRow['boundary'])
 
-    # delete existing char annotations for this word
+    # bump confidence
+    sql = """ UPDATE annotation SET confidence = %s WHERE id = %s; """
+    values = [config.CROWD_WORD_CONF_SLICED, word_data['annotation_id']]
+    dbExecute(conn, sql, values)
+
+    # delete existing char annotations for this word inside the boundary
     existingChars = _getCharsInWord(database_name, word_data['image_id'], wordBoundary)
     for char in existingChars:
         sql = """
