@@ -28,8 +28,8 @@
 
             <h2><a href="/" class="black-link"> Rigor crowd editor: word slicer </a></h2>
             <div>
-                <span class="muted"> Words: </span>
-                <b> (( WordsView.stats.words_raw ))      </b> <span class="muted"> unreviewed &rarr; </span>
+                <span class="muted"> Progress: </span>
+                <b> (( WordsView.stats.words_raw ))      </b> <span class="muted"> unreviewed words &rarr; </span>
                 <b> (( WordsView.stats.words_verified )) </b> <span class="muted"> verified &rarr; </span>
                 <b> (( WordsView.stats.words_sliced ))   </b> <span class="muted"> sliced </span>
             </div>
@@ -56,7 +56,7 @@
             <i ng-if="WordsView.stats.words_raw !== 0">No words to slice right now.  Go review more words.</i>
         </div>
         <div class="span6" ng-switch-when="ready">
-            <div><span class="muted"> word (( WordsView.word.annotation_id )): </span></div>
+            <div><span class="muted"> Word (( WordsView.word.annotation_id )) from image (( WordsView.word.image_id )): </span></div>
             <div>&nbsp;</div>
             <form>
                 <input type="text" class="crowd-giant-input span5" ng-model="WordsView.word.model" />
