@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="crowdApp" ng-controller="CrowdController">
+<html lang="en" ng-app="crowdIndexApp" ng-controller="CrowdIndexController">
 <head>
     <title> Rigor: Crowd version </title>
     <meta name="HandheldFriendly" content="true" />
@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="/static/css/vendor/bootstrap.css" />
     <link rel="stylesheet" href="/static/css/vendor/select2-3.2.0.css" />
     <link rel="stylesheet" href="/static/css/rigor.css" />
+
+    <!--script src="/static/js/vendor/angular-1.0.6.js" type="text/javascript" charset="utf-8"></script-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js" type="text/javascript" charset="utf-8"></script>
+
+    <script src="/static/js/crowd_index.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
 
@@ -21,18 +26,20 @@
     </div>
 
     <div class="row">
-        <div class="span6">
-            <div class="well well-small">
-                    <a href="/images" class="btn btn-large btn-primary"> Word approver </a>
-                    <h4> 103 / 205 words approved </h4>
+        <div class="span12">
+            <div class="well">
 
-            </div>
-        </div>
-        <div class="span6">
-            <div class="well well-small">
+                <h4>
+                    (( IndexView.stats.words_raw )) unreviewed words &rarr;
 
-                <a href="/words" class="btn btn-large btn-primary"> Word slicer </a>
-                    <h4> 29 / 495 words sliced </h4>
+                    <a href="/images" class="btn btn-large btn-primary"> Approver </a>
+
+                    &rarr; (( IndexView.stats.words_approved )) approved &rarr;
+
+                    <a href="/words" class="btn btn-large btn-primary"> Slicer </a>
+
+                    &rarr; (( IndexView.stats.words_sliced )) sliced
+                </h4>
 
             </div>
         </div>

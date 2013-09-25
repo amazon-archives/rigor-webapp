@@ -17,11 +17,6 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
 
     //================================================================================
 
-    $scope.config = {
-        // TODO: get this from the backend
-        MIN_CHAR_WIDTH: 0.02,
-    };
-
     $scope.ImagesView = {
         // json from server
         stats: {},
