@@ -391,6 +391,15 @@ def getCrowdStats(database_name):
     result['words_total'] = result['words_raw'] + result['words_verified'] + result['words_sliced']
     return result
 
+def getNextCrowdImage(database_name):
+    """Return the id of a random image which has words that need approving.
+    If there are none, return None
+    """
+    # TODO
+    # find a word which needs approving
+    # return the image_id of that word
+    return 603
+
 def getNextCrowdWord(database_name):
     """Return the id of a random word which has confidence CROWD_WORD_CONF_VERIFIED
     If there are none, return None

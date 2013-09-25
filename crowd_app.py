@@ -23,7 +23,7 @@ import backend
 import config
 
 
-#--------------------------------------------------------------------------------
+#================================================================================
 # HELPERS
 
 def check_auth(username, password):
@@ -50,25 +50,31 @@ def use_basic_auth(f):
     return decorated
 
 
-#--------------------------------------------------------------------------------
+#================================================================================
 # FLASK
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'fpqf94y1och48OUGWO38yfoo8yroihf28y982heD'
 
 
-#--------------------------------------------------------------------------------
+#================================================================================
 # ROUTING
 
 def simulateSlow():
     if config.CROWD_FAKE_SLOW_DELAY > 0:
         time.sleep(config.CROWD_FAKE_SLOW_DELAY)
 
+#===========================================
+# INDEX
+
 @app.route('/')
 # @use_basic_auth
 def index():
     simulateSlow()
     return render_template('crowd_index.html')
+
+#===========================================
+# MISC API
 
 @app.route('/stats')
 def stats():
@@ -83,23 +89,83 @@ def stats():
     simulateSlow()
     return jsonify(backend.getCrowdStats(config.CROWD_DB))
 
-@app.route('/photos')
-def photos():
+#===========================================
+# IMAGES
+
+@app.route('/images')
+def images():
     simulateSlow()
-    return render_template('crowd_index.html')
+    debugDetail('HTTP: /images')
+    return render_template('crowd_images.html')
+
+@app.route('/image/next')
+def redirectToNextImage():
+    """Redirect to the API call for an available image to approve.
+    """
+    simulateSlow()
+    debugDetail('HTTP: /images/next')
+    image_id = backend.getNextCrowdImage(config.CROWD_DB) # foo
+    if image_id is None:
+        abort(404)
+    else:
+        return redirect('/image/%s'%image_id)
+
+@app.route('/image/<image_id>')
+def getImage(image_id):
+    """
+    Return details about a particular image.
+    """
+    simulateSlow()
+    debugDetail('HTTP: /images/%s'%image_id)
+    image = backend.getImage(config.CROWD_DB, id=image_id)
+    # rename image url to avoid collision
+    image['url'] = image['url'].replace('/image/','/img/')
+    # rename 'id' to 'image_id'
+    image['image_id'] = image['id']
+    del image['id']
+    return jsonify(image)
+
+@app.route('/img/<locator>.<ext>',methods=['GET'])
+def getImageFile(locator, ext):
+    simulateSlow()
+    locator = locator.replace('-','').replace('/','').replace('..','')
+    ext = ext.replace('/','').replace('..','')
+    path = '/data/rigor/images/%s/%s/%s.%s' % (
+                locator[:2],
+                locator[2:4],
+                locator.replace('-',''),
+                ext
+            )
+    if os.path.exists(path):
+        return send_file(path)
+    else:
+        abort(404)
+
+#===========================================
+# WORD SLICER
 
 @app.route('/words')
 def words():
+    """Render the main UI.
+    """
     simulateSlow()
     return render_template('crowd_words.html')
 
+# Also allow fetching with annotation_id in the url directly
+#  which is useful when using Angular's HTML5 url mode.
+# Angular will handle fetching the word's details so we can
+#  just treat this like a plain old "/words" request.
 @app.route('/words/<annotation_id>')
 def wordsWithId(annotation_id):
+    """Render the main UI.
+    """
     simulateSlow()
     return render_template('crowd_words.html')
 
 @app.route('/word/next')
 def redirectToNextWord():
+    """Redirect to the API call for an available word to slice.
+    """
     simulateSlow()
     annotation_id = backend.getNextCrowdWord(config.CROWD_DB)
     if annotation_id is None:
@@ -110,19 +176,21 @@ def redirectToNextWord():
 @app.route('/word/<annotation_id>')
 def getWord(annotation_id):
     """
+    Return details about a particular word.
+
     {
         annotation_id
         model
         image_id
         image_url  # added here, not from backend
-        x_res
+        x_res      # size of the normalized cropped image
         y_res
-        ext
+        ext        # file extension
         chars = [
             {
-                start
+                start  # normalized distance along the word from left to right. range 0-1
                 end
-                model
+                model  # a single character string
             },
             { ... }
         ]
@@ -138,6 +206,8 @@ def getWord(annotation_id):
 
 @app.route('/word/<annotation_id>.<ext>')
 def getWordImage(annotation_id, ext):
+    """Fetch the cropped, normalized image for the given word.
+    """
     simulateSlow()
     path = backend.getCrowdWordImagePath(config.CROWD_DB, annotation_id, ext)
     if os.path.exists(path):
@@ -147,12 +217,15 @@ def getWordImage(annotation_id, ext):
 
 @app.route('/word/save', methods=['POST'])
 def saveWord():
+    """Save a word by converting its slices into char annotations with real bounding boxes.
+    The postdata should be a json object matching the one that getWord provides.
+    """
     simulateSlow()
     wordData = json.loads(request.data)
     backend.saveCrowdWord(config.CROWD_DB, wordData)
     return 'ok'
 
-#--------------------------------------------------------------------------------
+#================================================================================
 # MAIN
 
 if __name__ == '__main__':

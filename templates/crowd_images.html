@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="crowdImagesApp" ng-controller="CrowdImagesController">
+<head>
+    <title> Rigor: Crowd version </title>
+    <meta name="HandheldFriendly" content="true" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/css/vendor/bootstrap.css" />
+    <link rel="stylesheet" href="/static/css/rigor.css" />
+
+    <!--script src="/static/js/vendor/jquery-1.9.1.js"></script-->
+
+    <!--script src="/static/js/vendor/angular-1.0.6.js" type="text/javascript" charset="utf-8"></script-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js" type="text/javascript" charset="utf-8"></script>
+
+    <script src="/static/js/vendor/angular-ui-0.3.2.js"></script>
+
+    <script src="/static/js/crowd_images.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body
+    ng-mouseup="ImagesView.sushiHandleMouseUp($event)"
+    ng-mousemove="ImagesView.sushiHandleMouseMove($event)"
+>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="span8">
+
+            <h2><a href="/" class="black-link"> Rigor crowd editor: word approver </a></h2>
+            <div>
+                <span class="muted"> Progress: </span>
+                <b> (( ImagesView.stats.words_raw ))      </b> <span class="muted"> unreviewed words &rarr; </span>
+                <b> (( ImagesView.stats.words_verified )) </b> <span class="muted"> approved &rarr; </span>
+                <b> (( ImagesView.stats.words_sliced ))   </b> <span class="muted"> sliced </span>
+            </div>
+
+        </div>
+        <div class="span4">
+            <div>&nbsp;</div>
+            <div class="btn btn-large" ng-click="ImagesView.clickSkipButton()"> Needs work </div> 
+            <div class="btn btn-large btn-primary" ng-click="ImagesView.clickSaveButton()"> Approve &rarr; </div> 
+        </div>
+    </div>
+
+    <hr/>
+
+    <div class="row" ng-switch on="ImagesView.state">
+        <div class="span6" ng-switch-when="loading">
+            <i>Loading...</i>
+        </div>
+        <div class="span6" ng-switch-when="saving">
+            <i>Saving...</i>
+        </div>
+        <div class="span6" ng-switch-when="empty">
+            <i ng-if="ImagesView.stats.words_verified === 0">All done!  All words are approved and sliced.</i>
+            <i ng-if="ImagesView.stats.words_verified !== 0">All words are approved.  Now, go slice them.</i>
+        </div>
+        <div class="span12" ng-switch-when="ready">
+            <div><span class="muted"> Image (( ImagesView.image.image_id )): </span></div>
+            <img class="crowd-sushi-image" ng-src="(( ImagesView.image.url ))">
+        </div>
+    </div>
+
+    <div>&nbsp;</div>
+    <div>&nbsp;</div>
+    <div>&nbsp;</div>
+    <hr/>
+    <div>
+        <pre> state = (( ImagesView.state )) </pre>
+        <pre> image = (( ImagesView.image )) </pre>
+        <pre> stats = (( ImagesView.stats )) </pre>
+    </div>
+
+</div>
