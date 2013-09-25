@@ -540,12 +540,29 @@ def getCrowdWord(database_name, annotation_id):
     #   sort from left to right by center point
     #   calculate start and end fractions
     #   add missing chars, remove extra chars to match word model (??)
-    for ii,char in enumerate(model):
-        chars.append({
-            "start": (ii+0.05) / len(model),
-            "end": (ii+0.95) / len(model),
-            "model": char
-        })
+    existingChars = _getCharsInWord(database_name, image_id, boundary)
+    X,Y = 0,1
+    if existingChars:
+        for char in existingChars:
+            # TODO: this assumes axis-aligned word bounding boxes
+            # replace this with better math to check if center is inside the boundary polygon
+            start = (char['boundary'][0][X] - boundary[0][X]) / (boundary[1][X] - boundary[0][X])
+            end = (char['boundary'][1][X] - boundary[0][X]) / (boundary[1][X] - boundary[0][X])
+            start = min(1, max(0, start))
+            end = min(1, max(0, end))
+            chars.append({
+                "start": start,
+                "end": end,
+                "model": char['model'],
+            })
+    else:
+        # no existing chars.  generate new ones
+        for ii,char in enumerate(model):
+            chars.append({
+                "start": (ii+0.05) / len(model),
+                "end": (ii+0.95) / len(model),
+                "model": char
+            })
 
     # build JSON
     result = dict(
@@ -623,7 +640,7 @@ def saveCrowdWord(database_name, word_data):
         debugDetail('new id = %s' % newCharId)
 
     debugDetail('rolling back...')
-    conn.rollback()
+    conn.commit()
 
 #--------------------------------------------------------------------------------
 # MAIN
