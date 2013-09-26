@@ -109,6 +109,14 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
                 });
          },
 
+         boundaryToSvgPoints: function(boundary) {
+             var result = '';
+             angular.forEach(boundary, function(point,ii) {
+                 result = result + point[0] + ',' + point[1] + ' ';
+             });
+             return result;
+         },
+
          clickSkipButton: function() {
              console.log('[ImagesView.clickSkipButton]');
              $scope.ImagesView.loadImage();

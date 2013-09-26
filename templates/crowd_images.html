@@ -64,11 +64,22 @@
             </div>
         </div>
         <div class="span10" ng-switch-when="ready">
-            <img class="" ng-src="(( ImagesView.image.url ))">
+            <img class="img-polaroid overlap allow-large-image" ng-src="(( ImagesView.image.url ))" />
+            <svg
+                class="polaroid-style-padding overlap allow-large-image"
+                ng-attr-width="(( ImagesView.image.x_resolution ))"
+                ng-attr-height="(( ImagesView.image.y_resolution ))"
+                >
+                    <polygon
+                        class="svg-polygon-word"
+                        ng-repeat="word in ImagesView.image.words"
+                        ng-attr-points="(( ImagesView.boundaryToSvgPoints(word.boundary) ))"
+                    />
+            </svg>
         </div>
     </div>
 
-    <div>&nbsp;</div>
+    <div style="padding-top: 200px;">&nbsp;</div>
     <div>&nbsp;</div>
     <div>&nbsp;</div>
     <hr/>
