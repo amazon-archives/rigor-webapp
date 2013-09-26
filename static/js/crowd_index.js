@@ -27,6 +27,7 @@ crowdIndexApp.controller('CrowdIndexController', function($scope, $http, $routeP
             words_approved: '...', 
             words_sliced: '...',
             words_total: '...',
+            words_progress: '...',
         },
 
         loadStats: function(repeat) {

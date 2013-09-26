@@ -27,6 +27,7 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             // words_approved: 29,
             // words_sliced: 29,
             // words_total: 104,
+            // words_progress: 0.03,
         image: {},
             // image_id
         state: 'loading', // one of: loading, ready, saving (not implemented yet), empty (e.g. nothing to show)

@@ -377,6 +377,7 @@ def getCrowdStats(database_name):
         words_approved: 29, // approved but not yet sliced
         words_sliced: 29,
         words_total: 104,
+        words_progress: 0.34  // fraction of the entire task that is complete, range 0-1
     }
     """
     conn = getDbConnection(database_name)
@@ -389,6 +390,7 @@ def getCrowdStats(database_name):
     result['words_approved'] = int(list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_APPROVED]))[0]['count'])
     result['words_sliced'] = int(list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_SLICED]))[0]['count'])
     result['words_total'] = result['words_raw'] + result['words_approved'] + result['words_sliced']
+    result['words_progress'] = (result['words_raw'] * 0 + result['words_approved'] * 0.5 + result['words_sliced'] * 1) / result['words_total']
     return result
 
 def getNextCrowdImage(database_name):

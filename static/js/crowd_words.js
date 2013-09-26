@@ -30,6 +30,7 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
             // words_approved: 29,
             // words_sliced: 29,
             // words_total: 104,
+            // words_progress: 0.03,
         word: {},
             // annotation_id
             // image_id
