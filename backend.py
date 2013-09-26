@@ -405,6 +405,8 @@ def getNextCrowdImage(database_name):
     # return the image_id of that word
     return 603
 
+# TODO: save
+
 #-----------------------
 # CROWD WORD
 
@@ -614,9 +616,14 @@ def saveCrowdWord(database_name, word_data):
     wordRow = list(dbQueryDict(conn, sql, [word_data['annotation_id']]))[0]
     wordBoundary = eval(wordRow['boundary'])
 
-    # bump confidence
+    # bump word confidence
     sql = """ UPDATE annotation SET confidence = %s WHERE id = %s; """
     values = [config.CROWD_WORD_CONF_SLICED, word_data['annotation_id']]
+    dbExecute(conn, sql, values)
+
+    # update word model
+    sql = """ UPDATE annotation SET model = %s WHERE id = %s; """
+    values = [word_data['model'], word_data['annotation_id']]
     dbExecute(conn, sql, values)
 
     # delete existing char annotations for this word inside the boundary
