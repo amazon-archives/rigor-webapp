@@ -18,6 +18,9 @@ crowdIndexApp.controller('CrowdIndexController', function($scope, $http, $routeP
     //================================================================================
 
     $scope.IndexView = {
+        config: {
+            statsFreq: 5,  // update stats every this many seconds
+        },
         // json from server
         stats: {
             words_raw: '...',
@@ -26,17 +29,28 @@ crowdIndexApp.controller('CrowdIndexController', function($scope, $http, $routeP
             words_total: '...',
         },
 
-        loadStats: function() {
-            console.log('[IndexView.loadStats] ...');
+        loadStats: function(repeat) {
+            // repeat is a bool
+            console.log('[IndexView.loadStats] repeat = ' + repeat + ' ...');
             $http.get('/stats')
                 .success(function(data,status,headers,config) {
                     console.log('...[IndexView.loadStats] success');
                     $scope.IndexView.stats = data;
-                    $timeout($scope.IndexView.loadStats, 10 * 1000);
+                    if (repeat) {
+                        $timeout(
+                            function() { $scope.IndexView.loadStats(true); },
+                            $scope.IndexView.config.statsFreq * 1000
+                        );
+                    }
                 })
                 .error(function(data,status,headers,config) {
                     console.log('...[IndexView.loadStats] error');
-                    $timeout($scope.IndexView.loadStats, 10 * 1000);
+                    if (repeat) {
+                        $timeout(
+                            function() { $scope.IndexView.loadStats(true); },
+                            $scope.IndexView.config.statsFreq * 1000
+                        );
+                    }
                 });
         },
 
@@ -47,7 +61,7 @@ crowdIndexApp.controller('CrowdIndexController', function($scope, $http, $routeP
 
     console.log('[main] --------------------------------------------------------------\\');
 
-    $scope.IndexView.loadStats();
+    $scope.IndexView.loadStats(true);
 
     console.log('[main] --------------------------------------------------------------/');
 

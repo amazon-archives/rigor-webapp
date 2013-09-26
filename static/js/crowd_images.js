@@ -18,6 +18,9 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
     //================================================================================
 
     $scope.ImagesView = {
+        config: {
+            statsFreq: 9,  // update stats every this many seconds
+        },
         // json from server
         stats: {},
             // words_raw: 29,
@@ -28,15 +31,28 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             // image_id
         state: 'loading', // one of: loading, ready, saving (not implemented yet), empty (e.g. nothing to show)
 
-        loadStats: function() {
-            console.log('[ImagesView.loadStats] ...');
+        loadStats: function(repeat) {
+            // repeat is a bool
+            console.log('[ImagesView.loadStats] repeat = ' + repeat + ' ...');
             $http.get('/stats')
                 .success(function(data,status,headers,config) {
                     console.log('...[ImagesView.loadStats] success');
                     $scope.ImagesView.stats = data;
+                    if (repeat) {
+                        $timeout(
+                            function() { $scope.ImagesView.loadStats(true); },
+                            $scope.ImagesView.config.statsFreq * 1000
+                        );
+                    }
                 })
                 .error(function(data,status,headers,config) {
                     console.log('...[ImagesView.loadStats] error');
+                    if (repeat) {
+                        $timeout(
+                            function() { $scope.ImagesView.loadStats(true); },
+                            $scope.ImagesView.config.statsFreq * 1000
+                        );
+                    }
                 });
         },
 
@@ -74,7 +90,8 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
          clickSkipButton: function() {
              console.log('[ImagesView.clickSkipButton]');
              $scope.ImagesView.loadImage();
-             $timeout($scope.ImagesView.loadStats, 1000);
+             // refresh stats once
+             $timeout(function() { $scope.ImagesView.loadStats(false) }, 1000);
          },
 
          clickSaveButton: function() {
@@ -92,7 +109,8 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
                      // update stats
                      $scope.ImagesView.stats.words_raw = $scope.ImagesView.stats.words_raw - 1;
                      $scope.ImagesView.stats.words_approved = $scope.ImagesView.stats.words_approved + 1;
-                     $timeout($scope.ImagesView.loadStats, 1000);
+                     // refresh stats once
+                     $timeout(function() { $scope.ImagesView.loadStats(false) }, 1000);
 
                  })
                  .error(function(data,status,headers,config) {
@@ -119,7 +137,7 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
         console.log(id)
         $scope.ImagesView.loadImage(id);
     }
-    $scope.ImagesView.loadStats();
+    $scope.ImagesView.loadStats(true);
 
     console.log('[main] --------------------------------------------------------------/');
 

@@ -17,12 +17,13 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
 
     //================================================================================
 
-    $scope.config = {
-        // TODO: get this from the backend
-        MIN_CHAR_WIDTH: 0.02,
-    };
 
     $scope.WordsView = {
+        config: {
+            // TODO: get this from the backend
+            MIN_CHAR_WIDTH: 0.02,
+            statsFreq: 9,  // update stats every this many seconds
+        },
         // json from server
         stats: {},
             // words_raw: 29,
@@ -54,15 +55,28 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
             // dX
             // dY
 
-        loadStats: function() {
-            console.log('[WordsView.loadStats] ...');
+        loadStats: function(repeat) {
+            // repeat is a bool
+            console.log('[WordsView.loadStats] repeat = ' + repeat + ' ...');
             $http.get('/stats')
                 .success(function(data,status,headers,config) {
                     console.log('...[WordsView.loadStats] success');
                     $scope.WordsView.stats = data;
+                    if (repeat) {
+                        $timeout(
+                            function() { $scope.WordsView.loadStats(true); },
+                            $scope.WordsView.config.statsFreq * 1000
+                        );
+                    }
                 })
                 .error(function(data,status,headers,config) {
                     console.log('...[WordsView.loadStats] error');
+                    if (repeat) {
+                        $timeout(
+                            function() { $scope.WordsView.loadStats(true); },
+                            $scope.WordsView.config.statsFreq * 1000
+                        );
+                    }
                 });
         },
 
@@ -101,7 +115,8 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
          clickSkipButton: function() {
              console.log('[WordsView.clickSkipButton]');
              $scope.WordsView.loadWord();
-             $timeout($scope.WordsView.loadStats, 1000);
+             // refresh stats once
+             $timeout(function() { $scope.WordsView.loadStats(false) }, 1000);
          },
 
          clickSaveButton: function() {
@@ -119,7 +134,8 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
                      // update stats
                      $scope.WordsView.stats.words_approved = $scope.WordsView.stats.words_approved - 1;
                      $scope.WordsView.stats.words_sliced = $scope.WordsView.stats.words_sliced + 1;
-                     $timeout($scope.WordsView.loadStats, 1000);
+                     // refresh stats once
+                     $timeout(function() { $scope.WordsView.loadStats(false) }, 1000);
 
                  })
                  .error(function(data,status,headers,config) {
@@ -160,16 +176,16 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
                  // figure out new position
                  char.start = char.originalStart + dragState.dX / $scope.WordsView.word.x_res;
                  // keep in bounds
-                 char.start = Math.max(0, Math.min(1 - $scope.config.MIN_CHAR_WIDTH, char.start));
+                 char.start = Math.max(0, Math.min(1 - $scope.WordsView.config.MIN_CHAR_WIDTH, char.start));
                  // push end marker
-                 char.end = Math.max(char.originalEnd, char.start + $scope.config.MIN_CHAR_WIDTH);
+                 char.end = Math.max(char.originalEnd, char.start + $scope.WordsView.config.MIN_CHAR_WIDTH);
              } else {
                  // figure out new position
                  char.end = char.originalEnd + dragState.dX / $scope.WordsView.word.x_res;
                  // keep in bounds
-                 char.end = Math.max($scope.config.MIN_CHAR_WIDTH, Math.min(1, char.end));
+                 char.end = Math.max($scope.WordsView.config.MIN_CHAR_WIDTH, Math.min(1, char.end));
                  // push start marker
-                 char.start = Math.min(char.originalStart, char.end - $scope.config.MIN_CHAR_WIDTH);
+                 char.start = Math.min(char.originalStart, char.end - $scope.WordsView.config.MIN_CHAR_WIDTH);
              }
 
              $event.preventDefault();
@@ -221,7 +237,7 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
         console.log(id)
         $scope.WordsView.loadWord(id);
     }
-    $scope.WordsView.loadStats();
+    $scope.WordsView.loadStats(true);
 
     console.log('[main] --------------------------------------------------------------/');
 
