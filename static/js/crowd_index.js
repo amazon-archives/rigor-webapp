@@ -32,9 +32,11 @@ crowdIndexApp.controller('CrowdIndexController', function($scope, $http, $routeP
                 .success(function(data,status,headers,config) {
                     console.log('...[IndexView.loadStats] success');
                     $scope.IndexView.stats = data;
+                    $timeout($scope.IndexView.loadStats, 10 * 1000);
                 })
                 .error(function(data,status,headers,config) {
                     console.log('...[IndexView.loadStats] error');
+                    $timeout($scope.IndexView.loadStats, 10 * 1000);
                 });
         },
 
