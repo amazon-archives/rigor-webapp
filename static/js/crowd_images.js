@@ -29,7 +29,28 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             // words_total: 104,
             // words_progress: 0.03,
         image: {},
+            // depth
+            // format
+            // hash
             // image_id
+            // locator
+            // source_id
+            // stamp
+            // tags
+            // thumb_url
+            // url
+            // x_resolution
+            // y_resolution
+            // words
+            //    annotation_id
+            //    image_id
+            //    confidence
+            //    boundary
+            //    stamp
+            //    model
+            //    domain
+        words: [],
+
         state: 'loading', // one of: loading, ready, saving (not implemented yet), empty (e.g. nothing to show)
 
         loadStats: function(repeat) {

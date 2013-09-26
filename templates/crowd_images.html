@@ -56,9 +56,15 @@
             <i ng-if="ImagesView.stats.words_approved === 0">All done!  All words are approved and sliced.</i>
             <i ng-if="ImagesView.stats.words_approved !== 0">All words are approved.  Now, go slice them.</i>
         </div>
-        <div class="span12" ng-switch-when="ready">
-            <div><span class="muted"> Image (( ImagesView.image.image_id )): </span></div>
-            <img class="crowd-sushi-image" ng-src="(( ImagesView.image.url ))">
+        <div class="span2" ng-switch-when="ready">
+            <div><span class="muted"> Image (( ImagesView.image.image_id )) </span></div>
+            <br>
+            <div ng-repeat="word in ImagesView.image.words">
+                (( word.model ))
+            </div>
+        </div>
+        <div class="span10" ng-switch-when="ready">
+            <img class="" ng-src="(( ImagesView.image.url ))">
         </div>
     </div>
 

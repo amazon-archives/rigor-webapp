@@ -114,6 +114,8 @@ def redirectToNextImage():
 def getImage(image_id):
     """
     Return details about a particular image.
+    Includes a list of word annotations.
+    Look in crowd_app.py for a list of the json properties returned here.
     """
     simulateSlow()
     debugDetail('HTTP: /images/%s'%image_id)
@@ -123,6 +125,16 @@ def getImage(image_id):
     # rename 'id' to 'image_id'
     image['image_id'] = image['id']
     del image['id']
+
+    words = backend.getImageAnnotations(config.CROWD_DB, id=image_id)
+    words = [word for word in words if word['domain'] == 'text:word']
+    # rename 'id' to 'annotation_id'
+    for word in words:
+        word['annotation_id'] = word['id']
+        del word['id']
+
+    image['words'] = words
+
     return jsonify(image)
 
 @app.route('/img/<locator>.<ext>',methods=['GET'])
