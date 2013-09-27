@@ -49,7 +49,6 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             //    stamp
             //    model
             //    domain
-        words: [],
 
         state: 'loading', // one of: loading, ready, saving (not implemented yet), empty (e.g. nothing to show)
 
@@ -133,15 +132,14 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
                  .success(function(data,status,headers,config) {
                      console.log('...[ImagesView.clickSaveButton] success');
 
-                     // load next image
-                     $scope.ImagesView.loadImage();
-                     
                      // update stats
-                     $scope.ImagesView.stats.words_raw = $scope.ImagesView.stats.words_raw - 1;
-                     $scope.ImagesView.stats.words_approved = $scope.ImagesView.stats.words_approved + 1;
+                     $scope.ImagesView.stats.words_raw = $scope.ImagesView.stats.words_raw - $scope.ImagesView.image.words.length;
+                     $scope.ImagesView.stats.words_approved = $scope.ImagesView.stats.words_approved + $scope.ImagesView.image.words.length;
                      // refresh stats once
                      $timeout(function() { $scope.ImagesView.loadStats(false) }, 1000);
 
+                     // load next image
+                     $scope.ImagesView.loadImage();
                  })
                  .error(function(data,status,headers,config) {
                      console.log('...[ImagesView.clickSaveButton] error');
