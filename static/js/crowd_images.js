@@ -123,6 +123,29 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
              $timeout(function() { $scope.ImagesView.loadStats(false) }, 1000);
          },
 
+         clickRejectButton: function() {
+             console.log('[ImagesView.clickRejectButton]');
+
+             // reject
+             $scope.ImagesView.state = 'saving';
+             $http.post('/image/reject/' + $scope.ImagesView.image.image_id) // foo
+                 .success(function(data,status,headers,config) {
+                     console.log('...[ImagesView.clickRejectButton] success');
+
+                     // update stats
+                     $scope.ImagesView.stats.words_raw = $scope.ImagesView.stats.words_raw - $scope.ImagesView.image.words.length;
+                     // refresh stats once
+                     $timeout(function() { $scope.ImagesView.loadStats(false) }, 1000);
+
+                     // load next image
+                     $scope.ImagesView.loadImage();
+                 })
+                 .error(function(data,status,headers,config) {
+                     console.log('...[ImagesView.clickRejectButton] error');
+                 });
+         },
+
+
          clickSaveButton: function() {
              console.log('[ImagesView.clickSaveButton]');
 

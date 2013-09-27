@@ -153,13 +153,20 @@ def getImageFile(locator, ext):
     else:
         abort(404)
 
-# TODO: /image/save
 @app.route('/image/save/<image_id>', methods=['POST'])
 def saveImage(image_id):
     """Save an image by bumping the confidence on all its words.
     """
     simulateSlow()
-    backend.bumpImageConfidence(config.CROWD_DB, image_id)
+    backend.setConfidenceForAllWordsInImage(config.CROWD_DB, image_id, config.CROWD_WORD_CONF_APPROVED)
+    return 'ok'
+
+@app.route('/image/reject/<image_id>', methods=['POST'])
+def rejectImage(image_id):
+    """Reject an image by changing the confidence on all its words.
+    """
+    simulateSlow()
+    backend.setConfidenceForAllWordsInImage(config.CROWD_DB, image_id, -1)
     return 'ok'
 
 #===========================================

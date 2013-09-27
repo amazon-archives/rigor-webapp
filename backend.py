@@ -415,7 +415,7 @@ def getNextCrowdImage(database_name):
     return results[0]['image_id']
 
 # TODO: save by bumping confidence on all words in the image
-def bumpImageConfidence(database_name, image_id):
+def setConfidenceForAllWordsInImage(database_name, image_id, conf):
     conn = getDbConnection(database_name)
     debugDetail('bumping image confidence')
     sql = """
