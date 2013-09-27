@@ -397,15 +397,35 @@ def getCrowdStats(database_name):
 # CROWD IMAGE
 
 def getNextCrowdImage(database_name):
-    """Return the id of a random image which has words that need approving.
+    """Return the id of a random image which has a word with CROWD_WORD_CONF_RAW
     If there are none, return None
     """
-    # TODO
-    # find a word which needs approving
-    # return the image_id of that word
-    return 603
+    conn = getDbConnection(database_name)
+    debugDetail('getting next image')
+    sql = """
+        SELECT * FROM annotation
+        WHERE domain = 'text:word'
+        AND confidence = %s
+        ORDER BY RANDOM()
+        LIMIT 1
+    """
+    results = list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_RAW]))
+    if not results:
+        return None
+    return results[0]['image_id']
 
-# TODO: save
+# TODO: save by bumping confidence on all words in the image
+def bumpImageConfidence(database_name, image_id):
+    conn = getDbConnection(database_name)
+    debugDetail('bumping image confidence')
+    sql = """
+        UPDATE annotation
+        SET confidence = %s
+        WHERE image_id = %s;
+    """
+    values = [config.CROWD_WORD_CONF_APPROVED, image_id]
+    dbExecute(conn, sql, values)
+    conn.commit()
 
 #-----------------------
 # CROWD WORD
@@ -426,7 +446,7 @@ def getNextCrowdWord(database_name):
     results = list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_APPROVED]))
     if not results:
         return None
-    return list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_APPROVED]))[0]['id']
+    return results[0]['id']
 
 def _getCharsInWord(database_name, image_id, word_boundary):
     """Return a list of row dicts for each char annotation that has a center inside the given boundary (from a word annotation)

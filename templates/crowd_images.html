@@ -21,7 +21,7 @@
 <div class="container-fluid">
 
     <div class="row">
-        <div class="span8">
+        <div class="span9">
 
             <h2>
                 <a href="/" class="black-link">Rigor crowd editor</a>
@@ -36,9 +36,9 @@
             </div>
 
         </div>
-        <div class="span4">
+        <div class="span3">
             <div>&nbsp;</div>
-            <div class="btn btn-large" ng-click="ImagesView.clickSkipButton()"> Needs work </div> 
+            <div class="btn btn-large" ng-click="ImagesView.clickSkipButton()"> Skip </div> 
             <div class="btn btn-large btn-primary" ng-click="ImagesView.clickSaveButton()"> Approve &rarr; </div> 
         </div>
     </div>
@@ -56,14 +56,9 @@
             <i ng-if="ImagesView.stats.words_approved === 0">All done!  All words are approved and sliced.</i>
             <i ng-if="ImagesView.stats.words_approved !== 0">All words are approved.  Now, go slice them.</i>
         </div>
-        <div class="span2" ng-switch-when="ready">
+        <div class="span12" ng-switch-when="ready">
             <div><span class="muted"> Image (( ImagesView.image.image_id )) </span></div>
             <br>
-            <div ng-repeat="word in ImagesView.image.words">
-                (( word.model ))
-            </div>
-        </div>
-        <div class="span10" ng-switch-when="ready">
             <img class="img-polaroid overlap allow-large-image" ng-src="(( ImagesView.image.url ))" />
             <svg
                 class="polaroid-style-padding overlap allow-large-image"
@@ -79,7 +74,7 @@
         </div>
     </div>
 
-    <div style="padding-top: 200px;">&nbsp;</div>
+    <div style="padding-top: 550px;">&nbsp;</div>
     <div>&nbsp;</div>
     <div>&nbsp;</div>
     <hr/>

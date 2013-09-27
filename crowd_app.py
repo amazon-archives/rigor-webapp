@@ -104,7 +104,7 @@ def redirectToNextImage():
     """
     simulateSlow()
     debugDetail('HTTP: /images/next')
-    image_id = backend.getNextCrowdImage(config.CROWD_DB) # foo
+    image_id = backend.getNextCrowdImage(config.CROWD_DB)
     if image_id is None:
         abort(404)
     else:
@@ -154,6 +154,13 @@ def getImageFile(locator, ext):
         abort(404)
 
 # TODO: /image/save
+@app.route('/image/save/<image_id>', methods=['POST'])
+def saveImage(image_id):
+    """Save an image by bumping the confidence on all its words.
+    """
+    simulateSlow()
+    backend.bumpImageConfidence(config.CROWD_DB, image_id)
+    return 'ok'
 
 #===========================================
 # WORD SLICER
