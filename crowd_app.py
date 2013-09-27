@@ -166,7 +166,7 @@ def rejectImage(image_id):
     """Reject an image by changing the confidence on all its words.
     """
     simulateSlow()
-    backend.setConfidenceForAllWordsInImage(config.CROWD_DB, image_id, -1)
+    backend.setConfidenceForAllWordsInImage(config.CROWD_DB, image_id, config.CROWD_WORD_CONF_REJECTED)
     return 'ok'
 
 #===========================================
