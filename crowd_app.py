@@ -68,7 +68,7 @@ def simulateSlow():
 # INDEX
 
 @app.route('/')
-# @use_basic_auth
+@use_basic_auth
 def index():
     simulateSlow()
     return render_template('crowd_index.html')
@@ -77,6 +77,7 @@ def index():
 # MISC API
 
 @app.route('/stats')
+@use_basic_auth
 def stats():
     """
     {
@@ -93,12 +94,14 @@ def stats():
 # IMAGES
 
 @app.route('/images')
+@use_basic_auth
 def images():
     simulateSlow()
     debugDetail('HTTP: /images')
     return render_template('crowd_images.html')
 
 @app.route('/image/next')
+@use_basic_auth
 def redirectToNextImage():
     """Redirect to the API call for an available image to approve.
     """
@@ -111,6 +114,7 @@ def redirectToNextImage():
         return redirect('/image/%s'%image_id)
 
 @app.route('/image/<image_id>')
+@use_basic_auth
 def getImage(image_id):
     """
     Return details about a particular image.
@@ -138,6 +142,7 @@ def getImage(image_id):
     return jsonify(image)
 
 @app.route('/img/<locator>.<ext>',methods=['GET'])
+@use_basic_auth
 def getImageFile(locator, ext):
     simulateSlow()
     locator = locator.replace('-','').replace('/','').replace('..','')
@@ -154,6 +159,7 @@ def getImageFile(locator, ext):
         abort(404)
 
 @app.route('/image/save/<image_id>', methods=['POST'])
+@use_basic_auth
 def saveImage(image_id):
     """Save an image by bumping the confidence on all its words.
     """
@@ -162,6 +168,7 @@ def saveImage(image_id):
     return 'ok'
 
 @app.route('/image/reject/<image_id>', methods=['POST'])
+@use_basic_auth
 def rejectImage(image_id):
     """Reject an image by changing the confidence on all its words.
     """
@@ -173,6 +180,7 @@ def rejectImage(image_id):
 # WORD SLICER
 
 @app.route('/words')
+@use_basic_auth
 def words():
     """Render the main UI.
     """
@@ -184,6 +192,7 @@ def words():
 # Angular will handle fetching the word's details so we can
 #  just treat this like a plain old "/words" request.
 @app.route('/words/<annotation_id>')
+@use_basic_auth
 def wordsWithId(annotation_id):
     """Render the main UI.
     """
@@ -191,6 +200,7 @@ def wordsWithId(annotation_id):
     return render_template('crowd_words.html')
 
 @app.route('/word/next')
+@use_basic_auth
 def redirectToNextWord():
     """Redirect to the API call for an available word to slice.
     """
@@ -202,6 +212,7 @@ def redirectToNextWord():
         return redirect('/word/%s'%annotation_id)
 
 @app.route('/word/<annotation_id>')
+@use_basic_auth
 def getWord(annotation_id):
     """
     Return details about a particular word.
@@ -233,6 +244,7 @@ def getWord(annotation_id):
     return jsonify(word)
 
 @app.route('/word/<annotation_id>.<ext>')
+@use_basic_auth
 def getWordImage(annotation_id, ext):
     """Fetch the cropped, normalized image for the given word.
     """
@@ -244,6 +256,7 @@ def getWordImage(annotation_id, ext):
         abort(404)
 
 @app.route('/word/save', methods=['POST'])
+@use_basic_auth
 def saveWord():
     """Save a word by converting its slices into char annotations with real bounding boxes.
     The postdata should be a json object matching the one that getWord provides.
