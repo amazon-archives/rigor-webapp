@@ -605,6 +605,9 @@ def getCrowdWord(database_name, annotation_id):
                 "end": (ii+0.95) / len(model),
                 "model": char
             })
+        # expand first and last chars to hit edges of image
+        chars[0]['start'] = 0
+        chars[-1]['end'] = 1
 
     # build JSON
     result = dict(
