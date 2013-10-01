@@ -59,14 +59,14 @@
             <i ng-if="WordsView.stats.words_raw === 0">No words to slice.  All done!</i>
             <i ng-if="WordsView.stats.words_raw !== 0">No words to slice right now.  Go review more words.</i>
         </div>
-        <div class="span5" ng-switch-when="ready">
+        <div class="span12" ng-switch-when="ready">
             <div><span class="muted"> Word (( WordsView.word.annotation_id )) from image (( WordsView.word.image_id )): </span></div>
             <div>&nbsp;</div>
             <form>
                 <input type="text" class="crowd-giant-input span4" ng-model="WordsView.word.model" />
             </form>
         </div>
-        <div class="span7" ng-switch-when="ready">
+        <div class="span12" ng-switch-when="ready">
             <!-- flags/handles with letters -->
             <div class="crowd-sushi-start-handle-flag"
                 ng-repeat="char in WordsView.word.chars"
