@@ -19,7 +19,7 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
 
     $scope.ImagesView = {
         config: {
-            statsFreq: 9,  // update stats every this many seconds
+            statsFreq: 20,  // update stats every this many seconds
         },
         // json from server
         stats: {},

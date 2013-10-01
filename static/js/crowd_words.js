@@ -22,7 +22,7 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
         config: {
             // TODO: get this from the backend
             MIN_CHAR_WIDTH: 0.02,
-            statsFreq: 9,  // update stats every this many seconds
+            statsFreq: 20,  // update stats every this many seconds
         },
         // json from server
         stats: {},
