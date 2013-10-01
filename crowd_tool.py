@@ -115,6 +115,35 @@ def resetCrowdDb(dbname):
     debugDetail('  committing')
     conn.commit()
 
+def fixQuotes(dbname):
+    debugDetail('fixing quotes in %s' % dbname)
+    conn = getDbConnection(dbname)
+    sql = """
+        SELECT id, model
+        FROM annotation
+        WHERE domain = 'text:word'
+    """
+    words = list(dbQueryDict(conn, sql, values=()))
+    fixed = 0
+    for word in words:
+        model = word['model']
+        if model.startswith(' "') and model.endswith('"'):
+            fixed += 1
+            print repr(word['model'])
+            word['model'] = model[2:-1]
+            print repr(word['model'])
+            sql = """
+                UPDATE annotation
+                SET model=%s
+                WHERE id=%s
+            """
+            values = (word['model'], word['id'])
+            dbExecute(conn, sql, values)
+    debugDetail('    %s words were fixed' % fixed)
+    debugDetail('committing')
+    conn.commit()
+
+#--------------------------------------------------------------------------------
 
 def helpAndQuit():
     print """
@@ -122,21 +151,24 @@ def helpAndQuit():
     
     Commands:
         help
-        reset     wipe the chars and reset all words to "unreviewed" status
+        reset       wipe the chars and reset all words to "unreviewed" status
+        fixquotes
     """
     sys.exit(1)
 
 if __name__ == '__main__':
-    COMMANDS = ['-h','help','reset']
+    COMMANDS = ['-h','help','reset','fixquotes']
     args = sys.argv[1:]
     if len(args) != 1:
         helpAndQuit()
     command = args[0]
     if command == 'help' or command == '-h' or command not in COMMANDS:
         helpAndQuit()
-
-
-    if command == 'reset':
+    elif command == 'fixquotes':
+        print yellow('----------------------------------------------------------------------\\')
+        fixQuotes(config.CROWD_DB)
+        print yellow('----------------------------------------------------------------------/')
+    elif command == 'reset':
         print yellow('----------------------------------------------------------------------\\')
         resetCrowdDb(config.CROWD_DB)
         print yellow('----------------------------------------------------------------------/')
