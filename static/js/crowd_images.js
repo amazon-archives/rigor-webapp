@@ -50,6 +50,7 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             //    model
             //    domain
 
+        selected_word_id: null,
         state: 'loading', // one of: loading, ready, saving (not implemented yet), empty (e.g. nothing to show)
 
         loadStats: function(repeat) {
@@ -106,68 +107,79 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
                     $scope.ImagesView.state = 'empty';
                     console.log('...[ImagesView.loadImage] error');
                 });
-         },
+        },
 
-         boundaryToSvgPoints: function(boundary) {
-             var result = '';
-             angular.forEach(boundary, function(point,ii) {
-                 result = result + point[0] + ',' + point[1] + ' ';
-             });
-             return result;
-         },
+        boundaryToSvgPoints: function(boundary) {
+            var result = '';
+            angular.forEach(boundary, function(point,ii) {
+                result = result + point[0] + ',' + point[1] + ' ';
+            });
+            return result;
+        },
 
-         clickSkipButton: function() {
-             console.log('[ImagesView.clickSkipButton]');
-             $scope.ImagesView.loadImage();
-             // refresh stats once
-             $timeout(function() { $scope.ImagesView.loadStats(false) }, 1000);
-         },
+        clickSkipButton: function() {
+            console.log('[ImagesView.clickSkipButton]');
+            $scope.ImagesView.loadImage();
+            // refresh stats once
+            $timeout(function() { $scope.ImagesView.loadStats(false) }, 1000);
+        },
 
-         clickRejectButton: function() {
-             console.log('[ImagesView.clickRejectButton]');
+        clickRejectButton: function() {
+            return; // hack
+            console.log('[ImagesView.clickRejectButton]');
 
-             // reject
-             $scope.ImagesView.state = 'saving';
-             $http.post('/image/reject/' + $scope.ImagesView.image.image_id) // foo
-                 .success(function(data,status,headers,config) {
-                     console.log('...[ImagesView.clickRejectButton] success');
+            // reject
+            $scope.ImagesView.state = 'saving';
+            $http.post('/image/reject/' + $scope.ImagesView.image.image_id) // foo
+                .success(function(data,status,headers,config) {
+                    console.log('...[ImagesView.clickRejectButton] success');
 
-                     // update stats
-                     $scope.ImagesView.stats.words_raw = $scope.ImagesView.stats.words_raw - $scope.ImagesView.image.words.length;
-                     // refresh stats once
-                     $timeout(function() { $scope.ImagesView.loadStats(false) }, 1000);
+                    // update stats
+                    $scope.ImagesView.stats.words_raw = $scope.ImagesView.stats.words_raw - $scope.ImagesView.image.words.length;
+                    // refresh stats once
+                    $timeout(function() { $scope.ImagesView.loadStats(false) }, 1000);
 
-                     // load next image
-                     $scope.ImagesView.loadImage();
-                 })
-                 .error(function(data,status,headers,config) {
-                     console.log('...[ImagesView.clickRejectButton] error');
-                 });
-         },
+                    // load next image
+                    $scope.ImagesView.loadImage();
+                })
+                .error(function(data,status,headers,config) {
+                    console.log('...[ImagesView.clickRejectButton] error');
+                });
+        },
 
+        clickSaveButton: function() {
+            return; // hack
+            console.log('[ImagesView.clickSaveButton]');
 
-         clickSaveButton: function() {
-             console.log('[ImagesView.clickSaveButton]');
+            // save
+            $scope.ImagesView.state = 'saving';
+            $http.post('/image/save/' + $scope.ImagesView.image.image_id) // foo
+                .success(function(data,status,headers,config) {
+                    console.log('...[ImagesView.clickSaveButton] success');
 
-             // save
-             $scope.ImagesView.state = 'saving';
-             $http.post('/image/save/' + $scope.ImagesView.image.image_id) // foo
-                 .success(function(data,status,headers,config) {
-                     console.log('...[ImagesView.clickSaveButton] success');
+                    // update stats
+                    $scope.ImagesView.stats.words_raw = $scope.ImagesView.stats.words_raw - $scope.ImagesView.image.words.length;
+                    $scope.ImagesView.stats.words_approved = $scope.ImagesView.stats.words_approved + $scope.ImagesView.image.words.length;
+                    // refresh stats once
+                    $timeout(function() { $scope.ImagesView.loadStats(false) }, 1000);
 
-                     // update stats
-                     $scope.ImagesView.stats.words_raw = $scope.ImagesView.stats.words_raw - $scope.ImagesView.image.words.length;
-                     $scope.ImagesView.stats.words_approved = $scope.ImagesView.stats.words_approved + $scope.ImagesView.image.words.length;
-                     // refresh stats once
-                     $timeout(function() { $scope.ImagesView.loadStats(false) }, 1000);
+                    // load next image
+                    $scope.ImagesView.loadImage();
+                })
+                .error(function(data,status,headers,config) {
+                    console.log('...[ImagesView.clickSaveButton] error');
+                });
+        },
 
-                     // load next image
-                     $scope.ImagesView.loadImage();
-                 })
-                 .error(function(data,status,headers,config) {
-                     console.log('...[ImagesView.clickSaveButton] error');
-                 });
-         },
+        clickWord: function(word) {
+            console.log('[ImagesView.clickWord] ' + word['annotation_id']);
+            console.log(word);
+            $scope.ImagesView.selected_word_id = word['annotation_id'];
+        },
+
+        isSelectedWord: function(word) {
+            return word['annotation_id'] === $scope.ImagesView.selected_word_id;
+        },
 
     }
 
