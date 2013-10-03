@@ -16,7 +16,10 @@
 
     <script src="/static/js/crowd_images.js" type="text/javascript" charset="utf-8"></script>
 </head>
-<body>
+<body
+    ng-mouseup="ImagesView.handleMouseUp($event)"
+    ng-mousemove="ImagesView.handleMouseMove($event)"
+>
 
 <div class="container-fluid">
 
@@ -57,8 +60,14 @@
             <i ng-if="ImagesView.stats.words_approved !== 0">All words are approved.  Now, go slice them.</i>
         </div>
         <div class="span12" ng-switch-when="ready">
-            <div><span class="muted"> Image (( ImagesView.image.image_id )) </span></div>
+            <div>
+                Drag the boxes to match the rotation and perspective of the words.
+                Hold down <b>shift</b> to drag with greater precision.
+                The grid inside a selected word is only there to help you see the rotation; it is not going to line up with specific characters.
+                If the word is small, use the browser to zoom the page.
+            </div>
             <br>
+            <div><span class="muted"> Image (( ImagesView.image.image_id )) </span></div>
             <img
                 class="img-polaroid overlap allow-large-image"
                 ng-src="(( ImagesView.image.url ))"
@@ -67,13 +76,66 @@
                 class="polaroid-style-padding overlap allow-large-image"
                 ng-attr-width="(( ImagesView.image.x_resolution ))"
                 ng-attr-height="(( ImagesView.image.y_resolution ))"
-                ng-click="ImagesView.clickDeselectWord()"
                 >
+                    <!-- main box -->
                     <polygon
-                        ng-attr-class="(( 'svg-polygon-word ' + (ImagesView.isSelectedWord(word) && 'svg-polygon-selected') ))"
+                        ng-attr-class="(( 'svg-polygon-word ' + (ImagesView.isSelectedWord(word) && 'svg-polygon-selected-crowd') ))"
                         ng-repeat="word in ImagesView.image.words"
                         ng-click="ImagesView.clickWord(word)"
                         ng-attr-points="(( ImagesView.boundaryToSvgPoints(word.boundary) ))"
+                    />
+                    <!-- vertical gridlines -->
+                    <line
+                        ng-repeat="pct in [0.08, 0.25, 0.5, 0.75, 0.92]"
+                        class="svg-selected-gridline"
+                        ng-show="ImagesView.anythingIsSelected()"
+                        ng-attr-x1="(( (1-pct) * ImagesView.selected_word.boundary[0][0] + pct * ImagesView.selected_word.boundary[1][0] ))"
+                        ng-attr-y1="(( (1-pct) * ImagesView.selected_word.boundary[0][1] + pct * ImagesView.selected_word.boundary[1][1] ))"
+                        ng-attr-x2="(( (1-pct) * ImagesView.selected_word.boundary[3][0] + pct * ImagesView.selected_word.boundary[2][0] ))"
+                        ng-attr-y2="(( (1-pct) * ImagesView.selected_word.boundary[3][1] + pct * ImagesView.selected_word.boundary[2][1] ))"
+                    />
+                    <!-- horizontal gridlines -->
+                    <line
+                        ng-repeat="pct in [0.1, 0.3, 0.7, 0.9]"
+                        class="svg-selected-gridline"
+                        ng-show="ImagesView.anythingIsSelected()"
+                        ng-attr-x1="(( (1-pct) * ImagesView.selected_word.boundary[0][0] + pct * ImagesView.selected_word.boundary[3][0] ))"
+                        ng-attr-y1="(( (1-pct) * ImagesView.selected_word.boundary[0][1] + pct * ImagesView.selected_word.boundary[3][1] ))"
+                        ng-attr-x2="(( (1-pct) * ImagesView.selected_word.boundary[1][0] + pct * ImagesView.selected_word.boundary[2][0] ))"
+                        ng-attr-y2="(( (1-pct) * ImagesView.selected_word.boundary[1][1] + pct * ImagesView.selected_word.boundary[2][1] ))"
+                    />
+                    <!-- corner handles -->
+                    <rect
+                        class="svg-selected-handle"
+                        ng-show="ImagesView.anythingIsSelected()"
+                        ng-mousedown="ImagesView.handleMouseDown(0,$event)"
+                        ng-attr-x="(( ImagesView.selected_word.boundary[0][0] - ImagesView.config.handleSize/2 ))"
+                        ng-attr-y="(( ImagesView.selected_word.boundary[0][1] - ImagesView.config.handleSize/2 ))"
+                        ng-attr-width="(( ImagesView.config.handleSize ))"  ng-attr-height="(( ImagesView.config.handleSize ))"
+                    />
+                    <rect
+                        class="svg-selected-handle"
+                        ng-show="ImagesView.anythingIsSelected()"
+                        ng-mousedown="ImagesView.handleMouseDown(1,$event)"
+                        ng-attr-x="(( ImagesView.selected_word.boundary[1][0] - ImagesView.config.handleSize/2 ))"
+                        ng-attr-y="(( ImagesView.selected_word.boundary[1][1] - ImagesView.config.handleSize/2 ))"
+                        ng-attr-width="(( ImagesView.config.handleSize ))"  ng-attr-height="(( ImagesView.config.handleSize ))"
+                    />
+                    <rect
+                        class="svg-selected-handle"
+                        ng-show="ImagesView.anythingIsSelected()"
+                        ng-mousedown="ImagesView.handleMouseDown(2,$event)"
+                        ng-attr-x="(( ImagesView.selected_word.boundary[2][0] - ImagesView.config.handleSize/2 ))"
+                        ng-attr-y="(( ImagesView.selected_word.boundary[2][1] - ImagesView.config.handleSize/2 ))"
+                        ng-attr-width="(( ImagesView.config.handleSize ))"  ng-attr-height="(( ImagesView.config.handleSize ))"
+                    />
+                    <rect
+                        class="svg-selected-handle"
+                        ng-show="ImagesView.anythingIsSelected()"
+                        ng-mousedown="ImagesView.handleMouseDown(3,$event)"
+                        ng-attr-x="(( ImagesView.selected_word.boundary[3][0] - ImagesView.config.handleSize/2 ))"
+                        ng-attr-y="(( ImagesView.selected_word.boundary[3][1] - ImagesView.config.handleSize/2 ))"
+                        ng-attr-width="(( ImagesView.config.handleSize ))"  ng-attr-height="(( ImagesView.config.handleSize ))"
                     />
             </svg>
         </div>
@@ -87,7 +149,7 @@
         <pre> state = (( ImagesView.state )) </pre>
         <pre> image = (( ImagesView.image )) </pre>
         <pre> stats = (( ImagesView.stats )) </pre>
-        <pre> selected word id = (( ImagesView.selected_word_id )) </pre>
+        <pre> selected word = (( ImagesView.selected_word )) </pre>
     </div>
 
 </div>

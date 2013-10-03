@@ -66,6 +66,23 @@ body {
     stroke: hsla(345,100%,55%,0.8);
 }
 
+.svg-polygon-selected-crowd {
+    stroke-width: 2 !important;
+    fill: hsla(345,70%,40%,0.1);
+    stroke: hsla(345,100%,55%,0.8);
+}
+
+.svg-selected-gridline {
+    stroke-width: 1 !important;
+    stroke: hsla(345,100%,55%,0.5);
+}
+
+.svg-selected-handle {
+    stroke-width: 2;
+    fill: hsla(345,90%,90%,0.2);
+    stroke: hsla(345,100%,55%,1);
+}
+
 .model-text-char {
     color: hsl(200,60%,40%);
     background: hsla(0,0%,100%,0.8);

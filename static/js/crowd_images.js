@@ -20,6 +20,7 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
     $scope.ImagesView = {
         config: {
             statsFreq: 20,  // update stats every this many seconds
+            handleSize: 18,
         },
         // json from server
         stats: {},
@@ -50,8 +51,16 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             //    model
             //    domain
 
-        selected_word_id: null,
+        selected_word: {},
         state: 'loading', // one of: loading, ready, saving (not implemented yet), empty (e.g. nothing to show)
+        dragState: {}, // is {} when mouse button is up
+            // iiBeingDragged
+            // startX  // mouse down position
+            // startY
+            // dX      // mouse movement amount
+            // dY
+            // originalX   // original location of the thing being dragged
+            // originalY
 
         loadStats: function(repeat) {
             // repeat is a bool
@@ -94,6 +103,8 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             // clear state
             $scope.ImagesView.state = 'loading';
             $scope.ImagesView.image = {};
+            $scope.ImagesView.selected_word = {};
+            $scope.ImagesView.dragState = {};
 
             // get new data
             $http.get(imageUrl)
@@ -174,11 +185,69 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
         clickWord: function(word) {
             console.log('[ImagesView.clickWord] ' + word['annotation_id']);
             console.log(word);
-            $scope.ImagesView.selected_word_id = word['annotation_id'];
+            $scope.ImagesView.selected_word = word;
         },
 
         isSelectedWord: function(word) {
-            return word['annotation_id'] === $scope.ImagesView.selected_word_id;
+            return word['annotation_id'] === $scope.ImagesView.selected_word['annotation_id'];
+        },
+
+        anythingIsSelected: function() {
+            return $scope.ImagesView.selected_word.hasOwnProperty('annotation_id');
+        },
+
+
+        handleMouseDown: function(ii,$event) {
+            console.log('[ImagesView.handleMouseDown] ii = ' + ii);
+            console.log(event);
+            $scope.ImagesView.dragState = {};
+            var dragState = $scope.ImagesView.dragState;
+            dragState.iiBeingDragged = ii;
+            dragState.startX = $event.x;
+            dragState.startY = $event.y;
+            dragState.dX = 0;
+            dragState.dY = 0;
+            dragState.originalX = $scope.ImagesView.selected_word.boundary[ii][0];
+            dragState.originalY = $scope.ImagesView.selected_word.boundary[ii][1];
+            $event.preventDefault();
+        },
+        handleMouseMove: function($event) {
+            // if dragState is empty, ignore mouseMove
+            if (Object.keys($scope.ImagesView.dragState).length === 0) {
+                return;
+            }
+            console.log('[ImagesView.handleMouseMove]');
+            console.log(event);
+            var dragState = $scope.ImagesView.dragState;
+            var ii = dragState.iiBeingDragged;
+            dragState.dX = $event.x - dragState.startX;
+            dragState.dY = $event.y - dragState.startY;
+
+            var speed = 1.0;
+            if ($event.shiftKey) {
+                speed = 0.2;
+            }
+
+            // compute new position of this corner of the boundary box
+            $scope.ImagesView.selected_word.boundary[ii][0] = dragState.originalX + dragState.dX * speed;
+            $scope.ImagesView.selected_word.boundary[ii][1] = dragState.originalY + dragState.dY * speed;
+
+            // // keep in bounds
+            $scope.ImagesView.selected_word.boundary[ii][0] = Math.floor(Math.max(0, Math.min($scope.ImagesView.image.x_resolution, $scope.ImagesView.selected_word.boundary[ii][0])));
+            $scope.ImagesView.selected_word.boundary[ii][1] = Math.floor(Math.max(0, Math.min($scope.ImagesView.image.y_resolution, $scope.ImagesView.selected_word.boundary[ii][1])));
+
+            $event.preventDefault();
+        },
+        handleMouseUp: function($event) {
+            // mouseUp comes from the body tag, not the individual handle tags
+            // if dragState is empty, ignore mouseUp
+            if (Object.keys($scope.ImagesView.dragState).length === 0) {
+                return;
+            }
+            console.log('[ImagesView.handleMouseUp]');
+            console.log(event);
+            $scope.ImagesView.dragState = {};
+            $event.preventDefault();
         },
 
     }
