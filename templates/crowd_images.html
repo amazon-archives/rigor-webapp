@@ -33,7 +33,7 @@
             <div>
                 <span class="muted"> Progress: </span>
                 <b> (( ImagesView.stats.words_raw ))      </b> <span class="muted"> words to adjust &rarr; </span>
-                <b> (( ImagesView.stats.words_approved )) </b> <span class="muted"> to slice &rarr; </span>
+                <b> (( ImagesView.stats.words_approved )) </b> <span class="muted"> to <a href="/words">slice</a> &rarr; </span>
                 <b> (( ImagesView.stats.words_sliced ))   </b> <span class="muted"> done. </span>
                 <b> (( ImagesView.stats.words_progress * 100 | number:0 ))% </b> <span class="muted"> complete </span>
             </div>
@@ -69,7 +69,7 @@
             <br>
             <div class="muted">
                 <span> Image (( ImagesView.image.image_id )) </span>
-                <span ng-show="ImagesView.anythingIsSelected()"> / <a href="words#/(( ImagesView.selected_word.annotation_id ))">word (( ImagesView.selected_word.annotation_id ))</a></span>
+                <span ng-show="ImagesView.anythingIsSelected()"> / <a href="/words#/(( ImagesView.selected_word.annotation_id ))">word (( ImagesView.selected_word.annotation_id ))</a></span>
             </div>
             <img
                 class="img-polaroid overlap allow-large-image"
