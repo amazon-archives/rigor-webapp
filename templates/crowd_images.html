@@ -67,7 +67,10 @@
                 If the word is small, use the browser to zoom the page.
             </div>
             <br>
-            <div><span class="muted"> Image (( ImagesView.image.image_id )) </span></div>
+            <div class="muted">
+                <span> Image (( ImagesView.image.image_id )) </span>
+                <span ng-show="ImagesView.anythingIsSelected()"> / <a href="words#/(( ImagesView.selected_word.annotation_id ))">word (( ImagesView.selected_word.annotation_id ))</a></span>
+            </div>
             <img
                 class="img-polaroid overlap allow-large-image"
                 ng-src="(( ImagesView.image.url ))"

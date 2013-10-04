@@ -60,7 +60,7 @@
             <i ng-if="WordsView.stats.words_raw !== 0">No words to slice right now.  Go review more words.</i>
         </div>
         <div class="span12" ng-switch-when="ready">
-            <div><span class="muted"> Word (( WordsView.word.annotation_id )) from image (( WordsView.word.image_id )): </span></div>
+            <div><span class="muted"> Word (( WordsView.word.annotation_id )) from <a href="/images#/(( WordsView.word.image_id ))">image (( WordsView.word.image_id ))</a>: </span></div>
             <div>&nbsp;</div>
             <form>
                 <input type="text" class="crowd-giant-input span4" ng-model="WordsView.word.model" />
