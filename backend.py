@@ -685,6 +685,15 @@ def saveCrowdWord(database_name, word_data):
     # delete existing char annotations for this word inside the boundary
     existingChars = _getCharsInWord(database_name, word_data['annotation_id'])
     for char in existingChars:
+        # remove annotation tag
+        sql = """
+            DELETE FROM annotation_tag
+            WHERE annotation_id=%s
+            AND name LIKE %s;
+        """
+        values = [char['id'], config.CROWD_PARENT_ANNOTATION_TAG_PREFIX + word_data['annotation_id']]
+        dbExecute(conn, sql, values)
+        # remove annotation itself
         sql = """
             DELETE FROM annotation
             WHERE domain='text:char'
