@@ -66,6 +66,8 @@
                 <input type="text" class="crowd-giant-input span4" ng-model="WordsView.word.model" />
             </form>
         </div>
+    </div>
+    <div class="row" ng-switch on="WordsView.state">
         <div class="span12" ng-switch-when="ready">
             <!-- flags/handles with letters -->
             <div class="crowd-sushi-start-handle-flag"
