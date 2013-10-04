@@ -33,7 +33,7 @@
             <div>
                 <span class="muted"> Progress: </span>
                 <b> (( WordsView.stats.words_raw ))      </b> <span class="muted"> unreviewed words &rarr; </span>
-                <b> (( WordsView.stats.words_approved )) </b> <span class="muted"> approved &rarr; </span>
+                <b> (( WordsView.stats.words_approved )) </b> <span class="muted"> adjusted &rarr; </span>
                 <b> (( WordsView.stats.words_sliced ))   </b> <span class="muted"> sliced. </span>
                 <b> (( WordsView.stats.words_progress * 100 | number:0 ))% </b> <span class="muted"> complete </span>
             </div>
@@ -41,7 +41,7 @@
         </div>
         <div class="span3">
             <div>&nbsp;</div>
-            <div class="btn btn-large" ng-click="WordsView.clickSkipButton()"> Skip </div> 
+            <div class="btn btn-large" ng-click="WordsView.clickSkipButton()" title="Come back to this word later"> Skip </div> 
             <div class="btn btn-large btn-primary" ng-click="WordsView.clickSaveButton()"> Save &rarr; </div> 
         </div>
     </div>
@@ -60,8 +60,12 @@
             <i ng-if="WordsView.stats.words_raw !== 0">No words to slice right now.  Go review more words.</i>
         </div>
         <div class="span12" ng-switch-when="ready">
-            <div><span class="muted"> Word (( WordsView.word.annotation_id )) from <a href="/images#/(( WordsView.word.image_id ))">image (( WordsView.word.image_id ))</a>: </span></div>
+            <div>
+                Make sure the word in the text box matches the image.
+                Then drag the blue and red handles to the left and right sides of each character.
+            </div>
             <div>&nbsp;</div>
+            <div><span class="muted"> Word (( WordsView.word.annotation_id )) from <a href="/images#/(( WordsView.word.image_id ))">image (( WordsView.word.image_id ))</a> </span></div>
             <form>
                 <input type="text" class="crowd-giant-input span4" ng-model="WordsView.word.model" />
             </form>

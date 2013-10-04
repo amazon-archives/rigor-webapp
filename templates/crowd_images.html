@@ -28,12 +28,12 @@
 
             <h2>
                 <a href="/" class="black-link">Crowd editor</a>
-                <span class="muted"> / Word approver </span>
+                <span class="muted"> / Word adjuster </span>
             </h2>
             <div>
                 <span class="muted"> Progress: </span>
                 <b> (( ImagesView.stats.words_raw ))      </b> <span class="muted"> unreviewed words &rarr; </span>
-                <b> (( ImagesView.stats.words_approved )) </b> <span class="muted"> approved &rarr; </span>
+                <b> (( ImagesView.stats.words_approved )) </b> <span class="muted"> adjusted &rarr; </span>
                 <b> (( ImagesView.stats.words_sliced ))   </b> <span class="muted"> sliced. </span>
                 <b> (( ImagesView.stats.words_progress * 100 | number:0 ))% </b> <span class="muted"> complete </span>
             </div>
@@ -41,7 +41,7 @@
         </div>
         <div class="span3">
             <div>&nbsp;</div>
-            <div class="btn btn-large" ng-click="ImagesView.clickSkipButton()"> Skip </div> 
+            <div class="btn btn-large" ng-click="ImagesView.clickSkipButton()" title="Come back to this image later"> Skip </div> 
             <div class="btn btn-large btn-primary" ng-click="ImagesView.clickSaveButton()"> Save &rarr; </div> 
         </div>
     </div>
