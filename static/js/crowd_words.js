@@ -219,6 +219,10 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
                 model: newValue[ii],
             });
         }
+        if (newValue.length > 0) {
+            $scope.WordsView.word.chars[0].start = 0;
+            $scope.WordsView.word.chars[newValue.length-1].end = 1;
+        }
     });
 
     //--------------------------------------------------------------------------------
