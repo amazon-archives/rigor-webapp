@@ -1,5 +1,27 @@
 
+=========================================================
+CROWD EDITOR
 
+add documentation / examples
+
+SLICER
+better word slicer like ableton live
+slice: enforce character order
+
+fix bug when words are inside other words (image 445, word 881)
+don't assume word boxes are axis-aligned
+
+WORD EDITOR
+add new word
+click to deselect word
+rotate word
+press shift during drag
+
+
+
+
+=========================================================
+BROWSE
 
 better tag chooser
 
