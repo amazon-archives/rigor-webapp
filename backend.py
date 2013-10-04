@@ -416,7 +416,6 @@ def getNextCrowdImage(database_name):
         return None
     return results[0]['image_id']
 
-# TODO: save by bumping confidence on all words in the image
 def setConfidenceForAllWordsInImage(database_name, image_id, conf):
     conn = getDbConnection(database_name)
     debugDetail('bumping image confidence')
@@ -427,6 +426,22 @@ def setConfidenceForAllWordsInImage(database_name, image_id, conf):
     """
     values = [conf, image_id]
     dbExecute(conn, sql, values)
+    conn.commit()
+
+def updateWordBoundaries(database_name, words):
+    # input: a list of word dicts
+    # each with an annotation_id and a boundary
+    conn = getDbConnection(database_name)
+    debugDetail('updating word boundaries')
+    for word in words:
+        sql = """
+            UPDATE annotation
+            SET boundary = %s, confidence = %s
+            WHERE id = %s;
+        """
+        boundary = repr(word['boundary']).replace('[','(').replace(']',')')
+        values = [boundary, config.CROWD_WORD_CONF_APPROVED, word['annotation_id']]
+        dbExecute(conn, sql, values)
     conn.commit()
 
 #-----------------------

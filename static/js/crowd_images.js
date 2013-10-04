@@ -159,12 +159,11 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
         },
 
         clickSaveButton: function() {
-            return; // hack
             console.log('[ImagesView.clickSaveButton]');
 
             // save
             $scope.ImagesView.state = 'saving';
-            $http.post('/image/save/' + $scope.ImagesView.image.image_id) // foo
+            $http.post('/image/save', JSON.stringify($scope.ImagesView.image)) // foo
                 .success(function(data,status,headers,config) {
                     console.log('...[ImagesView.clickSaveButton] success');
 
