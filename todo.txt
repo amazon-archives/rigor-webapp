@@ -8,7 +8,7 @@ SLICER
 better word slicer like ableton live
 slice: enforce character order
 
-fix bug when words are inside other words (image 445, word 881)
+    fix bug when words are inside other words (image 445, word 881)
 don't assume word boxes are axis-aligned
 
 WORD EDITOR
