@@ -88,6 +88,11 @@ def resetCrowdDb(dbname):
     debugDetail('  deleting character annotations')
     conn = getDbConnection(dbname)
     sql = """
+        DELETE FROM annotation_tag
+        WHERE name LIKE %s;
+    """
+    dbExecute(conn, sql, values=[config.CROWD_PARENT_ANNOTATION_TAG_PREFIX[:-1] + '%'])
+    sql = """
         DELETE FROM annotation
         WHERE domain='text:char';
     """
