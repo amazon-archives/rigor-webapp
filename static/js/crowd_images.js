@@ -195,6 +195,13 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             return $scope.ImagesView.selected_word.hasOwnProperty('annotation_id');
         },
 
+        selectedBoundary: function() {
+            if ($scope.ImagesView.selected_word.hasOwnProperty('annotation_id')) {
+                return $scope.ImagesView.selected_word.boundary;
+            }
+            return [[0,0],[0,0],[0,0],[0,0]];
+        },
+
 
         handleMouseDown: function(ii,$event) {
             console.log('[ImagesView.handleMouseDown] ii = ' + ii);

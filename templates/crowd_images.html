@@ -89,20 +89,20 @@
                         ng-repeat="pct in [0.08, 0.25, 0.5, 0.75, 0.92]"
                         class="svg-selected-gridline"
                         ng-show="ImagesView.anythingIsSelected()"
-                        ng-attr-x1="(( (1-pct) * ImagesView.selected_word.boundary[0][0] + pct * ImagesView.selected_word.boundary[1][0] ))"
-                        ng-attr-y1="(( (1-pct) * ImagesView.selected_word.boundary[0][1] + pct * ImagesView.selected_word.boundary[1][1] ))"
-                        ng-attr-x2="(( (1-pct) * ImagesView.selected_word.boundary[3][0] + pct * ImagesView.selected_word.boundary[2][0] ))"
-                        ng-attr-y2="(( (1-pct) * ImagesView.selected_word.boundary[3][1] + pct * ImagesView.selected_word.boundary[2][1] ))"
+                        ng-attr-x1="(( (1-pct) * ImagesView.selectedBoundary()[0][0] + pct * ImagesView.selectedBoundary()[1][0] ))"
+                        ng-attr-y1="(( (1-pct) * ImagesView.selectedBoundary()[0][1] + pct * ImagesView.selectedBoundary()[1][1] ))"
+                        ng-attr-x2="(( (1-pct) * ImagesView.selectedBoundary()[3][0] + pct * ImagesView.selectedBoundary()[2][0] ))"
+                        ng-attr-y2="(( (1-pct) * ImagesView.selectedBoundary()[3][1] + pct * ImagesView.selectedBoundary()[2][1] ))"
                     />
                     <!-- horizontal gridlines -->
                     <line
                         ng-repeat="pct in [0.1, 0.3, 0.7, 0.9]"
                         class="svg-selected-gridline"
                         ng-show="ImagesView.anythingIsSelected()"
-                        ng-attr-x1="(( (1-pct) * ImagesView.selected_word.boundary[0][0] + pct * ImagesView.selected_word.boundary[3][0] ))"
-                        ng-attr-y1="(( (1-pct) * ImagesView.selected_word.boundary[0][1] + pct * ImagesView.selected_word.boundary[3][1] ))"
-                        ng-attr-x2="(( (1-pct) * ImagesView.selected_word.boundary[1][0] + pct * ImagesView.selected_word.boundary[2][0] ))"
-                        ng-attr-y2="(( (1-pct) * ImagesView.selected_word.boundary[1][1] + pct * ImagesView.selected_word.boundary[2][1] ))"
+                        ng-attr-x1="(( (1-pct) * ImagesView.selectedBoundary()[0][0] + pct * ImagesView.selectedBoundary()[3][0] ))"
+                        ng-attr-y1="(( (1-pct) * ImagesView.selectedBoundary()[0][1] + pct * ImagesView.selectedBoundary()[3][1] ))"
+                        ng-attr-x2="(( (1-pct) * ImagesView.selectedBoundary()[1][0] + pct * ImagesView.selectedBoundary()[2][0] ))"
+                        ng-attr-y2="(( (1-pct) * ImagesView.selectedBoundary()[1][1] + pct * ImagesView.selectedBoundary()[2][1] ))"
                     />
                     <!-- corner handles -->
                     <rect
