@@ -20,7 +20,8 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
     $scope.ImagesView = {
         config: {
             statsFreq: 20,  // update stats every this many seconds
-            handleSize: 18,
+            cornerHandleSize: 18,
+            skewHandleSize: 18,
         },
         // json from server
         stats: {},
@@ -59,8 +60,7 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             // startY
             // dX      // mouse movement amount
             // dY
-            // originalX   // original location of the thing being dragged
-            // originalY
+            // originalBoundary // original word box before dragging started
 
         loadStats: function(repeat) {
             // repeat is a bool
@@ -203,7 +203,8 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
         },
 
 
-        handleMouseDown: function(ii,$event) {
+        handleMouseDown: function(kind,ii,$event) {
+            // kind should be either "corner" or "skew"
             console.log('[ImagesView.handleMouseDown] ii = ' + ii);
             console.log(event);
             $scope.ImagesView.dragState = {};
@@ -213,8 +214,8 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             dragState.startY = $event.y;
             dragState.dX = 0;
             dragState.dY = 0;
-            dragState.originalX = $scope.ImagesView.selected_word.boundary[ii][0];
-            dragState.originalY = $scope.ImagesView.selected_word.boundary[ii][1];
+            dragState.originalBoundary = JSON.parse(JSON.stringify($scope.ImagesView.selected_word.boundary));
+            dragState.kind = kind;
             $event.preventDefault();
         },
         handleMouseMove: function($event) {
@@ -235,8 +236,19 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             }
 
             // compute new position of this corner of the boundary box
-            $scope.ImagesView.selected_word.boundary[ii][0] = dragState.originalX + dragState.dX * speed;
-            $scope.ImagesView.selected_word.boundary[ii][1] = dragState.originalY + dragState.dY * speed;
+            if (dragState.kind === 'corner') {
+                $scope.ImagesView.selected_word.boundary[ii][0] = dragState.originalBoundary[ii][0] + dragState.dX * speed;
+                $scope.ImagesView.selected_word.boundary[ii][1] = dragState.originalBoundary[ii][1] + dragState.dY * speed;
+            } else if (dragState.kind === 'skew') {
+                var ii2 = (ii+1) % 4;
+                // when moving a skew handle, move both corners at the same time
+                $scope.ImagesView.selected_word.boundary[ii][0] = dragState.originalBoundary[ii][0] + dragState.dX * speed;
+                $scope.ImagesView.selected_word.boundary[ii][1] = dragState.originalBoundary[ii][1] + dragState.dY * speed;
+                $scope.ImagesView.selected_word.boundary[ii2][0] = dragState.originalBoundary[ii2][0] + dragState.dX * speed;
+                $scope.ImagesView.selected_word.boundary[ii2][1] = dragState.originalBoundary[ii2][1] + dragState.dY * speed;
+            } else {
+                console.error('[ImagesView.handleMouseMove] unknown drag kind: ' + dragState.kind);
+            }
 
             // // keep in bounds
             $scope.ImagesView.selected_word.boundary[ii][0] = Math.floor(Math.max(0, Math.min($scope.ImagesView.image.x_resolution, $scope.ImagesView.selected_word.boundary[ii][0])));

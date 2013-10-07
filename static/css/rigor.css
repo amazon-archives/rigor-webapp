@@ -63,7 +63,7 @@ body {
 
 .svg-polygon-selected {
     stroke-width: 4 !important;
-    stroke: hsla(345,100%,55%,0.8);
+    stroke: hsla(345,100%,45%,0.8);
 }
 
 .svg-polygon-selected-crowd {
@@ -77,10 +77,16 @@ body {
     stroke: hsla(345,100%,55%,0.5);
 }
 
-.svg-selected-handle {
+.svg-selected-corner-handle {
     stroke-width: 2;
     fill: hsla(345,90%,90%,0.35);
-    stroke: hsla(345,100%,55%,1);
+    stroke: hsla(345,100%,60%,1);
+}
+
+.svg-selected-skew-handle {
+    stroke-width: 2;
+    fill: hsla(345,90%,90%,0.35);
+    stroke: hsla(345,100%,75%,1);
 }
 
 .model-text-char {

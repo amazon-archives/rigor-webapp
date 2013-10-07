@@ -19,6 +19,7 @@ rotate word
 skew handles
 press shift during drag
 zoom / scroll
+sort words big-to-small to avoid unclickable overlapped words
 
 
 =========================================================
