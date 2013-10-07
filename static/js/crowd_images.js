@@ -244,6 +244,9 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             if (dragState.kind === 'corner') {
                 $scope.ImagesView.selected_word.boundary[ii][0] = dragState.originalBoundary[ii][0] + dragState.dX * speed;
                 $scope.ImagesView.selected_word.boundary[ii][1] = dragState.originalBoundary[ii][1] + dragState.dY * speed;
+                // // keep in bounds
+                $scope.ImagesView.selected_word.boundary[ii][0] = Math.floor(Math.max(0, Math.min($scope.ImagesView.image.x_resolution, $scope.ImagesView.selected_word.boundary[ii][0])));
+                $scope.ImagesView.selected_word.boundary[ii][1] = Math.floor(Math.max(0, Math.min($scope.ImagesView.image.y_resolution, $scope.ImagesView.selected_word.boundary[ii][1])));
             } else if (dragState.kind === 'skew') {
                 var ii2 = (ii+1) % 4;
                 // when moving a skew handle, move both corners at the same time
@@ -251,13 +254,15 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
                 $scope.ImagesView.selected_word.boundary[ii][1] = dragState.originalBoundary[ii][1] + dragState.dY * speed;
                 $scope.ImagesView.selected_word.boundary[ii2][0] = dragState.originalBoundary[ii2][0] + dragState.dX * speed;
                 $scope.ImagesView.selected_word.boundary[ii2][1] = dragState.originalBoundary[ii2][1] + dragState.dY * speed;
+                // // keep in bounds
+                $scope.ImagesView.selected_word.boundary[ii][0] = Math.floor(Math.max(0, Math.min($scope.ImagesView.image.x_resolution, $scope.ImagesView.selected_word.boundary[ii][0])));
+                $scope.ImagesView.selected_word.boundary[ii][1] = Math.floor(Math.max(0, Math.min($scope.ImagesView.image.y_resolution, $scope.ImagesView.selected_word.boundary[ii][1])));
+                $scope.ImagesView.selected_word.boundary[ii2][0] = Math.floor(Math.max(0, Math.min($scope.ImagesView.image.x_resolution, $scope.ImagesView.selected_word.boundary[ii2][0])));
+                $scope.ImagesView.selected_word.boundary[ii2][1] = Math.floor(Math.max(0, Math.min($scope.ImagesView.image.y_resolution, $scope.ImagesView.selected_word.boundary[ii2][1])));
             } else {
                 console.error('[ImagesView.handleMouseMove] unknown drag kind: ' + dragState.kind);
             }
 
-            // // keep in bounds
-            $scope.ImagesView.selected_word.boundary[ii][0] = Math.floor(Math.max(0, Math.min($scope.ImagesView.image.x_resolution, $scope.ImagesView.selected_word.boundary[ii][0])));
-            $scope.ImagesView.selected_word.boundary[ii][1] = Math.floor(Math.max(0, Math.min($scope.ImagesView.image.y_resolution, $scope.ImagesView.selected_word.boundary[ii][1])));
 
             $event.preventDefault();
         },
