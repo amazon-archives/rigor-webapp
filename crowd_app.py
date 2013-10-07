@@ -250,6 +250,7 @@ def getWord(annotation_id):
     simulateSlow()
     word = backend.getCrowdWord(config.CROWD_DB, annotation_id)
 
+    random.seed(time.time())
     randomHash = ''.join([random.choice('abcdefghijklmnopqrstuvwxyz') for ii in range(10)])
     word['image_url'] = '/word/%s.%s?%s' % (word['annotation_id'], word['ext'], randomHash)
     del word['image_path']
