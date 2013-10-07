@@ -89,6 +89,12 @@ body {
     stroke: hsla(345,100%,75%,1);
 }
 
+.svg-invisible {
+    stroke-width: 0;
+    fill: hsla(0,0%,0%,0);
+    stroke: hsla(0,0%,0%,0);
+}
+
 .model-text-char {
     color: hsl(200,60%,40%);
     background: hsla(0,0%,100%,0.8);

@@ -80,6 +80,14 @@
                 ng-attr-width="(( ImagesView.image.x_resolution ))"
                 ng-attr-height="(( ImagesView.image.y_resolution ))"
                 >
+                    <!-- background for clicking to deselect -->
+                    <rect
+                        class="svg-invisible"
+                        x="0" y="0"
+                        ng-click="ImagesView.clickToDeselect()"
+                        ng-attr-width="(( ImagesView.image.x_resolution ))"
+                        ng-attr-height="(( ImagesView.image.y_resolution ))"
+                    />
                     <!-- main box -->
                     <polygon
                         ng-attr-class="(( 'svg-polygon-word ' + (ImagesView.isSelectedWord(word) && 'svg-polygon-selected-crowd') ))"

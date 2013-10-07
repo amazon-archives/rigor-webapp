@@ -12,11 +12,11 @@ slice: enforce character order
 don't assume word boxes are axis-aligned
 
 WORD EDITOR
-add new word
     reposition corner handles
-click to deselect word
+    click to deselect word
+    skew handles
+add new word
 rotate word
-skew handles
 press shift during drag
 zoom / scroll
 sort words big-to-small to avoid unclickable overlapped words

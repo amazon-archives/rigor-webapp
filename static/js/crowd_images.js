@@ -187,6 +187,11 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             $scope.ImagesView.selected_word = word;
         },
 
+        clickToDeselect: function() {
+            console.log('[ImagesView.clickToDeselect]');
+            $scope.ImagesView.selected_word = {};
+        },
+
         isSelectedWord: function(word) {
             return word['annotation_id'] === $scope.ImagesView.selected_word['annotation_id'];
         },
