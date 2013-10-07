@@ -68,7 +68,7 @@ body {
 
 .svg-polygon-selected-crowd {
     stroke-width: 2 !important;
-    fill: hsla(345,70%,40%,0.1);
+    fill: hsla(345,70%,40%,0.12);
     stroke: hsla(345,100%,55%,0.8);
 }
 
@@ -79,7 +79,7 @@ body {
 
 .svg-selected-handle {
     stroke-width: 2;
-    fill: hsla(345,90%,90%,0.2);
+    fill: hsla(345,90%,90%,0.35);
     stroke: hsla(345,100%,55%,1);
 }
 

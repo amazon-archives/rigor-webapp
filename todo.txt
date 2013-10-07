@@ -13,51 +13,32 @@ don't assume word boxes are axis-aligned
 
 WORD EDITOR
 add new word
+    reposition corner handles
 click to deselect word
 rotate word
+skew handles
 press shift during drag
-
-
+zoom / scroll
 
 
 =========================================================
 BROWSE
 
 better tag chooser
-
 keyboard shortcuts
-
 fix NULL situation
-
 make images into real links so they can be opened in a new tab
-
 result stats
-
 batch edit
-
 better pagination control
-
 top navbar
-
     load images through flask
-
     use render paths instead of partials and nested scopes/controllers
-
     test with slow connection
-
     routing
-
     image detail view
-
     show image annotations
-
     on search, reset view to thumb view
-
     on loading detail view, fetch image if needed
-
-
-
-
-
 
 
