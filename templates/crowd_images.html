@@ -120,32 +120,32 @@
                         class="svg-selected-skew-handle"
                         ng-show="ImagesView.anythingIsSelected()"
                         ng-mousedown="ImagesView.handleMouseDown('skew',0,$event)"
-                        ng-attr-x="(( ImagesView.selected_word.boundary[0][0]/2 + ImagesView.selected_word.boundary[1][0]/2 - ImagesView.config.skewHandleSize/2 ))"
-                        ng-attr-y="(( ImagesView.selected_word.boundary[0][1]/2 + ImagesView.selected_word.boundary[1][1]/2 - ImagesView.config.skewHandleSize*3/2 ))"
+                        ng-attr-x="(( ImagesView.selected_word.boundary[0][0]/2 + ImagesView.selected_word.boundary[1][0]/2 - ImagesView.config.skewHandleSize/2 || 0 ))"
+                        ng-attr-y="(( ImagesView.selected_word.boundary[0][1]/2 + ImagesView.selected_word.boundary[1][1]/2 - ImagesView.config.skewHandleSize*3/2 || 0 ))"
                         ng-attr-width="(( ImagesView.config.skewHandleSize ))"  ng-attr-height="(( ImagesView.config.skewHandleSize ))"
                     />
                     <rect
                         class="svg-selected-skew-handle"
                         ng-show="ImagesView.anythingIsSelected()"
                         ng-mousedown="ImagesView.handleMouseDown('skew',1,$event)"
-                        ng-attr-x="(( ImagesView.selected_word.boundary[1][0]/2 + ImagesView.selected_word.boundary[2][0]/2 + ImagesView.config.skewHandleSize/2 ))"
-                        ng-attr-y="(( ImagesView.selected_word.boundary[1][1]/2 + ImagesView.selected_word.boundary[2][1]/2 - ImagesView.config.skewHandleSize/2 ))"
+                        ng-attr-x="(( ImagesView.selected_word.boundary[1][0]/2 + ImagesView.selected_word.boundary[2][0]/2 + ImagesView.config.skewHandleSize/2 || 0 ))"
+                        ng-attr-y="(( ImagesView.selected_word.boundary[1][1]/2 + ImagesView.selected_word.boundary[2][1]/2 - ImagesView.config.skewHandleSize/2 || 0 ))"
                         ng-attr-width="(( ImagesView.config.skewHandleSize ))"  ng-attr-height="(( ImagesView.config.skewHandleSize ))"
                     />
                     <rect
                         class="svg-selected-skew-handle"
                         ng-show="ImagesView.anythingIsSelected()"
                         ng-mousedown="ImagesView.handleMouseDown('skew',2,$event)"
-                        ng-attr-x="(( ImagesView.selected_word.boundary[2][0]/2 + ImagesView.selected_word.boundary[3][0]/2 - ImagesView.config.skewHandleSize/2 ))"
-                        ng-attr-y="(( ImagesView.selected_word.boundary[2][1]/2 + ImagesView.selected_word.boundary[3][1]/2 + ImagesView.config.skewHandleSize/2 ))"
+                        ng-attr-x="(( ImagesView.selected_word.boundary[2][0]/2 + ImagesView.selected_word.boundary[3][0]/2 - ImagesView.config.skewHandleSize/2 || 0 ))"
+                        ng-attr-y="(( ImagesView.selected_word.boundary[2][1]/2 + ImagesView.selected_word.boundary[3][1]/2 + ImagesView.config.skewHandleSize/2 || 0 ))"
                         ng-attr-width="(( ImagesView.config.skewHandleSize ))"  ng-attr-height="(( ImagesView.config.skewHandleSize ))"
                     />
                     <rect
                         class="svg-selected-skew-handle"
                         ng-show="ImagesView.anythingIsSelected()"
                         ng-mousedown="ImagesView.handleMouseDown('skew',3,$event)"
-                        ng-attr-x="(( ImagesView.selected_word.boundary[3][0]/2 + ImagesView.selected_word.boundary[0][0]/2 - ImagesView.config.skewHandleSize*3/2 ))"
-                        ng-attr-y="(( ImagesView.selected_word.boundary[3][1]/2 + ImagesView.selected_word.boundary[0][1]/2 - ImagesView.config.skewHandleSize/2 ))"
+                        ng-attr-x="(( ImagesView.selected_word.boundary[3][0]/2 + ImagesView.selected_word.boundary[0][0]/2 - ImagesView.config.skewHandleSize*3/2 || 0 ))"
+                        ng-attr-y="(( ImagesView.selected_word.boundary[3][1]/2 + ImagesView.selected_word.boundary[0][1]/2 - ImagesView.config.skewHandleSize/2 || 0 ))"
                         ng-attr-width="(( ImagesView.config.skewHandleSize ))"  ng-attr-height="(( ImagesView.config.skewHandleSize ))"
                     />
                     <!-- corner handles -->
@@ -153,32 +153,32 @@
                         class="svg-selected-corner-handle"
                         ng-show="ImagesView.anythingIsSelected()"
                         ng-mousedown="ImagesView.handleMouseDown('corner',0,$event)"
-                        ng-attr-x="(( ImagesView.selected_word.boundary[0][0] - ImagesView.config.cornerHandleSize ))"
-                        ng-attr-y="(( ImagesView.selected_word.boundary[0][1] - ImagesView.config.cornerHandleSize ))"
+                        ng-attr-x="(( ImagesView.selected_word.boundary[0][0] - ImagesView.config.cornerHandleSize || 0 ))"
+                        ng-attr-y="(( ImagesView.selected_word.boundary[0][1] - ImagesView.config.cornerHandleSize || 0 ))"
                         ng-attr-width="(( ImagesView.config.cornerHandleSize ))"  ng-attr-height="(( ImagesView.config.cornerHandleSize ))"
                     />
                     <rect
                         class="svg-selected-corner-handle"
                         ng-show="ImagesView.anythingIsSelected()"
                         ng-mousedown="ImagesView.handleMouseDown('corner',1,$event)"
-                        ng-attr-x="(( ImagesView.selected_word.boundary[1][0]                                ))"
-                        ng-attr-y="(( ImagesView.selected_word.boundary[1][1] - ImagesView.config.cornerHandleSize ))"
+                        ng-attr-x="(( ImagesView.selected_word.boundary[1][0]                                      || 0 ))"
+                        ng-attr-y="(( ImagesView.selected_word.boundary[1][1] - ImagesView.config.cornerHandleSize || 0 ))"
                         ng-attr-width="(( ImagesView.config.cornerHandleSize ))"  ng-attr-height="(( ImagesView.config.cornerHandleSize ))"
                     />
                     <rect
                         class="svg-selected-corner-handle"
                         ng-show="ImagesView.anythingIsSelected()"
                         ng-mousedown="ImagesView.handleMouseDown('corner',2,$event)"
-                        ng-attr-x="(( ImagesView.selected_word.boundary[2][0]                                  ))"
-                        ng-attr-y="(( ImagesView.selected_word.boundary[2][1]                                  ))"
+                        ng-attr-x="(( ImagesView.selected_word.boundary[2][0] || 0 ))"
+                        ng-attr-y="(( ImagesView.selected_word.boundary[2][1] || 0 ))"
                         ng-attr-width="(( ImagesView.config.cornerHandleSize ))"  ng-attr-height="(( ImagesView.config.cornerHandleSize ))"
                     />
                     <rect
                         class="svg-selected-corner-handle"
                         ng-show="ImagesView.anythingIsSelected()"
                         ng-mousedown="ImagesView.handleMouseDown('corner',3,$event)"
-                        ng-attr-x="(( ImagesView.selected_word.boundary[3][0] - ImagesView.config.cornerHandleSize ))"
-                        ng-attr-y="(( ImagesView.selected_word.boundary[3][1]                                ))"
+                        ng-attr-x="(( ImagesView.selected_word.boundary[3][0] - ImagesView.config.cornerHandleSize || 0 ))"
+                        ng-attr-y="(( ImagesView.selected_word.boundary[3][1]                                      || 0 ))"
                         ng-attr-width="(( ImagesView.config.cornerHandleSize ))"  ng-attr-height="(( ImagesView.config.cornerHandleSize ))"
                     />
             </svg>
