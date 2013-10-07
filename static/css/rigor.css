@@ -83,6 +83,12 @@ body {
     stroke: hsla(345,100%,60%,1);
 }
 
+.svg-selected-corner-handle-zero {
+    stroke-width: 2;
+    fill: hsla(35,90%,90%,0.35);
+    stroke: hsla(35,100%,60%,1);
+}
+
 .svg-selected-skew-handle {
     stroke-width: 2;
     fill: hsla(345,90%,90%,0.35);

@@ -65,6 +65,8 @@
                 Hold down <b>shift</b> to drag with greater precision.
                 The grid inside a selected word is only there to help you see the rotation; it is not going to line up with specific characters.
                 If the word is small, use the browser to zoom the page.
+                The yellow handle should be in the upper corner of the beginning of the word.
+                If there are missing or extra words, skip the image.
             </div>
             <br>
             <div class="muted">
@@ -150,7 +152,7 @@
                     />
                     <!-- corner handles -->
                     <rect
-                        class="svg-selected-corner-handle"
+                        class="svg-selected-corner-handle-zero"
                         ng-show="ImagesView.anythingIsSelected()"
                         ng-mousedown="ImagesView.handleMouseDown('corner',0,$event)"
                         ng-attr-x="(( ImagesView.selected_word.boundary[0][0] - ImagesView.config.cornerHandleSize || 0 ))"
