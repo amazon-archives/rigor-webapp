@@ -61,8 +61,10 @@ app.config['SECRET_KEY'] = 'fpqf94y1och48OUGWO38yfoo8yroihf28y982heD'
 # ROUTING
 
 def simulateSlow():
+    debugDetail('...')
     if config.CROWD_FAKE_SLOW_DELAY > 0:
         time.sleep(config.CROWD_FAKE_SLOW_DELAY)
+    debugDetail('   ...')
 
 #===========================================
 # INDEX
@@ -288,5 +290,5 @@ if __name__ == '__main__':
         print 'usage: crowd_app.py PORTNUMBER'
         sys.exit(0)
     port = int(ARGS[0])
-    app.run(debug=True, port=port, host='0.0.0.0', use_evalex=False)
+    app.run(debug=True, port=port, host='0.0.0.0', use_evalex=False, processes=5)
 
