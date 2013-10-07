@@ -38,7 +38,7 @@ ANNOTATION_DOMAINS = """
 # DB HELPERS
 
 def getDbConnection(database_name):
-    dbConnectionString = "host='ea' dbname='%s' user='%s' password='%s'"
+    dbConnectionString = "host='eru' dbname='%s' user='%s' password='%s'"
     return psycopg2.connect(dbConnectionString % (database_name, config.DB_USER, config.DB_PASSWORD))
 
 def getColumnNames(conn, table):
