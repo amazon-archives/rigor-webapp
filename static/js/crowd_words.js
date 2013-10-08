@@ -48,6 +48,7 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
             //     { ... },
             // ],
         state: 'loading', // one of: loading, ready, saving (not implemented yet), empty (e.g. nothing to show)
+        isBrowserModalVisible: false,
         dragState: {}, // is {} when mouse button is up
             // charBeingDragged: {}
             // kind    // either 'start' or 'end'
@@ -55,6 +56,18 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
             // startY
             // dX
             // dY
+
+        doBrowserCheck: function() {
+            var browserName = BrowserDetect.browser;
+            console.log('[WordsView.doBrowserCheck] = ' + browserName);
+            if (browserName !== "Chrome") {
+                $scope.WordsView.isBrowserModalVisible = true;
+            }
+        },
+
+        clickDismissBrowserWarning: function() {
+            $scope.WordsView.isBrowserModalVisible = false;
+        },
 
         loadStats: function(repeat) {
             // repeat is a bool
@@ -233,6 +246,8 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
     // depending on URL, switch to appropriate view
     var path = $location.path();
     console.log('[main] path = ' + path);
+
+    $scope.WordsView.doBrowserCheck();
 
     if (path === '/words') {
         $scope.WordsView.loadWord();

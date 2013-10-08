@@ -54,6 +54,7 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
 
         selected_word: {},
         state: 'loading', // one of: loading, ready, saving (not implemented yet), empty (e.g. nothing to show)
+        isBrowserModalVisible: false,
         dragState: {}, // is {} when mouse button is up
             // iiBeingDragged
             // startX  // mouse down position
@@ -61,6 +62,18 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             // dX      // mouse movement amount
             // dY
             // originalBoundary // original word box before dragging started
+
+        doBrowserCheck: function() {
+            var browserName = BrowserDetect.browser;
+            console.log('[ImagesView.doBrowserCheck] = ' + browserName);
+            if (browserName !== "Chrome") {
+                $scope.ImagesView.isBrowserModalVisible = true;
+            }
+        },
+
+        clickDismissBrowserWarning: function() {
+            $scope.ImagesView.isBrowserModalVisible = false;
+        },
 
         loadStats: function(repeat) {
             // repeat is a bool
@@ -288,6 +301,8 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
     // depending on URL, switch to appropriate view
     var path = $location.path();
     console.log('[main] path = ' + path);
+
+    $scope.ImagesView.doBrowserCheck();
 
     if (path === '/images') {
         $scope.ImagesView.loadImage();

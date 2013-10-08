@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="/static/css/vendor/bootstrap.css" />
     <link rel="stylesheet" href="/static/css/rigor.css" />
 
+    <script src="/static/js/vendor/browserdetect.js"></script>
+
     <!--script src="/static/js/vendor/jquery-1.9.1.js"></script-->
 
     <!--script src="/static/js/vendor/angular-1.0.6.js" type="text/javascript" charset="utf-8"></script-->
@@ -20,6 +22,20 @@
     ng-mouseup="ImagesView.handleMouseUp($event)"
     ng-mousemove="ImagesView.handleMouseMove($event)"
 >
+
+<div class="modal-backdrop" ng-show="ImagesView.isBrowserModalVisible"></div>
+<div id="myModal" class="modal" ng-show="ImagesView.isBrowserModalVisible">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="ImagesView.clickDismissBrowserWarning()">&times;</button>
+        <h3>Please use Google Chrome</h3>
+    </div>
+    <div class="modal-body">
+        <p>This web app only works correctly in Google Chrome.</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#" ng-click="ImagesView.clickDismissBrowserWarning()" class="btn btn-danger">Try anyway</a>
+    </div>
+</div>
 
 <div class="container-fluid">
 
