@@ -62,6 +62,7 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             // dX      // mouse movement amount
             // dY
             // originalBoundary // original word box before dragging started
+            // shiftKey    // was shift key down when initial mousedown happened
 
         doBrowserCheck: function() {
             var browserName = BrowserDetect.browser;
@@ -234,6 +235,7 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             dragState.dY = 0;
             dragState.originalBoundary = JSON.parse(JSON.stringify($scope.ImagesView.selected_word.boundary));
             dragState.kind = kind;
+            dragState.shiftKey = $event.shiftKey;
             $event.preventDefault();
         },
         handleMouseMove: function($event) {
@@ -248,10 +250,7 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             dragState.dX = $event.x - dragState.startX;
             dragState.dY = $event.y - dragState.startY;
 
-            var speed = 1.0;
-            if ($event.shiftKey) {
-                speed = 0.2;
-            }
+            var speed = dragState.shiftKey ? 0.2 : 1.0;
 
             // compute new position of this corner of the boundary box
             if (dragState.kind === 'corner') {
