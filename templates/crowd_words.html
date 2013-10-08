@@ -23,6 +23,7 @@
     ng-mousemove="WordsView.sushiHandleMouseMove($event)"
 >
 
+<!-- browser warning modal -->
 <div class="modal-backdrop" ng-show="WordsView.isBrowserModalVisible"></div>
 <div id="myModal" class="modal" ng-show="WordsView.isBrowserModalVisible">
     <div class="modal-header">
@@ -37,10 +38,27 @@
     </div>
 </div>
 
+<!-- help modal -->
+<div class="modal-backdrop" ng-show="WordsView.isHelpModalVisible"></div>
+<div id="myModal" class="modal" style="top: 5% !important; width: 620px !important;" ng-show="WordsView.isHelpModalVisible">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="WordsView.clickDismissHelp()">&times;</button>
+        <h3>Help</h3>
+    </div>
+    <div class="modal-body" style="max-height: 520px !important">
+        <p> 1. If needed, edit the word in the text box to match the image.</p>
+        <p> 2. Drag the blue and red handles to the left and right sides of each character: </p>
+        <p><img src="/static/img/slicer_example_02.png"></p>
+    </div>
+    <div class="modal-footer">
+        <a href="#" ng-click="WordsView.clickDismissHelp()" class="btn btn-primary">Ok</a>
+    </div>
+</div>
+
 <div class="container-fluid">
 
     <div class="row">
-        <div class="span9">
+        <div class="span7">
 
             <h2>
                 <a href="/" class="black-link">Word finder</a>
@@ -55,8 +73,11 @@
             </div>
 
         </div>
-        <div class="span3 text-right">
+        <div class="span5 text-right">
             <div>&nbsp;</div>
+            <div class="btn btn-large btn-success" ng-click="WordsView.clickShowHelp()"> Instructions </div>
+            &nbsp;
+            &nbsp;
             <div class="btn btn-large" ng-click="WordsView.clickSkipButton()" title="Come back to this word later"> Skip </div> 
             <div class="btn btn-large btn-primary" ng-click="WordsView.clickSaveButton()"> Done &rarr; </div> 
         </div>
@@ -76,11 +97,6 @@
             <i ng-if="WordsView.stats.words_raw !== 0">No words to slice right now.  Go review more words.</i>
         </div>
         <div class="span12" ng-switch-when="ready">
-            <div>
-                Make sure the word in the text box matches the image.
-                Then drag the blue and red handles to the left and right sides of each character.
-            </div>
-            <div>&nbsp;</div>
             <div><span class="muted"> Word (( WordsView.word.annotation_id )) from <a href="/images#/(( WordsView.word.image_id ))">image (( WordsView.word.image_id ))</a> </span></div>
             <form>
                 <input type="text" class="crowd-giant-input span4" ng-model="WordsView.word.model" />

@@ -49,6 +49,7 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
             // ],
         state: 'loading', // one of: loading, ready, saving (not implemented yet), empty (e.g. nothing to show)
         isBrowserModalVisible: false,
+        isHelpModalVisible: false,
         dragState: {}, // is {} when mouse button is up
             // charBeingDragged: {}
             // kind    // either 'start' or 'end'
@@ -67,6 +68,13 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
 
         clickDismissBrowserWarning: function() {
             $scope.WordsView.isBrowserModalVisible = false;
+        },
+
+        clickShowHelp: function() {
+            $scope.WordsView.isHelpModalVisible = true;
+        },
+        clickDismissHelp: function() {
+            $scope.WordsView.isHelpModalVisible = false;
         },
 
         loadStats: function(repeat) {
