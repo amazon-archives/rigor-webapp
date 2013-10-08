@@ -1,5 +1,115 @@
 "use strict";
 
+//================================================================================
+// preview
+
+
+function Point(x, y) {
+    this.x = Number(x);
+    this.y = Number(y);
+}
+
+var doCrop = function(boundary) {
+    // these points must be in counter-clockwise order
+    var p1 = new Point(boundary[0][0], boundary[0][1]);
+    var p2 = new Point(boundary[3][0], boundary[3][1]);
+    var p3 = new Point(boundary[2][0], boundary[2][1]);
+    var p4 = new Point(boundary[1][0], boundary[1][1]);
+
+    var src_canvas = document.getElementById('preview-canvas-source')
+        , src_ctx = src_canvas.getContext('2d')
+        , crop_canvas = document.getElementById('preview-canvas-crop')
+        , crop_ctx = crop_canvas.getContext('2d')
+        , img = document.getElementById('main-img')
+    ;
+
+    var im_w = img.offsetWidth, im_h = img.offsetHeight; // this should be set to crop region
+    console.log(im_w, im_h);
+    src_canvas.width = im_w; src_canvas.height = im_h;
+    //crop_canvas.width = im_w; crop_canvas.height = im_h;
+
+    src_ctx.drawImage(img, 0, 0);
+
+    var imageData = src_ctx.getImageData(0, 0, im_w, im_h)
+        , pImageData = imageData.data;
+
+    // from left-top corner, counter-clockwise, p1 -> p2 -> p3 -> p4
+    // map to new cord sytem
+    var crop_w = 250, crop_h = 100;
+    var cropImageData = crop_ctx.createImageData(crop_w, crop_h)
+        , pCropImageData = cropImageData.data;
+
+    for (var x = 0; x < crop_w; x++) {
+        for (var y = 0; y < crop_h; y++) {
+            var u = x / crop_w, v = y / crop_h; // x, y is coordinate in croped image
+            var x0 = 0, y0 = 0; // x0, y0 is coordinate in original image
+
+            var tmpx1 = (1 - u) * p1.x + u * p4.x
+                , tmpx2 = (1 - u) * p2.x + u * p3.x
+                , tmpy1 = (1 - u) * p1.y + u * p4.y
+                , tmpy2 = (1 - u) * p2.y + u * p3.y;
+            x0 = (1 - v) * tmpx1 + v * tmpx2;
+            y0 = (1 - v) * tmpy1 + v * tmpy2;
+            // console.log(x, y);
+            // console.log(x0, y0);
+    
+            var val = bilinear_unrolled(pImageData, x0, y0, im_w);
+            var i0 = 4 * (y0 * im_w + x0) // index for original image
+                , i1 =  4 * (y * crop_w + x)// index for crop image
+            ;
+            pCropImageData[i1] = val[0];
+            pCropImageData[i1+1] = val[1];
+            pCropImageData[i1+2] = val[2];
+            pCropImageData[i1+3] = 255; 
+        }
+    }
+    crop_ctx.putImageData(cropImageData, 0, 0);
+};
+// Ref: http://jsperf.com/pixel-interpolation/2
+function bilinear_unrolled(pixels, x, y, width) {
+    var percentX = x - (x ^ 0);
+    var percentX1 = 1.0 - percentX;
+    var percentY = y - (y ^ 0);
+    var percentY1 = 1.0 - percentY;
+    var fx4 = (x ^ 0) * 4;
+    var cx4 = fx4 + 4;
+    var fy4 = (y ^ 0) * 4;
+    var cy4wr = (fy4 + 4) * width;
+    var fy4wr = fy4 * width;
+    var cy4wg = cy4wr + 1;
+    var fy4wg = fy4wr + 1;
+    var cy4wb = cy4wr + 2;
+    var fy4wb = fy4wr + 2;
+    var top, bottom, r, g, b;
+
+    top = pixels[cy4wr + fx4] * percentX1 + pixels[cy4wr + cx4] * percentX;
+    bottom = pixels[fy4wr + fx4] * percentX1 + pixels[fy4wr + cx4] * percentX;
+    r = top * percentY + bottom * percentY1;
+
+    top = pixels[cy4wg + fx4] * percentX1 + pixels[cy4wg + cx4] * percentX;
+    bottom = pixels[fy4wg + fx4] * percentX1 + pixels[fy4wg + cx4] * percentX;
+    g = top * percentY + bottom * percentY1;
+
+    top = pixels[cy4wb + fx4] * percentX1 + pixels[cy4wb + cx4] * percentX;
+    bottom = pixels[fy4wb + fx4] * percentX1 + pixels[fy4wb + cx4] * percentX;
+    b = top * percentY + bottom * percentY1;
+
+    return [r, g, b];
+}
+
+function clip() {
+    var p1, p2, p3, p4;
+    p1 = new Point(document.getElementById('p1x').value, document.getElementById('p1y').value);
+    p2 = new Point(document.getElementById('p2x').value, document.getElementById('p2y').value);
+    p3 = new Point(document.getElementById('p3x').value, document.getElementById('p3y').value);
+    p4 = new Point(document.getElementById('p4x').value, document.getElementById('p4y').value);
+    main(p1, p2, p3, p4);
+}
+
+
+
+//================================================================================
+// angular
 
 var crowdImagesApp = angular.module('crowdImagesApp', ['ui']);
 
@@ -12,10 +122,7 @@ crowdImagesApp.config(function($interpolateProvider,$locationProvider) {
     $locationProvider.html5Mode(false);
 });
 
-
 crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $routeParams, $timeout, $location) {
-
-    //================================================================================
 
     $scope.ImagesView = {
         config: {
@@ -207,6 +314,8 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             console.log('[ImagesView.clickWord] ' + word['annotation_id']);
             console.log(word);
             $scope.ImagesView.selected_word = word;
+            // update preview
+            $timeout(function() {doCrop($scope.ImagesView.selected_word.boundary)}, 0);
         },
 
         clickToDeselect: function() {
@@ -294,6 +403,10 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             }
             console.log('[ImagesView.handleMouseUp]');
             console.log(event);
+
+            // update preview
+            $timeout(function() {doCrop($scope.ImagesView.selected_word.boundary)}, 0);
+
             $scope.ImagesView.dragState = {};
             $event.preventDefault();
         },

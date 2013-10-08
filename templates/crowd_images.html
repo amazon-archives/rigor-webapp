@@ -114,11 +114,20 @@
 
         <div class="row" ng-switch-when="ready">
             <div class="span12">
+                <div>
+                    <canvas id="preview-canvas-source" style="display:none;"></canvas>
+                    <canvas id="preview-canvas-crop" class="preview-canvas" width=250 height=100></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-switch-when="ready">
+            <div class="span12">
                 <div class="muted">
                     <span> Image (( ImagesView.image.image_id )) </span>
                     <span ng-show="ImagesView.anythingIsSelected()"> / <a href="/words#/(( ImagesView.selected_word.annotation_id ))">word (( ImagesView.selected_word.annotation_id ))</a></span>
                 </div>
                 <img
+                    id="main-img"
                     class="img-polaroid overlap allow-large-image"
                     ng-src="(( ImagesView.image.url ))"
                     />

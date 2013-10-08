@@ -34,6 +34,8 @@ body {
 
 .dotted {border: 1px dashed red;}
 
+.preview-canvas {border:1px solid #ccc;}
+
 .overlap {
     position: absolute;
 }
