@@ -55,6 +55,7 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
         selected_word: {},
         state: 'loading', // one of: loading, ready, saving (not implemented yet), empty (e.g. nothing to show)
         isBrowserModalVisible: false,
+        isHelpModalVisible: false,
         dragState: {}, // is {} when mouse button is up
             // iiBeingDragged
             // startX  // mouse down position
@@ -74,6 +75,13 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
 
         clickDismissBrowserWarning: function() {
             $scope.ImagesView.isBrowserModalVisible = false;
+        },
+
+        clickShowHelp: function() {
+            $scope.ImagesView.isHelpModalVisible = true;
+        },
+        clickDismissHelp: function() {
+            $scope.ImagesView.isHelpModalVisible = false;
         },
 
         loadStats: function(repeat) {

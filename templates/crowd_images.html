@@ -23,6 +23,7 @@
     ng-mousemove="ImagesView.handleMouseMove($event)"
 >
 
+<!-- browser warning modal -->
 <div class="modal-backdrop" ng-show="ImagesView.isBrowserModalVisible"></div>
 <div id="myModal" class="modal" ng-show="ImagesView.isBrowserModalVisible">
     <div class="modal-header">
@@ -37,10 +38,34 @@
     </div>
 </div>
 
+<!-- help modal -->
+<div class="modal-backdrop" ng-show="ImagesView.isHelpModalVisible"></div>
+<div id="myModal" class="modal" style="top: 5% !important; width: 620px !important;" ng-show="ImagesView.isHelpModalVisible">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="ImagesView.clickDismissHelp()">&times;</button>
+        <h3>Help</h3>
+    </div>
+    <div class="modal-body" style="max-height: 520px !important">
+        <p> Hold down <b>shift</b> to drag with greater precision. </p>
+        <p> If the word is small, use the browser to zoom the page. </p>
+        <p> The yellow handle should be in the top left of the word. </p>
+        <p> If there are missing or extra words, skip the image for now. </p>
+        <p> The box should include the rotation and perspective of the word, as if it was printed on the 
+            same surface as the text. </p>
+        <p> If the text is in italics, the box should <b>not</b> be slanted to match. </p>
+        <p><img src="/static/img/word_example_04.png"></p>
+        <p><img src="/static/img/word_example_02.png"></p>
+    </div>
+    <div class="modal-footer">
+        <a href="#" ng-click="ImagesView.clickDismissHelp()" class="btn btn-primary">Ok</a>
+    </div>
+</div>
+
+<!-- main page -->
 <div class="container-fluid">
 
     <div class="row">
-        <div class="span9">
+        <div class="span7">
 
             <h2>
                 <a href="/" class="black-link">Word finder</a>
@@ -55,9 +80,12 @@
             </div>
 
         </div>
-        <div class="span3">
+        <div class="span5 text-right">
             <div>&nbsp;</div>
-            <div class="btn btn-large" ng-click="ImagesView.clickSkipButton()" title="Come back to this image later"> Skip </div> 
+            <div class="btn btn-large btn-success" ng-click="ImagesView.clickShowHelp()"> Instructions </div>
+            &nbsp;
+            &nbsp;
+            <div class="btn btn-large"             ng-click="ImagesView.clickSkipButton()" title="Come back to this image later"> Skip </div> 
             <div class="btn btn-large btn-primary" ng-click="ImagesView.clickSaveButton()"> Done &rarr; </div> 
         </div>
     </div>
@@ -86,18 +114,6 @@
 
         <div class="row" ng-switch-when="ready">
             <div class="span12">
-                Drag the boxes to match the rotation and perspective of the words.
-                Hold down <b>shift</b> to drag with greater precision.
-                The grid inside a selected word is only there to help you see the rotation; it is not going to line up with specific characters.
-                If the word is small, use the browser to zoom the page.
-                The yellow handle should be in the upper corner of the beginning of the word.
-                If there are missing or extra words, skip the image.
-            </div>
-        </div>
-
-        <div class="row" ng-switch-when="ready">
-            <div class="span12">
-                <br>
                 <div class="muted">
                     <span> Image (( ImagesView.image.image_id )) </span>
                     <span ng-show="ImagesView.anythingIsSelected()"> / <a href="/words#/(( ImagesView.selected_word.annotation_id ))">word (( ImagesView.selected_word.annotation_id ))</a></span>
