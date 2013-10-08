@@ -16,6 +16,29 @@ var doCrop = function(boundary) {
     var p3 = new Point(boundary[2][0], boundary[2][1]);
     var p4 = new Point(boundary[1][0], boundary[1][1]);
 
+    // figure out resolution of canvas based on aspect ratio of boundary box
+    function dist(p1,p2) {
+        return Math.sqrt((p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y));
+    }
+    var MAX_WIDTH = 600;
+    var MAX_HEIGHT = 100;
+    var x_dist = dist(p1,p4);
+    var y_dist = dist(p1,p2);
+    console.log(x_dist,y_dist);
+    var aspect = x_dist / y_dist;
+    var aspect = Math.min(Math.max(aspect, 1/3), 10);
+    var x_res = MAX_WIDTH;
+    var y_res = x_res / aspect;
+    if (y_res > MAX_HEIGHT) {
+        // if word is too tall, scale down
+        x_res = x_res * MAX_HEIGHT / y_res;
+        y_res = MAX_HEIGHT
+    }
+    x_res = Math.floor(x_res);
+    y_res = Math.floor(y_res);
+    console.log(x_res,y_res);
+
+
     var src_canvas = document.getElementById('preview-canvas-source')
         , src_ctx = src_canvas.getContext('2d')
         , crop_canvas = document.getElementById('preview-canvas-crop')
@@ -24,9 +47,8 @@ var doCrop = function(boundary) {
     ;
 
     var im_w = img.offsetWidth, im_h = img.offsetHeight; // this should be set to crop region
-    console.log(im_w, im_h);
     src_canvas.width = im_w; src_canvas.height = im_h;
-    //crop_canvas.width = im_w; crop_canvas.height = im_h;
+    crop_canvas.width = x_res; crop_canvas.height = MAX_HEIGHT;
 
     src_ctx.drawImage(img, 0, 0);
 
@@ -35,7 +57,7 @@ var doCrop = function(boundary) {
 
     // from left-top corner, counter-clockwise, p1 -> p2 -> p3 -> p4
     // map to new cord sytem
-    var crop_w = 250, crop_h = 100;
+    var crop_w = x_res, crop_h = y_res;
     var cropImageData = crop_ctx.createImageData(crop_w, crop_h)
         , pCropImageData = cropImageData.data;
 
@@ -50,8 +72,6 @@ var doCrop = function(boundary) {
                 , tmpy2 = (1 - u) * p2.y + u * p3.y;
             x0 = (1 - v) * tmpx1 + v * tmpx2;
             y0 = (1 - v) * tmpy1 + v * tmpy2;
-            // console.log(x, y);
-            // console.log(x0, y0);
     
             var val = bilinear_unrolled(pImageData, x0, y0, im_w);
             var i0 = 4 * (y0 * im_w + x0) // index for original image
@@ -360,8 +380,6 @@ crowdImagesApp.controller('CrowdImagesController', function($scope, $http, $rout
             if (Object.keys($scope.ImagesView.dragState).length === 0) {
                 return;
             }
-            console.log('[ImagesView.handleMouseMove]');
-            console.log(event);
             var dragState = $scope.ImagesView.dragState;
             var ii = dragState.iiBeingDragged;
             dragState.dX = $event.x - dragState.startX;

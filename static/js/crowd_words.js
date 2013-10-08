@@ -179,8 +179,6 @@ crowdWordsApp.controller('CrowdWordsController', function($scope, $http, $routeP
              if (Object.keys($scope.WordsView.dragState).length === 0) {
                  return;
              }
-             console.log('[WordsView.sushiHandleMouseMove]');
-             console.log(event);
              var dragState = $scope.WordsView.dragState;
              var char = dragState.charBeingDragged;
              dragState.dX = $event.x - dragState.startX;
