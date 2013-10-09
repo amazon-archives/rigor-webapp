@@ -134,6 +134,17 @@ def getImage(image_id):
 
     words = backend.getImageAnnotations(config.CROWD_DB, id=image_id)
     words = [word for word in words if word['domain'] == 'text:word']
+
+    # sort words largest first for optimal clickability
+    def wordSize(word):
+        maxEdge = max(abs(word["boundary"][0][0] - word["boundary"][1][0]),
+                      abs(word["boundary"][0][1] - word["boundary"][1][1]),
+                      abs(word["boundary"][1][0] - word["boundary"][2][0]),
+                      abs(word["boundary"][1][1] - word["boundary"][2][1]))
+        return maxEdge
+    words.sort(key = wordSize) # smallest first
+    words.reverse()
+
     # rename 'id' to 'annotation_id'
     for word in words:
         word['annotation_id'] = word['id']
