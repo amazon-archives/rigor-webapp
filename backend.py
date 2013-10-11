@@ -685,6 +685,7 @@ def getCrowdWord(database_name, annotation_id):
         y_res = yRes,
         ext = destExt,
         chars = chars,
+        confidence = wordRow['confidence'],
     )
     return result
 
