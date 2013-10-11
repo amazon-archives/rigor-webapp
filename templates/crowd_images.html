@@ -129,7 +129,7 @@
             <div class="span12">
                 <div class="muted">
                     <span> Image (( ImagesView.image.image_id )) </span>
-                    <span ng-show="ImagesView.anythingIsSelected()"> / <a href="/words#/(( ImagesView.selected_word.annotation_id ))">word (( ImagesView.selected_word.annotation_id ))</a></span>
+                    <span ng-show="ImagesView.anythingIsSelected()"> / <a href="/words#/(( ImagesView.selected_word.annotation_id ))">word (( ImagesView.selected_word.annotation_id ))</a>.  State: (( {1:"raw", 2:"approved", 3:"sliced"}[ImagesView.selected_word.confidence] )) </span>
                 </div>
                 <img
                     id="main-img"
