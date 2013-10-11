@@ -20,7 +20,7 @@ import jsonschema
 # DB HELPERS
 
 def getDbConnection(database_name):
-    dbConnectionString = "host='ea' dbname='%s' user='%s' password='%s'"
+    dbConnectionString = "host='eru' dbname='%s' user='%s' password='%s'"
     return psycopg2.connect(dbConnectionString % (database_name, config.DB_USER, config.DB_PASSWORD))
 
 def getColumnNames(conn, table):
@@ -148,6 +148,20 @@ def fixQuotes(dbname):
     debugDetail('committing')
     conn.commit()
 
+def markImageBad(dbname, image_id):
+    debugDetail('resetting words in db %s, image %s to RAW confidence' % (dbname, image_id))
+    conn = getDbConnection(dbname)
+    sql = """
+        UPDATE annotation
+        SET confidence = %s
+        WHERE domain = 'text:word'
+        AND image_id = %s
+    """
+    values = [config.CROWD_WORD_CONF_RAW, image_id]
+    dbExecute(conn, sql, values)
+    conn.commit()
+
+
 #--------------------------------------------------------------------------------
 
 def helpAndQuit():
@@ -158,20 +172,26 @@ def helpAndQuit():
         help
         reset       wipe the chars and reset all words to "unreviewed" status
         fixquotes
+        mark-image-bad <image_id>
     """
     sys.exit(1)
 
 if __name__ == '__main__':
-    COMMANDS = ['-h','help','reset','fixquotes']
+    COMMANDS = ['-h','help','reset','fixquotes','mark-image-bad']
     args = sys.argv[1:]
-    if len(args) != 1:
+    if len(args) == 0:
         helpAndQuit()
-    command = args[0]
+    command, args = args[0], args[1:]
     if command == 'help' or command == '-h' or command not in COMMANDS:
         helpAndQuit()
     elif command == 'fixquotes':
         print yellow('----------------------------------------------------------------------\\')
         fixQuotes(config.CROWD_DB)
+        print yellow('----------------------------------------------------------------------/')
+    elif command == 'mark-image-bad':
+        print yellow('----------------------------------------------------------------------\\')
+        image_id = args[0]
+        markImageBad(config.CROWD_DB, image_id)
         print yellow('----------------------------------------------------------------------/')
     elif command == 'reset':
         print yellow('----------------------------------------------------------------------\\')
