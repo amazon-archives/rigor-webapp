@@ -2,25 +2,17 @@
 =========================================================
 CROWD EDITOR
 
-add documentation / examples
-
 SLICER
 better word slicer like ableton live
 slice: enforce character order
-
-    fix bug when words are inside other words (image 445, word 881)
-don't assume word boxes are axis-aligned
+un-reproducible bug
 
 WORD EDITOR
-    reposition corner handles
-    click to deselect word
-    skew handles
+handles off the edge
 add new word
-rotate word
-press shift during drag
+remove word
 zoom / scroll
-sort words big-to-small to avoid unclickable overlapped words
-
+rotate word
 
 =========================================================
 BROWSE
