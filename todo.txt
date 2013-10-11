@@ -2,6 +2,9 @@
 =========================================================
 CROWD EDITOR
 
+name
+logs
+
 SLICER
 better word slicer like ableton live
 slice: enforce character order
