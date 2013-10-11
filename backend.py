@@ -404,17 +404,39 @@ def getNextCrowdImage(database_name):
     """
     conn = getDbConnection(database_name)
     debugDetail('getting next image')
+#         SELECT * FROM annotation
+#         WHERE domain = 'text:word'
+#         AND confidence = %s
+#         ORDER BY RANDOM()
+#         LIMIT 1
+    # get a word which needs processing (based on its confidence)
+    # from the least recently seen image
+    # and return the image it belongs to
     sql = """
-        SELECT * FROM annotation
+        SELECT annotation.*, image.stamp as image_stamp
+        FROM annotation, image
         WHERE domain = 'text:word'
         AND confidence = %s
-        ORDER BY RANDOM()
+        AND annotation.image_id = image.id
+        ORDER BY image.stamp
         LIMIT 1
     """
     results = list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_RAW]))
     if not results:
         return None
-    return results[0]['image_id']
+    print pprint.pformat(results[0])
+    nextId = results[0]['image_id']
+
+    # bump image stamp
+    sql = """
+        UPDATE image
+        SET stamp = NOW()
+        WHERE id = %s
+    """
+    dbExecute(conn, sql, [nextId])
+    conn.commit()
+
+    return nextId
 
 def setConfidenceForAllWordsInImage(database_name, image_id, conf):
     conn = getDbConnection(database_name)
@@ -457,13 +479,26 @@ def getNextCrowdWord(database_name):
         SELECT id FROM annotation
         WHERE domain = 'text:word'
         AND confidence = %s
-        ORDER BY RANDOM()
+        ORDER BY stamp
         LIMIT 1
     """
+#         ORDER BY RANDOM()
     results = list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_APPROVED]))
     if not results:
         return None
-    return results[0]['id']
+    nextId = results[0]['id']
+
+    # bump word stamp
+    sql = """
+        UPDATE annotation
+        SET stamp = NOW()
+        WHERE id = %s
+    """
+    dbExecute(conn, sql, [nextId])
+    conn.commit()
+
+    return nextId
+
 
 def _getCharsInWord(database_name, annotation_id):
     """Return a list of row dicts for each char annotation that has a center inside the given boundary (from a word annotation)
