@@ -214,7 +214,7 @@ def searchImages(queryDict):
     if clauses:
         sql = sql + '\nWHERE ' + '\nAND '.join(clauses)
 
-    sql += '\nORDER BY stamp DESC'
+    sql += '\nORDER BY image.id ASC'
 
     max_count = min(int(queryDict.get('max_count', 50)), 50)
     sql += '\nLIMIT %s'
