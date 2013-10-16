@@ -425,6 +425,15 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         can_save: false,
         save_state: 'nothing', // nothing, can_save, saving, error
 
+        // comparison
+        //comparison_boxes_string: '[((12, 264), (12, 221), (137, 221), (137, 264)), ((139, 364), (139, 175), (534, 175), (534, 364))]',
+        comparison_boxes_string: '',
+        comparison_boxes: [],  // a list of annotation-style objects like:
+        /*
+           boundary: [ [] [] [] [] ],
+           color: "#f90",
+        */
+
         enter: function(params) {
             // params should be {database_name: 'rigor', image_id: 2423}
             console.log('[DetailView.enter] params = ' + JSON.stringify(params));
@@ -846,6 +855,20 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         $scope.DetailView.selected_annotation._edit_state = 'edited';
         $scope.DetailView.can_save = true;
         $scope.DetailView.save_state = 'can_save';
+    });
+
+    $scope.$watch('DetailView.comparison_boxes_string', function(newValue,oldValue) {
+        var input_boxes = JSON.parse(newValue.replace(/\(/g, '[').replace(/\)/g, ']'));
+        $scope.DetailView.comparison_boxes = [];
+        for (var ii = 0; ii < input_boxes.length; ii++) {
+            // todo later: do an ajax here to python backend to get real colors from comparison
+            var output_box = {
+                boundary: input_boxes[ii],
+                fill: "hsla(300,100%,45%,0.25)",
+                stroke: "hsla(300,100%,80%,0.8)",
+            }
+            $scope.DetailView.comparison_boxes.push(output_box);
+        }
     });
 
     //--------------------------------------------------------------------------------

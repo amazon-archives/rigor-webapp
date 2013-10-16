@@ -59,6 +59,11 @@ body {
     fill: hsla(25,100%,45%,0.25);
     stroke: hsla(25,100%,80%,0.8);
 }
+.svg-polygon-comparison {
+    stroke-width: 2;
+    fill: hsla(250,100%,45%,0.25);
+    stroke: hsla(250,100%,80%,0.8);
+}
 .svg-polygon-lineorder {
     stroke-width: 2;
 }

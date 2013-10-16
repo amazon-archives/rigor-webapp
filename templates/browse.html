@@ -277,6 +277,14 @@
                     </div>
                     <!-- end save button -->
 
+
+                    <!-- comparison -->
+                    <div><span class="lead">Comparison</span></div>
+                    <div class="well well-small">
+                        <textarea id="model-form" type="text" class="rigor-sidebar-form-element2" ng-model="DetailView.comparison_boxes_string"></textarea>
+                    </div>
+                    <!-- end comparison -->
+
                 </div>
                 <!-- end sidebar -->
 
@@ -315,6 +323,17 @@
                                 ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:char')"
                                 ng-attr-points="(( DetailView.annotationToSvgPoints(annotation) ))"
                                 ng-click="DetailView.clickAnnotation(annotation)"
+                            />
+
+                            <!-- comparison polygons -->
+                            <polygon
+                                class="svg-polygon-comparison"
+                                style="
+                                    fill: (( annotation.fill ));
+                                    stroke: (( annotation.stroke ));
+                                "
+                                ng-repeat="annotation in DetailView.comparison_boxes"
+                                ng-attr-points="(( DetailView.annotationToSvgPoints(annotation) ))"
                             />
 
                             <!--
