@@ -116,7 +116,7 @@ def _imageDictDbToApi(conn, d):
     tags = []
     for row in dbQueryDict(conn, sql, values):
         tags.append(row['name'])
-    d2['tags'] = tags
+    d2['tags'] = sorted(list(set(tags)))
 
     # convert timestamp from datetime to unix time
     d2['stamp'] = dbTimestampToUTCTime(d['stamp'])
