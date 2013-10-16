@@ -858,16 +858,20 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     });
 
     $scope.$watch('DetailView.comparison_boxes_string', function(newValue,oldValue) {
-        var input_boxes = JSON.parse(newValue.replace(/\(/g, '[').replace(/\)/g, ']'));
-        $scope.DetailView.comparison_boxes = [];
-        for (var ii = 0; ii < input_boxes.length; ii++) {
-            // todo later: do an ajax here to python backend to get real colors from comparison
-            var output_box = {
-                boundary: input_boxes[ii],
-                fill: "hsla(300,100%,45%,0.25)",
-                stroke: "hsla(300,100%,80%,0.8)",
+        try {
+            var input_boxes = JSON.parse(newValue.replace(/\(/g, '[').replace(/\)/g, ']'));
+            $scope.DetailView.comparison_boxes = [];
+            for (var ii = 0; ii < input_boxes.length; ii++) {
+                // todo later: do an ajax here to python backend to get real colors from comparison
+                var output_box = {
+                    boundary: input_boxes[ii],
+                    fill: "hsla(300,100%,45%,0.25)",
+                    stroke: "hsla(300,100%,80%,0.8)",
+                }
+                $scope.DetailView.comparison_boxes.push(output_box);
             }
-            $scope.DetailView.comparison_boxes.push(output_box);
+        } catch(err) {
+                $scope.DetailView.comparison_boxes = [];
         }
     });
 
