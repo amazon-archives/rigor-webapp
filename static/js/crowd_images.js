@@ -1,8 +1,7 @@
 "use strict";
 
 //================================================================================
-// preview
-
+// rectified preview image: bilinear interpolation
 
 function Point(x, y) {
     this.x = Number(x);
