@@ -13,7 +13,6 @@ import psycopg2
 
 from utils import *
 import config
-import jsonschema
 
 
 #--------------------------------------------------------------------------------
@@ -61,7 +60,6 @@ def dbExecute(conn, sql, values=()):
     debugSQL(sql)
     debugSQL('... %s' % str(values))
     cursor = conn.cursor()
-#     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(sql, values)
     return cursor.rowcount
 
@@ -106,16 +104,6 @@ def resetCrowdDb(dbname):
     """
     values = [config.CROWD_WORD_CONF_RAW]
     dbExecute(conn, sql, values)
-
-#     for word_id in [1180, 1175, 1183, 1177]:
-#         debugDetail('  setting one word confidence to "approved" (%s)' % config.CROWD_WORD_CONF_APPROVED)
-#         sql = """
-#             UPDATE annotation
-#             SET confidence=%s
-#             WHERE id=%s
-#         """
-#         values = [config.CROWD_WORD_CONF_APPROVED, word_id]
-#         dbExecute(conn, sql, values)
 
     debugDetail('  committing')
     conn.commit()

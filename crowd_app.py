@@ -181,24 +181,6 @@ def saveImage():
     backend.updateWordBoundaries(config.CROWD_DB, imageData['words'])
     return 'ok'
 
-# @app.route('/image/save/<image_id>', methods=['POST'])
-# @use_basic_auth
-# def saveImage(image_id):
-#     """Save an image by bumping the confidence on all its words.
-#     """
-#     simulateSlow()
-#     backend.setConfidenceForAllWordsInImage(config.CROWD_DB, image_id, config.CROWD_WORD_CONF_APPROVED)
-#     return 'ok'
-# 
-# @app.route('/image/reject/<image_id>', methods=['POST'])
-# @use_basic_auth
-# def rejectImage(image_id):
-#     """Reject an image by changing the confidence on all its words.
-#     """
-#     simulateSlow()
-#     backend.setConfidenceForAllWordsInImage(config.CROWD_DB, image_id, config.CROWD_WORD_CONF_REJECTED)
-#     return 'ok'
-
 #===========================================
 # WORD SLICER
 

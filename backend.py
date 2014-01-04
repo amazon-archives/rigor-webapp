@@ -79,7 +79,6 @@ def dbExecute(conn, sql, values=()):
     debugSQL(sql)
     debugSQL('... %s' % str(values))
     cursor = conn.cursor()
-#     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(sql, values)
     return cursor.rowcount
 
@@ -332,13 +331,14 @@ def getAnnotationTags(database_name, id):
     return tags
 
 def saveAnnotations(database_name, annotations):
-    # given a list of annotations as json objects / dicts,
-    # apply the changes listed in their '_edit_state' fields.
-    # note that the '_edit_state' field must be added on on the javascript side.
-    # possible values:
-    #   edited -- apply the new values of 'model' and 'confidence'
-    #   new -- add the annotation 
-    #   deleted -- remove the annotation
+    """Given a list of annotations as json objects / dicts,
+    apply the changes listed in their '_edit_state' fields.
+    Note that the '_edit_state' field must be added on on the javascript side.
+    Possible values:
+       edited -- apply the new values of 'model' and 'confidence'
+       new -- add the annotation 
+       deleted -- remove the annotation
+    """
     conn = getDbConnection(database_name)
     debugDetail('saving %s annotations to %s' % (len(annotations), database_name))
     sql_lines = []
@@ -404,11 +404,6 @@ def getNextCrowdImage(database_name):
     """
     conn = getDbConnection(database_name)
     debugDetail('getting next image')
-#         SELECT * FROM annotation
-#         WHERE domain = 'text:word'
-#         AND confidence = %s
-#         ORDER BY RANDOM()
-#         LIMIT 1
     # get a word which needs processing (based on its confidence)
     # from the least recently seen image
     # and return the image it belongs to
@@ -482,7 +477,6 @@ def getNextCrowdWord(database_name):
         ORDER BY stamp
         LIMIT 1
     """
-#         ORDER BY RANDOM()
     results = list(dbQueryDict(conn, sql, [config.CROWD_WORD_CONF_APPROVED]))
     if not results:
         return None
@@ -507,10 +501,6 @@ def _getCharsInWord(database_name, annotation_id):
     conn = getDbConnection(database_name)
     debugDetail('getting chars in word %s' % (annotation_id))
 
-#     # old way
-#     sql = """ SELECT * FROM annotation WHERE domain = 'text:char' AND image_id = %s; """
-#     values = [image_id]
-
     # new way
     sql = """
         SELECT * FROM annotation
@@ -531,13 +521,6 @@ def _getCharsInWord(database_name, annotation_id):
         center_x = sum([x for (x,y) in charRow['boundary']]) / 4
         center_y = sum([y for (x,y) in charRow['boundary']]) / 4
         X,Y = 0,1
-        # skip this check
-#         # TODO: this assumes axis-aligned word bounding boxes
-#         # replace this with better math to check if center is inside the boundary polygon
-#         if not (word_boundary[0][X] < center_x < word_boundary[1][X]): continue
-#         if not (word_boundary[3][X] < center_x < word_boundary[2][X]): continue
-#         if not (word_boundary[1][Y] < center_y < word_boundary[2][Y]): continue
-#         if not (word_boundary[0][Y] < center_y < word_boundary[3][Y]): continue
         goodChars.append(charRow)
     debugDetail('  %s chars found in boundary region' % len(goodChars))
     return goodChars
@@ -778,49 +761,5 @@ def saveCrowdWord(database_name, word_data):
 
     debugDetail('committing')
     conn.commit()
-
-#--------------------------------------------------------------------------------
-# MAIN
-
-# connect upon importing this module
-# this is messy and should be cleaned up later
-
-if __name__ == '__main__':
-
-    pass
-    #     print getCrowdWordImage('icdar2003', 1)
-
-#     print _getCharsInWord('icdar2003sushi', 826, ((108, 270), (292, 270), (292, 341), (108, 341)))
-
-#     print getImage(id=23731)
-#     print getImage(database_name='rigor',locator='01bb6939-ac7f-4dbf-84c9-8136eaa3f6ea');
-
-#     print yellow(pprint.pformat(getImage(database_name='rigor',locator='afa567f9-f55b-4283-a1ea-d5682637ed4e')))
-#     print cyan(pprint.pformat(getImageAnnotations(database_name='rigor',locator='afa567f9-f55b-4283-a1ea-d5682637ed4e')))
-
-#     print yellow(pprint.pformat(getImage(database_name='rigor', locator='0571f3fe-cb88-4818-b213-36f08b48f132')))
-#     print cyan(pprint.pformat(getImageAnnotations(database_name='rigor', locator='0571f3fe-cb88-4818-b213-36f08b48f132')))
-
-#     print getTags('blindsight')
-
-#     debugMain('testing searchImages')
-#     full_count, images = searchImages({
-#         'database_name': 'rigor',
-#         'has_tags': ['money'],
-#         'exclude_tags': ['testdata'],
-#         'max_count': 2,
-#         'page': 0,
-#     })
-#     debugDetail('full count = %s' % repr(full_count))
-#     for image in images:
-#         debugDetail(pprint.pformat(image))
-
-#     debugMain('databases:')
-#     for db in getDatabaseNames():
-#         debugDetail(db)
-# 
-
-
-
 
 #
