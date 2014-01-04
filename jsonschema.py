@@ -3,6 +3,15 @@
 from __future__ import division
 import testlib
 
+"""Tools to validate JSON-style objects against a schema.
+
+A schema is a dict containing the keys you want your actual data to have.
+The values can either be types (int, str, ...) or instances of those types (123, "hello", ...).
+When instances are supplied ("hello"), they will allow a match against any other instance of
+the same type.
+Dictionaries can be nested.
+Lists are treated as opaque and their length and contents don't matter.
+"""
 
 #--------------------------------------------------------------------------------
 
@@ -151,6 +160,9 @@ if __name__ == '__main__':
 
     # special-cased type mismatches which are ok
     testlib.eq(   validate(dict(a=1.0), dict(a=1)), True, 'int is ok where float is expected'   )
+
+    # check matching type but different specific values
+    testlib.eq(   validate(dict(a=1), dict(a=2)), True, 'matching type but different specific values'   )
 
     # wrong type
     testlib.expectException(    validate, [],
