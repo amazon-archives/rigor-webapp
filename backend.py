@@ -612,7 +612,7 @@ def getCrowdWord(database_name, annotation_id):
     outPath = config.CROWD_LOCAL_CROP_IMG_PATH % (database_name, annotation_id, destExt)
     # http://www.imagemagick.org/Usage/distorts/#perspective
     cmd = ["convert", path, '-matte', '-virtual-pixel', 'black',
-           '-extent', '%sx%s' % (max(imageRow['x_resolution'],xRes),max(imageRow['y_resolution'],yRes)),
+           '-extent', '%sx%s' % (int(max(imageRow['x_resolution'],xRes)),int(max(imageRow['y_resolution'],yRes))),
            '-distort', 'BilinearReverse',
            coordString,
            '-crop', '%sx%s+0+0' % (xRes,yRes),
