@@ -11,6 +11,12 @@ Important files:
     static/js/*.js  # AngularJS code for the client side
     templates/*.html # AngularJS templates for the client side
 
+Configuration
+----------------------
+
+* Copy `config.py.example` to `config.py`.
+* In `config.py`, edit the `DB_HOST`, `DB_USER`, and `DB_PASSWORD` variables to match your Rigor database.  Also adjust `INITIAL_DB_NAME` and `CROWD_DB` to the names of individual Rigor databases you want the web interface to show.
+
 Rigor database browser
 ----------------------
 
@@ -32,7 +38,7 @@ Allows a crowd of people to adjust the bounding boxes of words and characters.
 Dependencies
 ------------
 
-See requirements.txt for a complete list
+(See requirements.txt for a complete list)
 
 * Flask
 * ImageMagick

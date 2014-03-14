@@ -1,9 +1,10 @@
 
+DB_HOST = 'xxxxxxxx'
 DB_USER = 'xxxxxxxx'
 DB_PASSWORD = 'xxxxxxxx'
 
 # database names to ignore
-DB_BLACKLIST = ['dave', 'postgres', 'template0', 'template1']
+DB_BLACKLIST = ['ignore_this_db', 'also_ignore_this_db']
 
 # which database to default to on first pageload
 INITIAL_DB_NAME = 'blindsight'
@@ -12,7 +13,7 @@ FAKE_SLOW_DELAY = 0
 
 # crowd stuff
 CROWD_FAKE_SLOW_DELAY = 0
-CROWD_DB = 'icdar2013test2crowd'
+CROWD_DB = 'blindsight'
 CROWD_MAX_WORD_HEIGHT = 320
 CROWD_WORD_WIDTH = 600
 CROWD_WORD_CONF_REJECTED = -1

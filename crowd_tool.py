@@ -19,8 +19,8 @@ import config
 # DB HELPERS
 
 def getDbConnection(database_name):
-    dbConnectionString = "host='eru' dbname='%s' user='%s' password='%s'"
-    return psycopg2.connect(dbConnectionString % (database_name, config.DB_USER, config.DB_PASSWORD))
+    dbConnectionString = "host='%s' dbname='%s' user='%s' password='%s'"
+    return psycopg2.connect(dbConnectionString % (config.DB_HOST, database_name, config.DB_USER, config.DB_PASSWORD))
 
 def getColumnNames(conn, table):
     """Return a list of column names for the given table.
