@@ -34,17 +34,6 @@ assert isinstance(tags[0], basestring)
 assert sorted(tags)[0] == 'align=center'
 
 
-debugMain('getImage by id')
-ID = 1
-imgDict = backend.getImage(DBNAME, id=ID)
-assert isinstance(imgDict, dict)
-assert 'id' in imgDict
-assert imgDict['id'] == ID
-assert 'tags' in imgDict
-assert len(imgDict['tags']) > 0
-assert isinstance(imgDict['tags'][0], basestring)
-
-
 debugMain('searchImages')
 queryDict = dict(
     database_name = DBNAME,
@@ -59,6 +48,28 @@ assert isinstance(results[0], dict)
 assert 'tags' in results[0]
 
 
+debugMain('getImage by id (int)')
+ID = 1
+imgDict = backend.getImage(DBNAME, id=ID)
+assert isinstance(imgDict, dict)
+assert 'id' in imgDict
+assert imgDict['id'] == int(ID)
+assert 'tags' in imgDict
+assert len(imgDict['tags']) > 0
+assert isinstance(imgDict['tags'][0], basestring)
+
+
+debugMain('getImage by id (unicode)')
+ID = u'1'
+imgDict = backend.getImage(DBNAME, id=ID)
+assert isinstance(imgDict, dict)
+assert 'id' in imgDict
+assert imgDict['id'] == int(ID)
+assert 'tags' in imgDict
+assert len(imgDict['tags']) > 0
+assert isinstance(imgDict['tags'][0], basestring)
+
+
 debugMain('getImage by locator')
 LOCATOR = '4075c8de-fb2e-41e8-831b-ea4bdcb5a6a3'
 imgDict = backend.getImage(DBNAME, locator=LOCATOR)
@@ -70,8 +81,15 @@ assert len(imgDict['tags']) > 0
 assert isinstance(imgDict['tags'][0], basestring)
 
 
-debugMain('getImageAnnotations')
+debugMain('getImageAnnotations (int)')
 ID = 1
+annotations = backend.getImageAnnotations(DBNAME, ID)
+assert isinstance(annotations, list)
+assert isinstance(annotations[0], dict)
+assert 'domain' in annotations[0]
+
+debugMain('getImageAnnotations (unicode)')
+ID = u'1'
 annotations = backend.getImageAnnotations(DBNAME, ID)
 assert isinstance(annotations, list)
 assert isinstance(annotations[0], dict)

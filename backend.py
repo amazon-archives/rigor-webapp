@@ -7,13 +7,30 @@ import calendar
 import os
 import tempfile
 import subprocess
-
-import psycopg2
+import uuid
 
 from utils import *
 import config
 import jsonschema
 
+# use rigor's database layer instead of hitting the db directly?
+if config.USE_RIGOR_DB_LAYER:
+    import rigor.database
+else:
+    import psycopg2
+
+# Things to fix when porting to rigor's database layer using pg8000:
+#   - sql values must be more strict:
+#       - uuids have to be python uuid.UUID objects instead of strings
+#       - if the database column is an int, must provide a python int and not a string
+#   - dbExecute used to be able to run multiple sql commands at once, separated by ';'.
+#      this is no longer allowed; must issue separate dbExecute calls for each sql command.
+#   - dbExecute now runs commit() automatically.
+#
+# The browse-related portion of this file has been ported.
+# Crowd-related functions have not been touched yet.
+#
+# Only tested with rigor running on pg8000, not rigor running psycopg2.
 
 #--------------------------------------------------------------------------------
 # EXCEPTIONS
@@ -34,20 +51,17 @@ ANNOTATION_DOMAINS = """
 
 """.strip().split()
 
+
 #--------------------------------------------------------------------------------
 # DB HELPERS
 
 def getDbConnection(database_name):
-    dbConnectionString = "host='%s' dbname='%s' user='%s' password='%s'"
-    return psycopg2.connect(dbConnectionString % (config.DB_HOST, database_name, config.DB_USER, config.DB_PASSWORD))
-
-def getColumnNames(conn, table):
-    """Return a list of column names for the given table.
-    """
-    sql = "SELECT * FROM %s LIMIT 1;" % table
-    cursor = conn.cursor()
-    cursor.execute(sql)
-    return [column[0] for column in cursor.description]
+    if config.USE_RIGOR_DB_LAYER:
+        db = rigor.database.Database.instance(database_name)
+        return db
+    else:
+        dbConnectionString = "host='%s' dbname='%s' user='%s' password='%s'"
+        return psycopg2.connect(dbConnectionString % (config.DB_HOST, database_name, config.DB_USER, config.DB_PASSWORD))
 
 def dbQueryDict(conn, sql, values=()):
     """Run the sql and yield the results as dictionaries
@@ -55,10 +69,21 @@ def dbQueryDict(conn, sql, values=()):
     """
     debugSQL(sql)
     debugSQL('... %s' % str(values))
-    cursor = conn.cursor()
-    cursor.arraysize = 2000
-    cursor.execute(sql, values)
-    def iterator():
+    if config.USE_RIGOR_DB_LAYER:
+        with conn.get_cursor() as cursor:
+            cursor.execute(sql, values)
+            for row in cursor.fetch_all():
+                rowdict = dict(row.iteritems())
+                # convert UUID instances to strings
+                for k,v in rowdict.items():
+                    if isinstance(v, uuid.UUID):
+                        rowdict[k] = str(v)
+                yield rowdict
+    else:
+        cursor = conn.cursor()
+        cursor.arraysize = 2000
+        cursor.execute(sql, values)
+
         columnNames = None
         while True:
             rows = cursor.fetchmany(size=2000)
@@ -69,7 +94,6 @@ def dbQueryDict(conn, sql, values=()):
             for row in rows:
                 d = dict(zip(columnNames, row))
                 yield d
-    return iterator()
 
 def dbExecute(conn, sql, values=()):
     """Run the sql and return the number of rows affected.
@@ -78,19 +102,29 @@ def dbExecute(conn, sql, values=()):
     """
     debugSQL(sql)
     debugSQL('... %s' % str(values))
-    cursor = conn.cursor()
-    cursor.execute(sql, values)
-    return cursor.rowcount
+    if config.USE_RIGOR_DB_LAYER:
+        with conn.get_cursor() as cursor:
+            cursor.execute(sql, values)
+            return cursor.rowcount
+    else:
+        cursor = conn.cursor()
+        cursor.execute(sql, values)
+        conn.commit()
+        return cursor.rowcount
 
 def dbInsertAndGetId(conn, sql, values=()):
     """Run the sql (which is assumed to be an "INSERT ... RETURNING id;") and return the id of the new row.
     You should call conn.commit() after this.
     """
-    debugSQL(sql)
-    debugSQL('... %s' % str(values))
-    cursor = conn.cursor()
-    cursor.execute(sql, values)
-    return cursor.fetchone()[0]
+    if config.USE_RIGOR_DB_LAYER:
+        # TODO
+        raise "this function has not been ported yet to use the rigor db layer."
+    else:
+        debugSQL(sql)
+        debugSQL('... %s' % str(values))
+        cursor = conn.cursor()
+        cursor.execute(sql, values)
+        return cursor.fetchone()[0]
 
 def dbTimestampToUTCTime(databaseTime):
     """Convert a time from the database to a unix seconds-since-epoch time
@@ -111,7 +145,7 @@ def _imageDictDbToApi(conn, d):
     # add tags
     debugDetail('getting tags for image %s' % d['id'])
     sql = """SELECT * FROM tag WHERE image_id = %s;"""
-    values = (d['id'],)
+    values = (int(d['id']),)
     tags = []
     for row in dbQueryDict(conn, sql, values):
         tags.append(row['name'])
@@ -241,7 +275,7 @@ def searchImages(queryDict):
 
     # add ii
     for ii, r in enumerate(results):
-        r['ii'] = ii + queryDict['page'] * queryDict['max_count']
+        r['ii'] = ii + queryDict['page'] * max_count
 
     # fill in tags, add image urls
     results = [_imageDictDbToApi(conn, r) for r in results]
@@ -258,12 +292,17 @@ def getImage(database_name, id=None, locator=None):
         sql = """
             SELECT * FROM image WHERE id = %s;
         """
-        values = ( id, )
+        values = (int(id), )
     elif locator:
         sql = """
             SELECT * FROM image WHERE locator = %s;
         """
-        values = ( locator, )
+        if config.USE_RIGOR_DB_LAYER:
+            # TODO: this should really depend on whether rigor is using
+            #  pg8000 or psycopg2
+            values = (uuid.UUID(locator), )
+        else:
+            values = (locator, )
 
     conn = getDbConnection(database_name)
     rows = list(dbQueryDict(conn, sql, values))
@@ -280,7 +319,7 @@ def getImageAnnotations(database_name, id):
     sql = """
         SELECT * FROM image WHERE id = %s;
     """
-    values = ( id, )
+    values = (int(id), )
 
     conn = getDbConnection(database_name)
     rows = list(dbQueryDict(conn, sql, values))
@@ -290,8 +329,6 @@ def getImageAnnotations(database_name, id):
         id = rows[0]['id']
     else:
         raise BackendError
-    print id
-
 
     # then look up annotations
     sql = """
@@ -300,7 +337,7 @@ def getImageAnnotations(database_name, id):
         ORDER BY id;
     """
     # TODO: add textcluster, blur, money domains
-    values = ( id, )
+    values = (int(id), )
 
     rows = list(dbQueryDict(conn, sql, values))
     # only keep the domains we care about
@@ -324,7 +361,7 @@ def getAnnotationTags(database_name, id):
     conn = getDbConnection(database_name)
     debugDetail('getting tags for annotation %s' % id)
     sql = """SELECT * FROM annotation_tag WHERE annotation_id = %s;"""
-    values = (id,)
+    values = (int(id),)
     tags = []
     for row in dbQueryDict(conn, sql, values):
         tags.append(row['name'])
@@ -347,25 +384,20 @@ def saveAnnotations(database_name, annotations):
         debugDetail('    annotation %s: %s'%(annotation['id'], annotation['_edit_state']))
         if annotation['_edit_state'] == 'edited':
             sql_lines.append(""" UPDATE annotation SET model = %s WHERE id = %s; """)
-            sql_values.append(annotation['model'])
-            sql_values.append(annotation['id'])
+            sql_values.append((annotation['model'], int(annotation['id'])))
             sql_lines.append(""" UPDATE annotation SET confidence = %s WHERE id = %s; """)
-            sql_values.append(annotation['confidence'])
-            sql_values.append(annotation['id'])
+            sql_values.append((annotation['confidence'], int(annotation['id'])))
         elif annotation['_edit_state'] == 'deleted':
             sql_lines.append(""" DELETE FROM annotation_tag WHERE annotation_id = %s; """)
-            sql_values.append(annotation['id'])
+            sql_values.append((int(annotation['id'], )))
             sql_lines.append(""" DELETE FROM annotation WHERE id = %s; """)
-            sql_values.append(annotation['id'])
+            sql_values.append((int(annotation['id'], )))
         elif annotation['_edit_state'] == 'new':
             debugDetail('NOT IMPLEMENTED YET: add new annotation')
         # TODO: check for _edit_state = 'deleted' and 'new'
     if sql_lines:
-        sql_lines = '\n'.join(sql_lines)
-        debugSQL(sql_lines)
-        debugSQL(sql_values)
-        dbExecute(conn, sql_lines, values=sql_values)
-        conn.commit()
+        for l,v in zip(sql_lines, sql_values):
+            dbExecute(conn, l, values=v)
 
 #--------------------------------------------------------------------------------
 # CROWD
@@ -441,7 +473,7 @@ def setConfidenceForAllWordsInImage(database_name, image_id, conf):
         SET confidence = %s
         WHERE image_id = %s;
     """
-    values = [conf, image_id]
+    values = [conf, int(image_id)]
     dbExecute(conn, sql, values)
     conn.commit()
 
@@ -457,7 +489,7 @@ def updateWordBoundaries(database_name, words):
             WHERE id = %s;
         """
         boundary = repr(word['boundary']).replace('[','(').replace(']',')')
-        values = [boundary, config.CROWD_WORD_CONF_APPROVED, word['annotation_id']]
+        values = [boundary, config.CROWD_WORD_CONF_APPROVED, int(word['annotation_id'])]
         dbExecute(conn, sql, values)
     conn.commit()
 
@@ -693,12 +725,12 @@ def saveCrowdWord(database_name, word_data):
 
     # bump word confidence
     sql = """ UPDATE annotation SET confidence = %s WHERE id = %s; """
-    values = [config.CROWD_WORD_CONF_SLICED, word_data['annotation_id']]
+    values = [config.CROWD_WORD_CONF_SLICED, int(word_data['annotation_id'])]
     dbExecute(conn, sql, values)
 
     # update word model
     sql = """ UPDATE annotation SET model = %s WHERE id = %s; """
-    values = [word_data['model'], word_data['annotation_id']]
+    values = [word_data['model'], int(word_data['annotation_id'])]
     dbExecute(conn, sql, values)
 
     # delete existing char annotations for this word inside the boundary
@@ -718,7 +750,7 @@ def saveCrowdWord(database_name, word_data):
             WHERE domain='text:char'
             AND id = %s;
         """
-        values = [char['id']]
+        values = [int(char['id'])]
         dbExecute(conn, sql, values)
 
     def _pointInterp(a, b, pct):
@@ -749,14 +781,14 @@ def saveCrowdWord(database_name, word_data):
             VALUES (%s, NOW(), %s, %s, %s, %s)
             RETURNING id;
         """
-        values = [word_data['image_id'], _makePolygonString(charBoundary), 'text:char', char['model'], config.CROWD_CHAR_CONF_SLICED]
+        values = [int(word_data['image_id']), _makePolygonString(charBoundary), 'text:char', char['model'], config.CROWD_CHAR_CONF_SLICED]
         newCharId = dbInsertAndGetId(conn, sql, values)
         debugDetail('new id = %s' % newCharId)
         sql = """
             INSERT INTO annotation_tag(annotation_id, name)
             VALUES (%s,%s);
         """
-        values = [newCharId, config.CROWD_PARENT_ANNOTATION_TAG_PREFIX + str(word_data['annotation_id'])]
+        values = [int(newCharId), config.CROWD_PARENT_ANNOTATION_TAG_PREFIX + str(word_data['annotation_id'])]
         dbExecute(conn, sql, values)
 
     debugDetail('committing')

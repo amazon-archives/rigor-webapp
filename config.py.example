@@ -20,6 +20,8 @@ HTTP_PW = 'password'
 
 FLASK_SECRET_KEY = 'p2932f2p49fj2p49fj2p49fj2p49jf348q'
 
+USE_RIGOR_DB_LAYER = False
+
 # crowd stuff
 CROWD_FAKE_SLOW_DELAY = 0
 CROWD_DB = 'blindsight'
