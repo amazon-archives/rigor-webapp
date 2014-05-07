@@ -11,6 +11,13 @@ INITIAL_DB_NAME = 'blindsight'
 
 FAKE_SLOW_DELAY = 0
 
+IMAGE_PATH = '/data/rigor/images/%s/%s/%s.%s'
+THUMB_PATH = '/data/rigor/thumbnails/64x64/%s/%s/%s.%s'
+
+USE_HTTP_AUTH = False
+HTTP_USER = 'user'
+HTTP_PW = 'password'
+
 # crowd stuff
 CROWD_FAKE_SLOW_DELAY = 0
 CROWD_DB = 'blindsight'

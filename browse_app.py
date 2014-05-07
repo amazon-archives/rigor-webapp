@@ -27,7 +27,7 @@ def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return username == 'blindsight' and password == 'blindsight!!!!!'
+    return username == config.HTTP_USER and password == config.HTTP_PW
 
 def authenticate():
     """Sends a 401 response that enables basic auth"""
@@ -40,9 +40,10 @@ def authenticate():
 def use_basic_auth(f):
     @functools.wraps(f)
     def decorated(*args, **kwargs):
-        auth = request.authorization
-        if not auth or not check_auth(auth.username, auth.password):
-            return authenticate()
+        if config.USE_HTTP_AUTH:
+            auth = request.authorization
+            if not auth or not check_auth(auth.username, auth.password):
+                return authenticate()
         return f(*args, **kwargs)
     return decorated
 
@@ -78,7 +79,7 @@ def tagTest():
 def getThumbFile(locator, ext):
     locator = locator.replace('-','').replace('/','').replace('..','')
     ext = ext.replace('/','').replace('..','')
-    path = '/data/rigor/thumbnails/200x200/%s/%s/%s.%s' % (
+    path = config.THUMB_PATH % (
                 locator[:2],
                 locator[2:4],
                 locator.replace('-',''),
@@ -95,7 +96,7 @@ def getImageFile(locator, ext):
     simulateSlow()
     locator = locator.replace('-','').replace('/','').replace('..','')
     ext = ext.replace('/','').replace('..','')
-    path = '/data/rigor/images/%s/%s/%s.%s' % (
+    path = config.IMAGE_PATH % (
                 locator[:2],
                 locator[2:4],
                 locator.replace('-',''),
