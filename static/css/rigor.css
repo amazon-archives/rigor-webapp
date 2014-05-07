@@ -66,6 +66,8 @@ body {
 }
 .svg-polygon-lineorder {
     stroke-width: 2;
+    fill: none;
+    stroke: hsla(300,100%,70%,0.8);
 }
 
 .svg-polygon-selected {

@@ -303,6 +303,13 @@
                         ng-attr-height="(( DetailView.image.y_resolution ))"
                         >
                             <!-- TODO: lineorder -->
+                            <polyline
+                                ng-attr-class="(( 'svg-polygon-lineorder ' + (DetailView.isSelectedAnnotation(annotation) && 'svg-polygon-selected') ))"
+                                ng-show="DetailView.showGeom['text:lineorder'] && annotation._edit_state !== 'deleted'"
+                                ng-repeat="annotation in DetailView.getAnnotationsByDomain('text:lineorder')"
+                                ng-attr-points="(( DetailView.annotationToSvgPoints(annotation) ))"
+                                ng-click="DetailView.clickAnnotation(annotation)"
+                            />
                             <polygon
                                 ng-attr-class="(( 'svg-polygon-line ' + (DetailView.isSelectedAnnotation(annotation) && 'svg-polygon-selected') ))"
                                 ng-show="DetailView.showGeom['text:line'] && annotation._edit_state !== 'deleted'"
