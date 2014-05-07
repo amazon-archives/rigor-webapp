@@ -4,6 +4,7 @@ from __future__ import division
 import os
 import sys
 import time
+import json
 
 import functools
 
@@ -52,7 +53,7 @@ def use_basic_auth(f):
 # FLASK
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'fq348fnylq84ylnqx48yq3xlg8nlqy348q'
+app.config['SECRET_KEY'] = config.FLASK_SECRET_KEY
 
 
 #--------------------------------------------------------------------------------
@@ -67,7 +68,10 @@ def simulateSlow():
 @use_basic_auth
 def index():
     simulateSlow()
-    return render_template('browse.html')
+    configDict = dict(
+        INITIAL_DB_NAME = config.INITIAL_DB_NAME,
+    )
+    return render_template('browse.html', CONFIG=json.dumps(configDict))
 
 @app.route('/tagtest')
 @use_basic_auth

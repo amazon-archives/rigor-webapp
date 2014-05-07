@@ -18,6 +18,8 @@ USE_HTTP_AUTH = False
 HTTP_USER = 'user'
 HTTP_PW = 'password'
 
+FLASK_SECRET_KEY = 'p2932f2p49fj2p49fj2p49fj2p49jf348q'
+
 # crowd stuff
 CROWD_FAKE_SLOW_DELAY = 0
 CROWD_DB = 'blindsight'

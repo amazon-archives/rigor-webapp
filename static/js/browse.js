@@ -3,6 +3,11 @@
 
 "use strict";
 
+// note that we depend on a global variable being set from the page template:
+//   CONFIG
+// which is an object that contains
+//   INITIAL_DB_NAME
+
 
 var browseApp = angular.module('browseApp', ['ui']);
 
@@ -142,7 +147,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
         // the query dict for doing searches
         query: {
-            database_name: 'blindsight',      // TODO: this should be set to config.INITIAL_DB_NAME
+            database_name: CONFIG.INITIAL_DB_NAME,
             has_tags: [], // actual list
             max_count: 18,
             page: 0
@@ -763,7 +768,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
 
         // get database name from URL
         parts = path.split('/');
-        database_name = 'blindsight';
+        database_name = CONFIG.INITIAL_DB_NAME;
         if (parts.length >= 2) {
             database_name = parts[1];
         }
