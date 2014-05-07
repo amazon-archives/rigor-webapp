@@ -1,3 +1,6 @@
+/* jshint -W069, -W097 */
+/* global console, angular, setTimeout, document */
+
 "use strict";
 
 
@@ -292,8 +295,8 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             if ($scope.SearchAndThumbView.query.has_tags.indexOf(tag) === -1) {
                 // add the tag to the has_tags form
                 var existing_tags = $scope.SearchAndThumbView.query.has_tags;
-                existing_tags.push(tag)
-                $scope.SearchAndThumbView.setHasTags( existing_tags, false );
+                existing_tags.push(tag);
+                $scope.SearchAndThumbView.setHasTags(existing_tags, false);
 
                 // and refresh the search
                 $scope.SearchAndThumbView.query.page = 0;
@@ -308,7 +311,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         },
         clickClearButton: function() {
             // Set has_tags to [], page to 0, and do the search again.
-            $scope.SearchAndThumbView.setHasTags( [], false );
+            $scope.SearchAndThumbView.setHasTags([], false);
             $scope.SearchAndThumbView.query.page = 0;
             $scope.SearchAndThumbView.doSearch();
         },
@@ -456,7 +459,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                 $http.get('/api/v1/db/'+$scope.DetailView.database_name+'/image/'+$scope.DetailView.image_id)
                     .success(function(data,status,headers,config) {
                         console.log('...[DetailView.fetchImageAndAnnotations] success');
-                        $scope.DetailView.image = data
+                        $scope.DetailView.image = data;
                         $scope.DetailView._fetchAnnotations(); 
                     })
                     .error(function(data,status,headers,config) {
@@ -470,7 +473,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             console.log('[DetailView.fetchAnnotations] fetching annotations from server...');
             $http.get('/api/v1/db/'+$scope.DetailView.database_name+'/image/'+$scope.DetailView.image_id+'/annotation')
                 .success(function(data,status,headers,config) {
-                    $scope.DetailView.annotations = data['d']
+                    $scope.DetailView.annotations = data['d'];
                     console.log('...[DetailView.fetchAnnotations] success.  got ' + data['d'].length + ' annotations.');
                     // set _edit_state for all the annotations because the server doesn't set it for us
                     angular.forEach($scope.DetailView.annotations, function(annotation,ii) {
@@ -554,7 +557,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
             }
 
             // the ii we want is in the existing search results.  find it there
-            var new_id = undefined;
+            var new_id;
             angular.forEach($scope.SearchAndThumbView.result_images, function(img,jj) {
                 if (img.ii == new_ii) {
                     console.log('[DetailView._findNextOrPrevId] new id found in existing search results: '+new_id);
@@ -725,7 +728,7 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
                     boundary: input_boxes[ii],
                     fill: "hsla(300,100%,45%,0.25)",
                     stroke: "hsla(300,100%,80%,0.8)",
-                }
+                };
                 $scope.DetailView.comparison_boxes.push(output_box);
             }
         } catch(err) {
@@ -742,12 +745,13 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     var path = $location.path();
     console.log('[main] path = ' + path);
 
+    var parts, database_name;
     if (path.indexOf('/image/') !== -1) {
         console.log('[main] choosing DETAIL VIEW because of URL');
 
-        var parts = path.split('/');
+        parts = path.split('/');
         var image_id = parts[parts.length-1];
-        var database_name = parts[1];
+        database_name = parts[1];
 
         $scope.ViewChooser.switchView('detail',{
             database_name: database_name,
@@ -758,8 +762,8 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
         console.log('[main] choosing SEARCH AND THUMB VIEW because of URL');
 
         // get database name from URL
-        var parts = path.split('/');
-        var database_name = 'blindsight';
+        parts = path.split('/');
+        database_name = 'blindsight';
         if (parts.length >= 2) {
             database_name = parts[1];
         }
@@ -784,7 +788,6 @@ browseApp.controller('BrowseController', function($scope, $http, $routeParams, $
     }
 
     console.log('[main] --------------------------------------------------------------/');
-
 
 });
 
