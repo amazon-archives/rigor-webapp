@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>{{ page_state.get('site_name', 'Rigor') }}</title>
+	<meta name="HandheldFriendly" content="true" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="/static/css/normalize.css" />
+	<link rel="stylesheet" href="/static/css/rigor-hub.css" />
+	{% for css_path in template_slots.get_unique('css_path') %}
+		<link rel="stylesheet" href="{{css_path}}" />
+	{% endfor %}
+	<script src="/static/js/vendor/lodash.min.js"></script>
+	<script src="/static/js/rigorhub.js"></script>
+	<script>
+		// load pageState into rigorhub's state observer
+		require('/rigorhub.js').pageState.set('', {{page_state | tojson | safe}});
+	</script>
+	{% for js_head_path in template_slots.get_unique('js_head_path') %}
+		<script src="{{js_head_path}}"></script>
+	{% endfor %}
+</head>
+<body>
+	<div class="headerRow">
+		<div class="headerRightItem">
+			{% if page_state.username %}
+				Welcome, {{ page_state.username }}
+			{% endif %}
+		</div>
+		<div class="headerTitle">
+			<a href="/">{{ page_state.get('site_name', 'Rigor') }}</a>
+		</div>
+	</div>
+	<div class="navbar">
+		{% for navbar_link in template_slots.get('navbar_link') %}
+			{{navbar_link | safe}}
+		{% endfor %}
+	</div>
+	<div class="panelGroup">
+		<div class="sidebar">
+			{% for pager_bar in template_slots.get('sidebar_pager_bar') %}
+				<div class="pagerBar">
+					{% if pager_bar.get('up_link', None) %}
+						<a href="{{pager_bar.up_link}}" class="pagerBarItem pagerBarButton">{{pager_bar.get('up_label', 'Up')}}</a>
+					{% endif %}
+					{% if pager_bar.get('prev_link', None) %}
+						<a href="{{pager_bar.prev_link}}" class="pagerBarItem pagerBarButton">&larr; Prev</a>
+					{% endif %}
+					{% if pager_bar.get('num_results', None) %}
+						<div class="pagerBarItem">
+							{{pager_bar.num_results | string}} result{% if pager_bar.num_results != 1 %}s{% endif %}.  Page <span style="border: 1px solid #aaa; background: white">3</span> of 23
+						</div>
+					{% endif %}
+					{% if pager_bar.get('next_link', None) %}
+						<a href="{{pager_bar.next_link}}" class="pagerBarItem pagerBarButton">Next &rarr;</a>
+					{% endif %}
+				</div>
+			{% endfor %}
+
+			{% for html in template_slots.get('sidebar_top') %}
+				<div class="sidebarBox">
+					{{html | safe}}
+				</div>
+			{% endfor %}
+
+			{% for html in template_slots.get('sidebar') %}
+				<div class="sidebarBox">
+					{{html | safe}}
+				</div>
+			{% endfor %}
+
+			{% for html in template_slots.get('sidebar_bottom') %}
+				<div class="sidebarBox">
+					{{html | safe}}
+				</div>
+			{% endfor %}
+		</div>
+		<div class="mainPanel">
+			{% for pager_bar in template_slots.get('main_panel_pager_bar') %}
+				<div class="pagerBar">
+					{% if pager_bar.get('up_link', None) %}
+						<a href="{{pager_bar.up_link}}" class="pagerBarItem pagerBarButton">{{pager_bar.get('up_label', 'Up')}}</a>
+					{% endif %}
+					{% if pager_bar.get('prev_link', None) %}
+						<a href="{{pager_bar.prev_link}}" class="pagerBarItem pagerBarButton">&larr; Prev</a>
+					{% endif %}
+					{% if pager_bar.get('num_results', None) != None and pager_bar.get('page_num', None) != None %}
+						<div class="pagerBarItem">
+							{{pager_bar.num_results | string}} result{% if pager_bar.num_results != 1 %}s{% endif %}.  Page <span style="border: 1px solid #aaa; background: white">{{pager_bar.get('page_num') | string}}</span> of {{pager_bar.get('num_pages') | string}}
+						</div>
+					{% endif %}
+					{% if pager_bar.get('next_link', None) %}
+						<a href="{{pager_bar.next_link}}" class="pagerBarItem pagerBarButton">Next &rarr;</a>
+					{% endif %}
+				</div>
+			{% endfor %}
+
+			{% for html in template_slots.get('main_panel') %}
+				{{html | safe}}
+			{% endfor %}
+		</div>
+	</div>
+	{% for js_tail_path in template_slots.get_unique('js_tail_path') %}
+		<script src="{{js_tail_path | safe}}"></script>
+	{% endfor %}
+</body>
+</html>

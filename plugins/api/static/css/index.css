@@ -1,0 +1,17 @@
+
+.apiIndicatorSaved {
+	color: #888;
+}
+
+.apiIndicatorCanSave {
+	color: #a00;
+}
+
+.apiIndicatorSaving {
+	color: #0a0;
+}
+
+.apiIndicatorError {
+	color: #f00;
+}
+

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>{{ page_state.get('site_name', 'Rigor') }}</title>
+	<meta name="HandheldFriendly" content="true" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="/static/css/normalize.css" />
+	<link rel="stylesheet" href="/static/css/rigor-hub.css" />
+	{% for css_path in template_slots.get_unique('css_path') %}
+		<link rel="stylesheet" href="{{css_path}}" />
+	{% endfor %}
+	<script src="/static/js/vendor/lodash.min.js"></script>
+	<script src="/static/js/rigorhub.js"></script>
+	<script>
+		// load pageState into rigorhub's state observer
+		require('/rigorhub.js').pageState.set('', {{page_state | tojson | safe}});
+	</script>
+	{% for js_head_path in template_slots.get_unique('js_head_path') %}
+		<script src="{{js_head_path}}"></script>
+	{% endfor %}
+</head>
+<body>
+	{% for html in template_slots.get('body') %}
+		{{html | safe}}
+	{% endfor %}
+	{% for js_tail_path in template_slots.get_unique('js_tail_path') %}
+		<script src="{{js_tail_path | safe}}"></script>
+	{% endfor %}
+</body>
+</html>

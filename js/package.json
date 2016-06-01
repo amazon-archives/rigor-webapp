@@ -1,0 +1,24 @@
+{
+  "name": "rigorhub",
+  "version": "0.0.0",
+  "description": "",
+  "main": "rigorhub.js",
+  "scripts": {
+    "test": "node test/state-observer-test.js",
+    "lint": "jscs --verbose --max-errors 55 -r inline *.js test/*.js; eslint *.js test/*.js",
+    "browserify": "browserify --ignore lodash --outfile dist/rigorhub.js --require ./rigorhub.js",
+    "prepublish": "npm run-script browserify",
+    "copy-to-static": "cp dist/rigorhub.js ../share/static/js/"
+  },
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "lodash": "^2.4.1"
+  },
+  "devDependencies": {
+    "browserify": "^8.1.1",
+    "eslint": "^0.12.0",
+    "jscs": "^1.10.0",
+    "tape": "^3.4.0"
+  }
+}

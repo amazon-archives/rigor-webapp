@@ -1,0 +1,46 @@
+[webapp]
+
+# Main page title to show at the top of every page
+site_name = Rigor
+
+# Comma-separated list of databases to show in the web interface
+dbs = faces, kittens
+
+# Which database to default to on first pageload
+initial_db = kittens
+
+# Add this many seconds of fake delay to http requests
+fake_latency = 0
+
+# HTTP basic authentication settings
+use_http_auth = False
+http_auth_user = user
+http_auth_password = password
+
+# Flask uses a secret key to authenticate its cookies.  Set this to a long random string.
+flask_secret_key = THIS15NOT4GOODl0ngRANDOMstRINGTHough
+
+# Absolute paths to plugin folders
+plugin_paths =
+	ping,
+	api,
+	percept_search_page,
+	percept_detail_page,
+	percept_annotations,
+	example,
+	map,
+	mass_edit
+
+percept_search_page_results_per_page = 30
+api_image_cache_bytes = 1000000
+
+# cache resized images for this long
+thumbnail_cache_seconds = 9999
+
+# only cache resized images smaller than this size
+max_size_for_caching_images = 400
+
+# mapping from domain to external link URL, encoded as JSON
+# these template strings will be replaced in the URL: {model} {db}
+# this will show up in the percept annotation sidebar
+# external_link_templates = {"category": "http://www.example.com/{model}"}
