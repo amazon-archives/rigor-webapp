@@ -35,16 +35,6 @@ def get_app(rigor_config):
 			{'WWW-Authenticate': 'Basic realm="Login Required"'}
 		)
 
-	def use_basic_auth(fn):
-		@functools.wraps(fn)
-		def decorated(*args, **kwargs):
-			if rigor_config.get('webapp', 'use_http_auth'):
-				auth = request.authorization
-				if not auth or not check_auth(auth.username, auth.password):
-					return authenticate()
-			return fn(*args, **kwargs)
-		return decorated
-
 	def simulate_slow(fn):
 		@functools.wraps(fn)
 		def decorated(*args, **kwargs):
@@ -96,6 +86,15 @@ def get_app(rigor_config):
 	debug_detail('adding plugin routes')
 	for plugin_instance in plugin_instances:
 		plugin_instance.add_routes(app, backend, plugin_instances)
+
+	@app.before_request
+	# see http://stackoverflow.com/a/13451233/856925 for more thoughts on this
+	def require_auth_everywhere():
+		if rigor_config.getboolean('webapp', 'use_http_auth'):
+			auth = request.authorization
+			if not auth or not check_auth(auth.username, auth.password):
+				return authenticate()
+
 
 	@app.route('/')
 	def index_redirect():
