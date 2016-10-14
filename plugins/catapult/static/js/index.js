@@ -11,6 +11,7 @@
 		catapult.categories_do_not_include  // map from cat name to descriptive text
 		catapult.db_name
 		catapult.db_names
+		catapult.domain
 	pageState created locally:
 		catapult.done  // bool: did we hit the end of all available images?
 		catapult.next_percepts  // [next, after that, after that...]
@@ -138,7 +139,7 @@ var actions = {
 		var db_name = RH.pageState.get('catapult.db_name');
 		var newAnnotation = {
 			confidence: 1,
-			domain: "category",
+			domain: RH.pageState.get('catapult.domain'),
 			model: category,
 			percept_id: perceptId,
 			stamp: Math.floor((new Date()).getTime() / 1000),
@@ -595,7 +596,7 @@ var SidebarChosenCategories = React.createClass({
 			content = Object.keys(this.state.percept.categories).map(function(category) {
 				var isSaving = that.state.percept.categories[category] === true;
 				var savingClass = isSaving ? ' catapult-pill-saving' : '';
-				var searchUrl = '/db/' + db_name + '/perceptsearch?&annotation_domain=category&annotation_model=' + category
+				var searchUrl = '/db/' + db_name + '/perceptsearch?&annotation_domain='+RH.pageState.get('catapult.domain')+'&annotation_model=' + category
 				return <div className={"catapult-pill" + savingClass} key={'catpill-' + category}>
 					<a target="_blank" href={searchUrl} className="catapult-pill-text">{category}</a>
 					<a href="#" className="catapult-pill-x" onClick={function() {actions.removeCategory(category)}}>&times;</a>
