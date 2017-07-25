@@ -1,3 +1,6 @@
+**Archived**
+============
+
 **This repository is no longer being updated.** New development is happening in [rigorgt/rigor-webapp](https://github.com/rigorgt/rigor-webapp).
 
 Rigor Hub
